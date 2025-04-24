@@ -13,6 +13,10 @@ doc/api/
 
 # dotenv environment variables file
 .env*
+lib/gen/env.g.dart
+firebase.json
+
+lib/firebase_options.dart
 
 # Avoid committing generated Javascript files:
 *.dart.js
@@ -28,3 +32,4 @@ doc/api/
 
 .idea
 
+android/app/google-services.json
