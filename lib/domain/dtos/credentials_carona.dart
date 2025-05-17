@@ -19,4 +19,30 @@ class CredentialsCarona {
     this.preco,
     this.rota,
   });
+
+  // Métodos set
+  void setIdMotorista(String idMotorista) {
+    this.idMotorista = idMotorista;
+  }
+
+  void setQtdePassageiros(int qtdePassageiros) {
+    this.qtdePassageiros = qtdePassageiros;
+  }
+
+  void setIsVolta(bool isVolta) {
+    this.isVolta = isVolta;
+  }
+
+  void setHorarioSaida(DateTime horarioSaida) {
+    this.horarioSaida = horarioSaida;
+  }
+
+  void setHorarioChegada(DateTime horarioChegada) {
+    this.horarioChegada = horarioChegada;
+  }
+
+  void setPreco(double preco) {
+    this.preco = preco;
+  }
+
 }

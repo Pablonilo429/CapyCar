@@ -1,47 +1,108 @@
+import 'package:capy_car/config/dependencies.dart';
+import 'package:capy_car/main_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:lucid_validation/lucid_validation.dart';
+import 'package:routefly/routefly.dart';
+import 'package:url_strategy/url_strategy.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'firebase_options.dart';
+
+import 'main.route.dart';
+
+part 'main.g.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
-  runApp(const MyApp());
+  setPathUrlStrategy();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  setupDependecies();
+  runApp(const MainApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+@Main('lib/ui/')
+class MainApp extends StatefulWidget {
+  const MainApp({super.key});
 
+  @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
   // This widget is the root of your application.
+
+  final mainViewModel = injector.get<MainViewModel>();
+
+  @override
+  void initState() {
+    super.initState();
+
+    mainViewModel.addListener(() {
+      if (mainViewModel.usuario == null) {
+        Routefly.navigate(routePaths.auth.login);
+      } else {
+        if (mainViewModel.usuario?.campus == null ||
+            mainViewModel.usuario?.campus == '' &&
+                mainViewModel.usuario?.isPrimeiroLogin == true) {
+          Routefly.navigate(routePaths.usuario.cadastro.cadastrarLocalizacao);
+        }
+        else if(mainViewModel.usuario?.isPrimeiroLogin == true){
+          Routefly.navigate(routePaths.usuario.cadastro.cadastrarPapel);
+        }
+        else {
+          Routefly.navigate(routePaths.carona.caronaHome);
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    mainViewModel.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
+    LucidValidation.global.culture = Culture('pt', 'BR');
+    return MaterialApp.router(
+      routerConfig: Routefly.routerConfig(
 
-
-
-
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        routes: routes,
+        initialPath: routePaths.auth.login,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('pt', 'BR'), // ou apenas Locale('pt')
+      ],
     );
+
+    // return MaterialApp(
+    //   title: 'Flutter Demo',
+    //   theme: ThemeData(
+    //     // This is the theme of your application.
+    //     //
+    //     // TRY THIS: Try running your application with "flutter run". You'll see
+    //     // the application has a purple toolbar. Then, without quitting the app,
+    //     // try changing the seedColor in the colorScheme below to Colors.green
+    //     // and then invoke "hot reload" (save your changes or press the "hot
+    //     // reload" button in a Flutter-supported IDE, or press "r" if you used
+    //     // the command line to start the app).
+    //     //
+    //     // Notice that the counter didn't reset back to zero; the application
+    //     // state is not lost during the reload. To reset the state, use hot
+    //     // restart instead.
+    //     //
+    //     // This works for code too, not just values: Most code changes can be
+    //     // tested with just a hot reload.
+    //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+    //   ),
+    //   home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    // );
   }
 }
 

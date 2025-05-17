@@ -23,6 +23,7 @@ sealed class Usuario with _$Usuario {
     String? bairro,
     required bool isMotorista,
     required bool isAtivo,
+    required bool isPrimeiroLogin,
     Carro? carro,
     List<Rota>? rotasCadastradas,
   }) = UsuarioDados;

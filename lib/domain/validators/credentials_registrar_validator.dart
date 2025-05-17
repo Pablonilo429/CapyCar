@@ -13,10 +13,12 @@ class CredentialsRegistrarValidator
 
     ruleFor((c) => c.nomeSocial, key: 'nomeSocial').minLength(1).maxLength(200);
 
-    ruleFor((c) => c.dataNascimento, key: 'dateOfBirth').lessThan(
-      DateTime(now.year - 18, now.month, now.day),
-      message: "É necessário ter 18 anos ou mais",
-    );
+    ruleFor((c) => c.dataNascimento, key: 'dateOfBirth')
+        .lessThan(
+          DateTime(now.year - 18, now.month, now.day),
+          message: "É necessário ter 18 anos ou mais",
+        )
+        .isNotNull(message: "Data de nascimento é obrigatória");
 
     ruleFor(
       (c) => c.emailInstitucional,

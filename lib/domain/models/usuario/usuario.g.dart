@@ -22,6 +22,7 @@ UsuarioDados _$UsuarioDadosFromJson(Map<String, dynamic> json) => UsuarioDados(
   bairro: json['bairro'] as String?,
   isMotorista: json['isMotorista'] as bool,
   isAtivo: json['isAtivo'] as bool,
+  isPrimeiroLogin: json['isPrimeiroLogin'] as bool,
   carro:
       json['carro'] == null
           ? null
@@ -46,6 +47,7 @@ Map<String, dynamic> _$UsuarioDadosToJson(UsuarioDados instance) =>
       'bairro': instance.bairro,
       'isMotorista': instance.isMotorista,
       'isAtivo': instance.isAtivo,
+      'isPrimeiroLogin': instance.isPrimeiroLogin,
       'carro': instance.carro,
       'rotasCadastradas': instance.rotasCadastradas,
     };

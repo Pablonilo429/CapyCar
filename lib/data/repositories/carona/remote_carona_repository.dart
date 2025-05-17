@@ -16,7 +16,7 @@ import 'package:result_dart/src/unit.dart';
 class RemoteCaronaRepository implements CaronaRepository {
   final _streamController = StreamController<Carona>.broadcast();
 
-  final StoreService _storeService = StoreService();
+  final FirestoreService _storeService = FirestoreService();
   final String _collection = 'caronas';
 
   /// Cria uma nova carona com validação

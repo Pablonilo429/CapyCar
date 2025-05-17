@@ -9,7 +9,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:result_dart/src/unit.dart';
 
 class RemoteRotaRepository implements RotaRepository {
-  final StoreService _storeService = StoreService();
+  final FirestoreService _storeService = FirestoreService();
   final String _collection = 'usuarios';
 
 

@@ -20,7 +20,7 @@ class CloudinaryService {
       fileBytes: bytes,
       publicId: userId,
       resourceType: CloudinaryResourceType.image,
-      folder: "CapyCar",
+      folder: "CapyCar/Usuarios",
       fileName: fileName, // Nome do arquivo no Cloudinary
     );
 

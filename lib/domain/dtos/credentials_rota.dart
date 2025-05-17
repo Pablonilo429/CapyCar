@@ -10,4 +10,25 @@ class CredentialsRota {
     this.campus = '',
     this.pontos = const [],
   });
+
+  void setNomeRota(String nomeRota) {
+    this.nomeRota = nomeRota;
+  }
+
+  void setCidadeSaida(String cidadeSaida) {
+    this.cidadeSaida = cidadeSaida;
+  }
+
+  void setCampus(String campus) {
+    this.campus = campus;
+  }
+
+  void setPontos(List<String> pontos) {
+    this.pontos = pontos;
+  }
+
+  // Método para adicionar um ponto individual à lista
+  void addPonto(String ponto) {
+    pontos.add(ponto);
+  }
 }

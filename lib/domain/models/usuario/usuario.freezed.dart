@@ -23,7 +23,7 @@ Usuario _$UsuarioFromJson(
 /// @nodoc
 mixin _$Usuario {
 
- String get uId; String get nome; String? get fotoPerfilUrl; String? get nomeSocial; String get emailInstitucional; DateTime? get dataNascimento; String? get numeroCelular; String? get campus; String? get cidade; String? get bairro; bool get isMotorista; bool get isAtivo; Carro? get carro; List<Rota>? get rotasCadastradas;
+ String get uId; String get nome; String? get fotoPerfilUrl; String? get nomeSocial; String get emailInstitucional; DateTime? get dataNascimento; String? get numeroCelular; String? get campus; String? get cidade; String? get bairro; bool get isMotorista; bool get isAtivo; bool get isPrimeiroLogin; Carro? get carro; List<Rota>? get rotasCadastradas;
 /// Create a copy of Usuario
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -36,16 +36,16 @@ $UsuarioCopyWith<Usuario> get copyWith => _$UsuarioCopyWithImpl<Usuario>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Usuario&&(identical(other.uId, uId) || other.uId == uId)&&(identical(other.nome, nome) || other.nome == nome)&&(identical(other.fotoPerfilUrl, fotoPerfilUrl) || other.fotoPerfilUrl == fotoPerfilUrl)&&(identical(other.nomeSocial, nomeSocial) || other.nomeSocial == nomeSocial)&&(identical(other.emailInstitucional, emailInstitucional) || other.emailInstitucional == emailInstitucional)&&(identical(other.dataNascimento, dataNascimento) || other.dataNascimento == dataNascimento)&&(identical(other.numeroCelular, numeroCelular) || other.numeroCelular == numeroCelular)&&(identical(other.campus, campus) || other.campus == campus)&&(identical(other.cidade, cidade) || other.cidade == cidade)&&(identical(other.bairro, bairro) || other.bairro == bairro)&&(identical(other.isMotorista, isMotorista) || other.isMotorista == isMotorista)&&(identical(other.isAtivo, isAtivo) || other.isAtivo == isAtivo)&&(identical(other.carro, carro) || other.carro == carro)&&const DeepCollectionEquality().equals(other.rotasCadastradas, rotasCadastradas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Usuario&&(identical(other.uId, uId) || other.uId == uId)&&(identical(other.nome, nome) || other.nome == nome)&&(identical(other.fotoPerfilUrl, fotoPerfilUrl) || other.fotoPerfilUrl == fotoPerfilUrl)&&(identical(other.nomeSocial, nomeSocial) || other.nomeSocial == nomeSocial)&&(identical(other.emailInstitucional, emailInstitucional) || other.emailInstitucional == emailInstitucional)&&(identical(other.dataNascimento, dataNascimento) || other.dataNascimento == dataNascimento)&&(identical(other.numeroCelular, numeroCelular) || other.numeroCelular == numeroCelular)&&(identical(other.campus, campus) || other.campus == campus)&&(identical(other.cidade, cidade) || other.cidade == cidade)&&(identical(other.bairro, bairro) || other.bairro == bairro)&&(identical(other.isMotorista, isMotorista) || other.isMotorista == isMotorista)&&(identical(other.isAtivo, isAtivo) || other.isAtivo == isAtivo)&&(identical(other.isPrimeiroLogin, isPrimeiroLogin) || other.isPrimeiroLogin == isPrimeiroLogin)&&(identical(other.carro, carro) || other.carro == carro)&&const DeepCollectionEquality().equals(other.rotasCadastradas, rotasCadastradas));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uId,nome,fotoPerfilUrl,nomeSocial,emailInstitucional,dataNascimento,numeroCelular,campus,cidade,bairro,isMotorista,isAtivo,carro,const DeepCollectionEquality().hash(rotasCadastradas));
+int get hashCode => Object.hash(runtimeType,uId,nome,fotoPerfilUrl,nomeSocial,emailInstitucional,dataNascimento,numeroCelular,campus,cidade,bairro,isMotorista,isAtivo,isPrimeiroLogin,carro,const DeepCollectionEquality().hash(rotasCadastradas));
 
 @override
 String toString() {
-  return 'Usuario(uId: $uId, nome: $nome, fotoPerfilUrl: $fotoPerfilUrl, nomeSocial: $nomeSocial, emailInstitucional: $emailInstitucional, dataNascimento: $dataNascimento, numeroCelular: $numeroCelular, campus: $campus, cidade: $cidade, bairro: $bairro, isMotorista: $isMotorista, isAtivo: $isAtivo, carro: $carro, rotasCadastradas: $rotasCadastradas)';
+  return 'Usuario(uId: $uId, nome: $nome, fotoPerfilUrl: $fotoPerfilUrl, nomeSocial: $nomeSocial, emailInstitucional: $emailInstitucional, dataNascimento: $dataNascimento, numeroCelular: $numeroCelular, campus: $campus, cidade: $cidade, bairro: $bairro, isMotorista: $isMotorista, isAtivo: $isAtivo, isPrimeiroLogin: $isPrimeiroLogin, carro: $carro, rotasCadastradas: $rotasCadastradas)';
 }
 
 
@@ -56,7 +56,7 @@ abstract mixin class $UsuarioCopyWith<$Res>  {
   factory $UsuarioCopyWith(Usuario value, $Res Function(Usuario) _then) = _$UsuarioCopyWithImpl;
 @useResult
 $Res call({
- String uId, String nome, String? fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, Carro? carro, List<Rota>? rotasCadastradas
+ String uId, String nome, String? fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, bool isPrimeiroLogin, Carro? carro, List<Rota>? rotasCadastradas
 });
 
 
@@ -73,7 +73,7 @@ class _$UsuarioCopyWithImpl<$Res>
 
 /// Create a copy of Usuario
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = freezed,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = freezed,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? isPrimeiroLogin = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
   return _then(_self.copyWith(
 uId: null == uId ? _self.uId : uId // ignore: cast_nullable_to_non_nullable
 as String,nome: null == nome ? _self.nome : nome // ignore: cast_nullable_to_non_nullable
@@ -87,6 +87,7 @@ as String?,cidade: freezed == cidade ? _self.cidade : cidade // ignore: cast_nul
 as String?,bairro: freezed == bairro ? _self.bairro : bairro // ignore: cast_nullable_to_non_nullable
 as String?,isMotorista: null == isMotorista ? _self.isMotorista : isMotorista // ignore: cast_nullable_to_non_nullable
 as bool,isAtivo: null == isAtivo ? _self.isAtivo : isAtivo // ignore: cast_nullable_to_non_nullable
+as bool,isPrimeiroLogin: null == isPrimeiroLogin ? _self.isPrimeiroLogin : isPrimeiroLogin // ignore: cast_nullable_to_non_nullable
 as bool,carro: freezed == carro ? _self.carro : carro // ignore: cast_nullable_to_non_nullable
 as Carro?,rotasCadastradas: freezed == rotasCadastradas ? _self.rotasCadastradas : rotasCadastradas // ignore: cast_nullable_to_non_nullable
 as List<Rota>?,
@@ -112,7 +113,7 @@ $CarroCopyWith<$Res>? get carro {
 @JsonSerializable()
 
 class UsuarioDados implements Usuario {
-  const UsuarioDados({required this.uId, required this.nome, this.fotoPerfilUrl, this.nomeSocial, required this.emailInstitucional, this.dataNascimento, this.numeroCelular, this.campus, this.cidade, this.bairro, required this.isMotorista, required this.isAtivo, this.carro, final  List<Rota>? rotasCadastradas}): _rotasCadastradas = rotasCadastradas;
+  const UsuarioDados({required this.uId, required this.nome, this.fotoPerfilUrl, this.nomeSocial, required this.emailInstitucional, this.dataNascimento, this.numeroCelular, this.campus, this.cidade, this.bairro, required this.isMotorista, required this.isAtivo, required this.isPrimeiroLogin, this.carro, final  List<Rota>? rotasCadastradas}): _rotasCadastradas = rotasCadastradas;
   factory UsuarioDados.fromJson(Map<String, dynamic> json) => _$UsuarioDadosFromJson(json);
 
 @override final  String uId;
@@ -127,6 +128,7 @@ class UsuarioDados implements Usuario {
 @override final  String? bairro;
 @override final  bool isMotorista;
 @override final  bool isAtivo;
+@override final  bool isPrimeiroLogin;
 @override final  Carro? carro;
  final  List<Rota>? _rotasCadastradas;
 @override List<Rota>? get rotasCadastradas {
@@ -151,16 +153,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsuarioDados&&(identical(other.uId, uId) || other.uId == uId)&&(identical(other.nome, nome) || other.nome == nome)&&(identical(other.fotoPerfilUrl, fotoPerfilUrl) || other.fotoPerfilUrl == fotoPerfilUrl)&&(identical(other.nomeSocial, nomeSocial) || other.nomeSocial == nomeSocial)&&(identical(other.emailInstitucional, emailInstitucional) || other.emailInstitucional == emailInstitucional)&&(identical(other.dataNascimento, dataNascimento) || other.dataNascimento == dataNascimento)&&(identical(other.numeroCelular, numeroCelular) || other.numeroCelular == numeroCelular)&&(identical(other.campus, campus) || other.campus == campus)&&(identical(other.cidade, cidade) || other.cidade == cidade)&&(identical(other.bairro, bairro) || other.bairro == bairro)&&(identical(other.isMotorista, isMotorista) || other.isMotorista == isMotorista)&&(identical(other.isAtivo, isAtivo) || other.isAtivo == isAtivo)&&(identical(other.carro, carro) || other.carro == carro)&&const DeepCollectionEquality().equals(other._rotasCadastradas, _rotasCadastradas));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UsuarioDados&&(identical(other.uId, uId) || other.uId == uId)&&(identical(other.nome, nome) || other.nome == nome)&&(identical(other.fotoPerfilUrl, fotoPerfilUrl) || other.fotoPerfilUrl == fotoPerfilUrl)&&(identical(other.nomeSocial, nomeSocial) || other.nomeSocial == nomeSocial)&&(identical(other.emailInstitucional, emailInstitucional) || other.emailInstitucional == emailInstitucional)&&(identical(other.dataNascimento, dataNascimento) || other.dataNascimento == dataNascimento)&&(identical(other.numeroCelular, numeroCelular) || other.numeroCelular == numeroCelular)&&(identical(other.campus, campus) || other.campus == campus)&&(identical(other.cidade, cidade) || other.cidade == cidade)&&(identical(other.bairro, bairro) || other.bairro == bairro)&&(identical(other.isMotorista, isMotorista) || other.isMotorista == isMotorista)&&(identical(other.isAtivo, isAtivo) || other.isAtivo == isAtivo)&&(identical(other.isPrimeiroLogin, isPrimeiroLogin) || other.isPrimeiroLogin == isPrimeiroLogin)&&(identical(other.carro, carro) || other.carro == carro)&&const DeepCollectionEquality().equals(other._rotasCadastradas, _rotasCadastradas));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,uId,nome,fotoPerfilUrl,nomeSocial,emailInstitucional,dataNascimento,numeroCelular,campus,cidade,bairro,isMotorista,isAtivo,carro,const DeepCollectionEquality().hash(_rotasCadastradas));
+int get hashCode => Object.hash(runtimeType,uId,nome,fotoPerfilUrl,nomeSocial,emailInstitucional,dataNascimento,numeroCelular,campus,cidade,bairro,isMotorista,isAtivo,isPrimeiroLogin,carro,const DeepCollectionEquality().hash(_rotasCadastradas));
 
 @override
 String toString() {
-  return 'Usuario(uId: $uId, nome: $nome, fotoPerfilUrl: $fotoPerfilUrl, nomeSocial: $nomeSocial, emailInstitucional: $emailInstitucional, dataNascimento: $dataNascimento, numeroCelular: $numeroCelular, campus: $campus, cidade: $cidade, bairro: $bairro, isMotorista: $isMotorista, isAtivo: $isAtivo, carro: $carro, rotasCadastradas: $rotasCadastradas)';
+  return 'Usuario(uId: $uId, nome: $nome, fotoPerfilUrl: $fotoPerfilUrl, nomeSocial: $nomeSocial, emailInstitucional: $emailInstitucional, dataNascimento: $dataNascimento, numeroCelular: $numeroCelular, campus: $campus, cidade: $cidade, bairro: $bairro, isMotorista: $isMotorista, isAtivo: $isAtivo, isPrimeiroLogin: $isPrimeiroLogin, carro: $carro, rotasCadastradas: $rotasCadastradas)';
 }
 
 
@@ -171,7 +173,7 @@ abstract mixin class $UsuarioDadosCopyWith<$Res> implements $UsuarioCopyWith<$Re
   factory $UsuarioDadosCopyWith(UsuarioDados value, $Res Function(UsuarioDados) _then) = _$UsuarioDadosCopyWithImpl;
 @override @useResult
 $Res call({
- String uId, String nome, String? fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, Carro? carro, List<Rota>? rotasCadastradas
+ String uId, String nome, String? fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, bool isPrimeiroLogin, Carro? carro, List<Rota>? rotasCadastradas
 });
 
 
@@ -188,7 +190,7 @@ class _$UsuarioDadosCopyWithImpl<$Res>
 
 /// Create a copy of Usuario
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = freezed,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = freezed,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? isPrimeiroLogin = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
   return _then(UsuarioDados(
 uId: null == uId ? _self.uId : uId // ignore: cast_nullable_to_non_nullable
 as String,nome: null == nome ? _self.nome : nome // ignore: cast_nullable_to_non_nullable
@@ -202,6 +204,7 @@ as String?,cidade: freezed == cidade ? _self.cidade : cidade // ignore: cast_nul
 as String?,bairro: freezed == bairro ? _self.bairro : bairro // ignore: cast_nullable_to_non_nullable
 as String?,isMotorista: null == isMotorista ? _self.isMotorista : isMotorista // ignore: cast_nullable_to_non_nullable
 as bool,isAtivo: null == isAtivo ? _self.isAtivo : isAtivo // ignore: cast_nullable_to_non_nullable
+as bool,isPrimeiroLogin: null == isPrimeiroLogin ? _self.isPrimeiroLogin : isPrimeiroLogin // ignore: cast_nullable_to_non_nullable
 as bool,carro: freezed == carro ? _self.carro : carro // ignore: cast_nullable_to_non_nullable
 as Carro?,rotasCadastradas: freezed == rotasCadastradas ? _self._rotasCadastradas : rotasCadastradas // ignore: cast_nullable_to_non_nullable
 as List<Rota>?,

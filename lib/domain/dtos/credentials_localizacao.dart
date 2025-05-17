@@ -8,4 +8,16 @@ class CredentialsLocalizacao {
     this.cidade = '',
     this.bairro = '',
   });
+
+  void setCampus(String campus) {
+    this.campus = campus;
+  }
+
+  void setCidade(String cidade) {
+    this.cidade = cidade;
+  }
+
+  void setBairro(String bairro) {
+    this.bairro = bairro;
+  }
 }

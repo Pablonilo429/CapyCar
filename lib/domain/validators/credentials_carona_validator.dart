@@ -33,5 +33,6 @@ class CredentialsCaronaValidator extends LucidValidator<CredentialsCarona> {
     carona.horarioChegada!.difference(carona.horarioSaida!) >=
     Duration(minutes: 30),
     'O horário de saída deve ser pelo menos 30 minutos antes da chegada', 'diferencaHorarios');
+
   }
 }

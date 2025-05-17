@@ -13,15 +13,8 @@ class CredentialsCarroValidator extends LucidValidator<CredentialsCarro> {
     ruleFor((c) => c.cor, key: 'cor').notEmpty().maxLength(25).minLength(1);
 
     ruleFor(
-      (c) => c.modelo,
-      key: 'modelo',
-    ).notEmpty().maxLength(50).minLength(1);
-
-    ruleFor(
       (c) => c.placa,
       key: 'placa',
     ).notEmpty().maxLength(7).minLength(7).mustHaveNumber();
-
-
   }
 }
