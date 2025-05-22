@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Carona {
 
- String? get id; String get motoristaId; Rota get rota; bool get isVolta; List<String>? get idsPassageiros; int get qtdePassageiros; String get status; DateTime get horarioSaidaCarona; DateTime get horarioChegada; DateTime get dataCarona; bool get isFinalizada;
+ String? get id; String get motoristaId; Rota get rota; bool get isVolta; List<String>? get idsPassageiros; int get qtdePassageiros; String get status; DateTime get horarioSaidaCarona; DateTime get horarioChegada; DateTime get dataCarona; double get preco; bool get isFinalizada;
 /// Create a copy of Carona
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +29,16 @@ $CaronaCopyWith<Carona> get copyWith => _$CaronaCopyWithImpl<Carona>(this as Car
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Carona&&(identical(other.id, id) || other.id == id)&&(identical(other.motoristaId, motoristaId) || other.motoristaId == motoristaId)&&(identical(other.rota, rota) || other.rota == rota)&&(identical(other.isVolta, isVolta) || other.isVolta == isVolta)&&const DeepCollectionEquality().equals(other.idsPassageiros, idsPassageiros)&&(identical(other.qtdePassageiros, qtdePassageiros) || other.qtdePassageiros == qtdePassageiros)&&(identical(other.status, status) || other.status == status)&&(identical(other.horarioSaidaCarona, horarioSaidaCarona) || other.horarioSaidaCarona == horarioSaidaCarona)&&(identical(other.horarioChegada, horarioChegada) || other.horarioChegada == horarioChegada)&&(identical(other.dataCarona, dataCarona) || other.dataCarona == dataCarona)&&(identical(other.isFinalizada, isFinalizada) || other.isFinalizada == isFinalizada));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Carona&&(identical(other.id, id) || other.id == id)&&(identical(other.motoristaId, motoristaId) || other.motoristaId == motoristaId)&&(identical(other.rota, rota) || other.rota == rota)&&(identical(other.isVolta, isVolta) || other.isVolta == isVolta)&&const DeepCollectionEquality().equals(other.idsPassageiros, idsPassageiros)&&(identical(other.qtdePassageiros, qtdePassageiros) || other.qtdePassageiros == qtdePassageiros)&&(identical(other.status, status) || other.status == status)&&(identical(other.horarioSaidaCarona, horarioSaidaCarona) || other.horarioSaidaCarona == horarioSaidaCarona)&&(identical(other.horarioChegada, horarioChegada) || other.horarioChegada == horarioChegada)&&(identical(other.dataCarona, dataCarona) || other.dataCarona == dataCarona)&&(identical(other.preco, preco) || other.preco == preco)&&(identical(other.isFinalizada, isFinalizada) || other.isFinalizada == isFinalizada));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,motoristaId,rota,isVolta,const DeepCollectionEquality().hash(idsPassageiros),qtdePassageiros,status,horarioSaidaCarona,horarioChegada,dataCarona,isFinalizada);
+int get hashCode => Object.hash(runtimeType,id,motoristaId,rota,isVolta,const DeepCollectionEquality().hash(idsPassageiros),qtdePassageiros,status,horarioSaidaCarona,horarioChegada,dataCarona,preco,isFinalizada);
 
 @override
 String toString() {
-  return 'Carona(id: $id, motoristaId: $motoristaId, rota: $rota, isVolta: $isVolta, idsPassageiros: $idsPassageiros, qtdePassageiros: $qtdePassageiros, status: $status, horarioSaidaCarona: $horarioSaidaCarona, horarioChegada: $horarioChegada, dataCarona: $dataCarona, isFinalizada: $isFinalizada)';
+  return 'Carona(id: $id, motoristaId: $motoristaId, rota: $rota, isVolta: $isVolta, idsPassageiros: $idsPassageiros, qtdePassageiros: $qtdePassageiros, status: $status, horarioSaidaCarona: $horarioSaidaCarona, horarioChegada: $horarioChegada, dataCarona: $dataCarona, preco: $preco, isFinalizada: $isFinalizada)';
 }
 
 
@@ -49,7 +49,7 @@ abstract mixin class $CaronaCopyWith<$Res>  {
   factory $CaronaCopyWith(Carona value, $Res Function(Carona) _then) = _$CaronaCopyWithImpl;
 @useResult
 $Res call({
- String? id, String motoristaId, Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, bool isFinalizada
+ String? id, String motoristaId, Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, double preco, bool isFinalizada
 });
 
 
@@ -66,7 +66,7 @@ class _$CaronaCopyWithImpl<$Res>
 
 /// Create a copy of Carona
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? motoristaId = null,Object? rota = null,Object? isVolta = null,Object? idsPassageiros = freezed,Object? qtdePassageiros = null,Object? status = null,Object? horarioSaidaCarona = null,Object? horarioChegada = null,Object? dataCarona = null,Object? isFinalizada = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? motoristaId = null,Object? rota = null,Object? isVolta = null,Object? idsPassageiros = freezed,Object? qtdePassageiros = null,Object? status = null,Object? horarioSaidaCarona = null,Object? horarioChegada = null,Object? dataCarona = null,Object? preco = null,Object? isFinalizada = null,}) {
   return _then(_self.copyWith(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,motoristaId: null == motoristaId ? _self.motoristaId : motoristaId // ignore: cast_nullable_to_non_nullable
@@ -78,7 +78,8 @@ as int,status: null == status ? _self.status : status // ignore: cast_nullable_t
 as String,horarioSaidaCarona: null == horarioSaidaCarona ? _self.horarioSaidaCarona : horarioSaidaCarona // ignore: cast_nullable_to_non_nullable
 as DateTime,horarioChegada: null == horarioChegada ? _self.horarioChegada : horarioChegada // ignore: cast_nullable_to_non_nullable
 as DateTime,dataCarona: null == dataCarona ? _self.dataCarona : dataCarona // ignore: cast_nullable_to_non_nullable
-as DateTime,isFinalizada: null == isFinalizada ? _self.isFinalizada : isFinalizada // ignore: cast_nullable_to_non_nullable
+as DateTime,preco: null == preco ? _self.preco : preco // ignore: cast_nullable_to_non_nullable
+as double,isFinalizada: null == isFinalizada ? _self.isFinalizada : isFinalizada // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }
@@ -99,7 +100,7 @@ $RotaCopyWith<$Res> get rota {
 @JsonSerializable()
 
 class _Carona implements Carona {
-  const _Carona({this.id, required this.motoristaId, required this.rota, required this.isVolta, final  List<String>? idsPassageiros, required this.qtdePassageiros, required this.status, required this.horarioSaidaCarona, required this.horarioChegada, required this.dataCarona, required this.isFinalizada}): _idsPassageiros = idsPassageiros;
+  const _Carona({this.id, required this.motoristaId, required this.rota, required this.isVolta, final  List<String>? idsPassageiros, required this.qtdePassageiros, required this.status, required this.horarioSaidaCarona, required this.horarioChegada, required this.dataCarona, required this.preco, required this.isFinalizada}): _idsPassageiros = idsPassageiros;
   factory _Carona.fromJson(Map<String, dynamic> json) => _$CaronaFromJson(json);
 
 @override final  String? id;
@@ -120,6 +121,7 @@ class _Carona implements Carona {
 @override final  DateTime horarioSaidaCarona;
 @override final  DateTime horarioChegada;
 @override final  DateTime dataCarona;
+@override final  double preco;
 @override final  bool isFinalizada;
 
 /// Create a copy of Carona
@@ -135,16 +137,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Carona&&(identical(other.id, id) || other.id == id)&&(identical(other.motoristaId, motoristaId) || other.motoristaId == motoristaId)&&(identical(other.rota, rota) || other.rota == rota)&&(identical(other.isVolta, isVolta) || other.isVolta == isVolta)&&const DeepCollectionEquality().equals(other._idsPassageiros, _idsPassageiros)&&(identical(other.qtdePassageiros, qtdePassageiros) || other.qtdePassageiros == qtdePassageiros)&&(identical(other.status, status) || other.status == status)&&(identical(other.horarioSaidaCarona, horarioSaidaCarona) || other.horarioSaidaCarona == horarioSaidaCarona)&&(identical(other.horarioChegada, horarioChegada) || other.horarioChegada == horarioChegada)&&(identical(other.dataCarona, dataCarona) || other.dataCarona == dataCarona)&&(identical(other.isFinalizada, isFinalizada) || other.isFinalizada == isFinalizada));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Carona&&(identical(other.id, id) || other.id == id)&&(identical(other.motoristaId, motoristaId) || other.motoristaId == motoristaId)&&(identical(other.rota, rota) || other.rota == rota)&&(identical(other.isVolta, isVolta) || other.isVolta == isVolta)&&const DeepCollectionEquality().equals(other._idsPassageiros, _idsPassageiros)&&(identical(other.qtdePassageiros, qtdePassageiros) || other.qtdePassageiros == qtdePassageiros)&&(identical(other.status, status) || other.status == status)&&(identical(other.horarioSaidaCarona, horarioSaidaCarona) || other.horarioSaidaCarona == horarioSaidaCarona)&&(identical(other.horarioChegada, horarioChegada) || other.horarioChegada == horarioChegada)&&(identical(other.dataCarona, dataCarona) || other.dataCarona == dataCarona)&&(identical(other.preco, preco) || other.preco == preco)&&(identical(other.isFinalizada, isFinalizada) || other.isFinalizada == isFinalizada));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,motoristaId,rota,isVolta,const DeepCollectionEquality().hash(_idsPassageiros),qtdePassageiros,status,horarioSaidaCarona,horarioChegada,dataCarona,isFinalizada);
+int get hashCode => Object.hash(runtimeType,id,motoristaId,rota,isVolta,const DeepCollectionEquality().hash(_idsPassageiros),qtdePassageiros,status,horarioSaidaCarona,horarioChegada,dataCarona,preco,isFinalizada);
 
 @override
 String toString() {
-  return 'Carona(id: $id, motoristaId: $motoristaId, rota: $rota, isVolta: $isVolta, idsPassageiros: $idsPassageiros, qtdePassageiros: $qtdePassageiros, status: $status, horarioSaidaCarona: $horarioSaidaCarona, horarioChegada: $horarioChegada, dataCarona: $dataCarona, isFinalizada: $isFinalizada)';
+  return 'Carona(id: $id, motoristaId: $motoristaId, rota: $rota, isVolta: $isVolta, idsPassageiros: $idsPassageiros, qtdePassageiros: $qtdePassageiros, status: $status, horarioSaidaCarona: $horarioSaidaCarona, horarioChegada: $horarioChegada, dataCarona: $dataCarona, preco: $preco, isFinalizada: $isFinalizada)';
 }
 
 
@@ -155,7 +157,7 @@ abstract mixin class _$CaronaCopyWith<$Res> implements $CaronaCopyWith<$Res> {
   factory _$CaronaCopyWith(_Carona value, $Res Function(_Carona) _then) = __$CaronaCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String motoristaId, Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, bool isFinalizada
+ String? id, String motoristaId, Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, double preco, bool isFinalizada
 });
 
 
@@ -172,7 +174,7 @@ class __$CaronaCopyWithImpl<$Res>
 
 /// Create a copy of Carona
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? motoristaId = null,Object? rota = null,Object? isVolta = null,Object? idsPassageiros = freezed,Object? qtdePassageiros = null,Object? status = null,Object? horarioSaidaCarona = null,Object? horarioChegada = null,Object? dataCarona = null,Object? isFinalizada = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? motoristaId = null,Object? rota = null,Object? isVolta = null,Object? idsPassageiros = freezed,Object? qtdePassageiros = null,Object? status = null,Object? horarioSaidaCarona = null,Object? horarioChegada = null,Object? dataCarona = null,Object? preco = null,Object? isFinalizada = null,}) {
   return _then(_Carona(
 id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as String?,motoristaId: null == motoristaId ? _self.motoristaId : motoristaId // ignore: cast_nullable_to_non_nullable
@@ -184,7 +186,8 @@ as int,status: null == status ? _self.status : status // ignore: cast_nullable_t
 as String,horarioSaidaCarona: null == horarioSaidaCarona ? _self.horarioSaidaCarona : horarioSaidaCarona // ignore: cast_nullable_to_non_nullable
 as DateTime,horarioChegada: null == horarioChegada ? _self.horarioChegada : horarioChegada // ignore: cast_nullable_to_non_nullable
 as DateTime,dataCarona: null == dataCarona ? _self.dataCarona : dataCarona // ignore: cast_nullable_to_non_nullable
-as DateTime,isFinalizada: null == isFinalizada ? _self.isFinalizada : isFinalizada // ignore: cast_nullable_to_non_nullable
+as DateTime,preco: null == preco ? _self.preco : preco // ignore: cast_nullable_to_non_nullable
+as double,isFinalizada: null == isFinalizada ? _self.isFinalizada : isFinalizada // ignore: cast_nullable_to_non_nullable
 as bool,
   ));
 }

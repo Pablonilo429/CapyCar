@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/main_viewmodel.dart';
+import 'package:capy_car/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:lucid_validation/lucid_validation.dart';
@@ -45,15 +48,40 @@ class _MainAppState extends State<MainApp> {
             mainViewModel.usuario?.campus == '' &&
                 mainViewModel.usuario?.isPrimeiroLogin == true) {
           Routefly.navigate(routePaths.usuario.cadastro.cadastrarLocalizacao);
-        }
-        else if(mainViewModel.usuario?.isPrimeiroLogin == true){
+        } else if (mainViewModel.usuario?.isPrimeiroLogin == true) {
           Routefly.navigate(routePaths.usuario.cadastro.cadastrarPapel);
-        }
-        else {
+        } else {
           Routefly.navigate(routePaths.carona.caronaHome);
         }
       }
     });
+  }
+
+  FutureOr<RouteInformation> authMiddleware(RouteInformation routeInfo) {
+    final path = routeInfo.uri.path;
+
+    print(routeInfo.uri.path);
+    // Exceções públicas
+    final isPublic =
+        path == '/auth/login' ||
+        path == '/auth/registrar' ||
+        path == '/auth/senha/esqueci_senha';
+
+    // Checagem de login
+    final isLoggedIn = injector.get<MainViewModel>().usuario != null;
+
+    // Se não logado e a rota não for pública, redireciona para login
+    if (!isLoggedIn && !isPublic) {
+      return routeInfo.redirect(Uri.parse('/auth/login'));
+    }
+
+    // Se já logado e tentando acessar login ou registro, redireciona para a home
+    if (isLoggedIn && isPublic) {
+      return routeInfo.redirect(Uri.parse('/home'));
+    }
+
+    // Caso contrário, segue com a navegação
+    return routeInfo;
   }
 
   @override
@@ -66,8 +94,10 @@ class _MainAppState extends State<MainApp> {
   Widget build(BuildContext context) {
     LucidValidation.global.culture = Culture('pt', 'BR');
     return MaterialApp.router(
+      title: "CapyCar",
+      theme: appTheme,
       routerConfig: Routefly.routerConfig(
-
+        middlewares: [authMiddleware],
         routes: routes,
         initialPath: routePaths.auth.login,
       ),

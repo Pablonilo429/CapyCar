@@ -9,7 +9,7 @@ class LoaderWidget extends StatelessWidget {
         children: const [
           CircleAvatar(
             radius: 100,
-            backgroundImage: NetworkImage("https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png"),
+            backgroundImage: AssetImage('assets/logo/motorista.png'),
             backgroundColor: Colors.white,
           ),
           SizedBox(height: 30),

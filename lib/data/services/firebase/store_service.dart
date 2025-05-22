@@ -79,6 +79,54 @@ class FirestoreService {
     }
   }
 
+  /// Busca caronas futuras (até 24h), com filtros opcionais
+  Future<List<QueryDocumentSnapshot>> getFilteredCaronas({
+    required String collection,
+    String? textoBusca,
+    String? campusFiltro,
+    bool? isVoltaFiltro,
+  }) async {
+    Query query = _firestore.collection(collection);
+
+    // Filtro por caronas não finalizadas
+    query = query.where('isFinalizada', isEqualTo: false);
+
+    // Filtro por campus
+    if (campusFiltro != null && campusFiltro.isNotEmpty) {
+      query = query.where('rota.campus', isEqualTo: campusFiltro);
+    }
+
+    // Filtro por tipo (ida/volta)
+    if (isVoltaFiltro != null) {
+      query = query.where('isVolta', isEqualTo: isVoltaFiltro);
+    }
+
+    // Filtro por data/hora (próximas 24 horas)
+    final agoraIso = DateTime.now().toIso8601String();
+    final ateIso = DateTime.now().add(Duration(hours: 24)).toIso8601String();
+
+    query = query.where('horarioSaidaCarona', isGreaterThanOrEqualTo: agoraIso);
+    query = query.where('horarioSaidaCarona', isLessThanOrEqualTo: ateIso);
+
+    // Obtem os documentos
+    final snapshot = await query.get();
+    final docs = snapshot.docs;
+
+    // Busca textual manual (Firestore não suporta "contains" em listas nem busca full-text ainda)
+    if (textoBusca != null && textoBusca.isNotEmpty) {
+      final termo = textoBusca.toLowerCase();
+      return docs.where((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        final saida = (data['rota']['saida'] as String?)?.toLowerCase() ?? '';
+        final pontos =
+            (data['rota']['pontos'] as List?)?.join(' ').toLowerCase() ?? '';
+        return saida.contains(termo) || pontos.contains(termo);
+      }).toList();
+    }
+    print(docs.length);
+    return docs;
+  }
+
   /// Busca um documento específico por ID
   Future<DocumentSnapshot> getDocumentById({
     required String collection,

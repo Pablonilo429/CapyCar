@@ -3,10 +3,11 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import '../rota/rota.dart';
 
 part 'carona.freezed.dart';
+
 part 'carona.g.dart';
 
 @freezed
-sealed class Carona with _$Carona{
+sealed class Carona with _$Carona {
   const factory Carona({
     String? id,
     required String motoristaId,
@@ -18,6 +19,7 @@ sealed class Carona with _$Carona{
     required DateTime horarioSaidaCarona,
     required DateTime horarioChegada,
     required DateTime dataCarona,
+    required double preco,
     required bool isFinalizada,
   }) = _Carona;
 

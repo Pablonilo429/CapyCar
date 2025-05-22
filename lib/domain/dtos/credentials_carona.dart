@@ -7,7 +7,7 @@ class CredentialsCarona {
   bool? isVolta;
   DateTime? horarioSaida;
   DateTime? horarioChegada;
-  double? preco;
+  double preco;
   CredentialsRota? rota;
 
   CredentialsCarona({
@@ -16,7 +16,7 @@ class CredentialsCarona {
     this.isVolta,
     this.horarioSaida,
     this.horarioChegada,
-    this.preco,
+    this.preco = 1.0,
     this.rota,
   });
 

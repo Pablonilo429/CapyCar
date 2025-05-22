@@ -14,6 +14,7 @@ class CadastarFotoViewModel extends ChangeNotifier {
   late final cadastrarFotoCommand = Command1(_cadastrarFoto);
 
 
+
   AsyncResult<Unit> _cadastrarFoto(Uint8List foto) {
     return _authRepository.registrarFoto(foto);
   }

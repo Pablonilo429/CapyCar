@@ -13,6 +13,8 @@ import 'package:capy_car/ui/auth/login/login_viewmodel.dart';
 import 'package:capy_car/ui/auth/logout/logout_viewmodel.dart';
 import 'package:capy_car/ui/auth/registrar/registrar_viewmodel.dart';
 import 'package:capy_car/ui/auth/senha/esqueci_senha_viewmodel.dart';
+import 'package:capy_car/ui/carona/carona_home_viewmodel.dart';
+import 'package:capy_car/ui/components/appDrawer_view_model.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_carro_viewmodel.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_foto_viewmodel.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_localizacao_viewmodel.dart';
@@ -43,6 +45,8 @@ void setupDependecies() {
   injector.addSingleton<CadastrarLocalizacaoViewmodel>(CadastrarLocalizacaoViewmodel.new);
   injector.addSingleton<CadastarFotoViewModel>(CadastarFotoViewModel.new);
   injector.addSingleton<CadastrarCarroViewmodel>(CadastrarCarroViewmodel.new);
+  injector.addSingleton<CaronaHomeViewModel>(CaronaHomeViewModel.new);
+  injector.addSingleton<AppDrawerViewModel>(AppDrawerViewModel.new);
 
 
 

@@ -18,5 +18,9 @@ abstract interface class CaronaRepository {
 
   AsyncResult<Carona> getCarona(String id);
 
-  AsyncResult<List<Carona?>> getAllCarona();
+  AsyncResult<List<Carona?>> getAllCarona(
+    String? campus,
+    bool? isVolta, // busca textual
+    String? rotaFiltro,
+  );
 }

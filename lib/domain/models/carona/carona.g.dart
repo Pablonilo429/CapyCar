@@ -20,6 +20,7 @@ _Carona _$CaronaFromJson(Map<String, dynamic> json) => _Carona(
   horarioSaidaCarona: DateTime.parse(json['horarioSaidaCarona'] as String),
   horarioChegada: DateTime.parse(json['horarioChegada'] as String),
   dataCarona: DateTime.parse(json['dataCarona'] as String),
+  preco: (json['preco'] as num).toDouble(),
   isFinalizada: json['isFinalizada'] as bool,
 );
 
@@ -34,5 +35,6 @@ Map<String, dynamic> _$CaronaToJson(_Carona instance) => <String, dynamic>{
   'horarioSaidaCarona': instance.horarioSaidaCarona.toIso8601String(),
   'horarioChegada': instance.horarioChegada.toIso8601String(),
   'dataCarona': instance.dataCarona.toIso8601String(),
+  'preco': instance.preco,
   'isFinalizada': instance.isFinalizada,
 };

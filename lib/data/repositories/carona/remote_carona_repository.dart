@@ -22,79 +22,67 @@ class RemoteCaronaRepository implements CaronaRepository {
   /// Cria uma nova carona com validação
   @override
   AsyncResult<Carona> criarCarona(CredentialsCarona credentials) async {
-    final validated = await CredentialsCaronaValidator().validateResult(
-      credentials,
-    );
-    final validatedRota = await CredentialsRotaValidator().validateResult(
-      credentials.rota!,
-    );
+    try {
+      // Verifica se já há carona ativa (não finalizada) do tipo correspondente (ida/volta) para o motorista
+      final caronasAtuais = await _storeService.getDocumentsWithFilter(
+        collection: _collection,
+        filters: {
+          'isFinalizada': false,
+          'isVolta': credentials.isVolta!,
+          'motoristaId': credentials.idMotorista,
+        },
+      );
 
-    return await validated.fold((creds) async {
-      return await validatedRota.fold((_) async {
-        try {
-          // Verifica se já há carona ativa (não finalizada) do tipo correspondente (ida/volta) para o motorista
-          final caronasAtuais = await _storeService.getDocumentsWithFilter(
+      for (final doc in caronasAtuais) {
+        final data = doc.data() as Map<String, dynamic>;
+        final horarioChegada = (data['horarioChegada'] as Timestamp).toDate();
+        if (horarioChegada.isBefore(DateTime.now())) {
+          await _storeService.updateDocument(
             collection: _collection,
-            filters: {
-              'isFinalizada': false,
-              'isVolta': creds.isVolta!,
-              'motoristaId': creds.idMotorista,
-            },
+            docId: doc.id,
+            data: {'isFinalizada': true, 'status': 'concluída'},
           );
-
-          for (final doc in caronasAtuais) {
-            final data = doc.data() as Map<String, dynamic>;
-            final horarioChegada =
-                (data['horarioChegada'] as Timestamp).toDate();
-
-            if (horarioChegada.isBefore(DateTime.now())) {
-              await _storeService.updateDocument(
-                collection: _collection,
-                docId: doc.id,
-                data: {'isFinalizada': true, 'status': 'concluída'},
-              );
-            } else {
-              return Failure(
-                Exception(
-                  'Você já possui uma carona ${creds.isVolta! ? 'de volta' : 'de ida'} ativa.',
-                ),
-              );
-            }
-          }
-
-          final carona = Carona(
-            id: '',
-            motoristaId: creds.idMotorista,
-            rota: Rota(
-              campus: creds.rota!.campus,
-              pontos: creds.rota!.pontos,
-              saida: creds.rota!.cidadeSaida,
+        } else {
+          return Failure(
+            Exception(
+              'Você já possui uma carona ${credentials.isVolta! ? 'de volta' : 'de ida'} ativa.',
             ),
-            qtdePassageiros: creds.qtdePassageiros,
-            isVolta: creds.isVolta!,
-            idsPassageiros: [],
-            status: 'ativa',
-            horarioSaidaCarona: creds.horarioSaida!,
-            horarioChegada: creds.horarioChegada!,
-            dataCarona: DateTime.now(),
-            isFinalizada: false,
           );
-
-          final data = carona.toJson()..remove('id');
-          final docRef = await _storeService.addDocument(
-            collection: _collection,
-            data: data,
-          );
-
-          final doc = await docRef.get();
-          final newCarona = carona.copyWith(id: doc.id);
-          _streamController.add(newCarona);
-          return Success(newCarona);
-        } catch (e) {
-          return Failure(Exception('Erro ao criar carona: $e'));
         }
-      }, (rotaError) => Failure(rotaError));
-    }, (err) => Failure(err));
+      }
+
+      final carona = Carona(
+        id: '',
+        motoristaId: credentials.idMotorista,
+        rota: Rota(
+          campus: credentials.rota!.campus,
+          pontos: credentials.rota!.pontos,
+          saida: credentials.rota!.cidadeSaida,
+        ),
+        qtdePassageiros: credentials.qtdePassageiros,
+        isVolta: credentials.isVolta!,
+        idsPassageiros: [],
+        status: 'ativa',
+        horarioSaidaCarona: credentials.horarioSaida!,
+        horarioChegada: credentials.horarioChegada!,
+        dataCarona: DateTime.now(),
+        preco: credentials.preco,
+        isFinalizada: false,
+      );
+
+      final data = carona.toJson()..remove('id');
+      final docRef = await _storeService.addDocument(
+        collection: _collection,
+        data: data,
+      );
+
+      final doc = await docRef.get();
+      final newCarona = carona.copyWith(id: doc.id);
+      _streamController.add(newCarona);
+      return Success(newCarona);
+    } catch (e) {
+      return Failure(Exception('Erro ao criar carona: $e'));
+    }
   }
 
   /// Edita uma carona existente
@@ -160,36 +148,40 @@ class RemoteCaronaRepository implements CaronaRepository {
     }
   }
 
-  /// Lista caronas com paginação e filtro opcional por rota
+  /// Lista caronas com filtro opcional
   @override
-  AsyncResult<List<Carona>> getAllCarona({
-    int page = 1,
-    int pageSize = 10,
-    String? rotaFiltro,
+  AsyncResult<List<Carona?>> getAllCarona(
     String? campus,
-    bool? isVolta,
-  }) async {
+    bool? isVolta,// busca textual
+    String? rotaFiltro,
+  ) async {
     try {
-      final docs = await _storeService.getDocumentsWithPaginationAndFilter(
+      final docs = await _storeService.getFilteredCaronas(
         collection: _collection,
-        page: page,
-        pageSize: pageSize,
-        rotaFiltro: rotaFiltro,
+        textoBusca: rotaFiltro,
         campusFiltro: campus,
         isVoltaFiltro: isVolta,
       );
 
-      final caronas =
-          docs.map((doc) {
-            final data = doc.data() as Map<String, dynamic>;
-            return Carona.fromJson(data).copyWith(id: doc.id);
-          }).toList();
+      final caronas = docs.map((doc) {
+        final data = doc.data() as Map<String, dynamic>;
+        return Carona.fromJson(data).copyWith(id: doc.id);
+      }).toList();
+      print(caronas.length);
+
+      if(caronas.isEmpty){
+
+        return Failure(Exception('Não há caronas para as próximas 24 horas.'));
+      }
 
       return Success(caronas);
     } catch (e) {
+
+      print("Erro ao buscar caronas: $e");
       return Failure(Exception('Erro ao buscar caronas: $e'));
     }
   }
+
 
   /// Cancela uma carona
   @override
