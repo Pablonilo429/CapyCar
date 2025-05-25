@@ -1,3 +1,4 @@
+import 'package:capy_car/main.dart';
 import 'package:flutter/material.dart';
 import 'package:routefly/routefly.dart';
 
@@ -26,7 +27,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
                 iconSize: 30.0,
                 icon: const Icon(Icons.menu),
                 onPressed: () {
-                  Routefly.pop(context);
+                  Routefly.navigate(routePaths.carona.caronaHome);
                 },
               )
               : IconButton(

@@ -88,6 +88,7 @@ class RemoteAuthRepository implements AuthRepository {
           'emailInstitucional': credentials.emailInstitucional,
           'isAtivo': true,
           'isPrimeiroLogin': true,
+          'urlFotoPerfil': '',
         },
       );
 

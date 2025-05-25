@@ -9,7 +9,7 @@ part of 'usuario.dart';
 UsuarioDados _$UsuarioDadosFromJson(Map<String, dynamic> json) => UsuarioDados(
   uId: json['uId'] as String,
   nome: json['nome'] as String,
-  fotoPerfilUrl: json['fotoPerfilUrl'] as String?,
+  fotoPerfilUrl: json['fotoPerfilUrl'] as String,
   nomeSocial: json['nomeSocial'] as String?,
   emailInstitucional: json['emailInstitucional'] as String,
   dataNascimento:

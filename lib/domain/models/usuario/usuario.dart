@@ -13,7 +13,7 @@ sealed class Usuario with _$Usuario {
   const factory Usuario({
     required String uId,
     required String nome,
-    String? fotoPerfilUrl,
+    required String fotoPerfilUrl,
     String? nomeSocial,
     required String emailInstitucional,
     DateTime? dataNascimento,

@@ -1,6 +1,5 @@
 import 'package:capy_car/domain/dtos/credentials_rota.dart';
 
-
 class CredentialsCarona {
   String idMotorista;
   int qtdePassageiros;
@@ -13,7 +12,7 @@ class CredentialsCarona {
   CredentialsCarona({
     this.idMotorista = '',
     this.qtdePassageiros = 4,
-    this.isVolta,
+    this.isVolta = false,
     this.horarioSaida,
     this.horarioChegada,
     this.preco = 1.0,
@@ -44,5 +43,4 @@ class CredentialsCarona {
   void setPreco(double preco) {
     this.preco = preco;
   }
-
 }

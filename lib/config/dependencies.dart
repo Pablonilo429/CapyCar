@@ -13,8 +13,12 @@ import 'package:capy_car/ui/auth/login/login_viewmodel.dart';
 import 'package:capy_car/ui/auth/logout/logout_viewmodel.dart';
 import 'package:capy_car/ui/auth/registrar/registrar_viewmodel.dart';
 import 'package:capy_car/ui/auth/senha/esqueci_senha_viewmodel.dart';
+import 'package:capy_car/ui/carona/cadastro/cadastrar_carona_view_model.dart';
 import 'package:capy_car/ui/carona/carona_home_viewmodel.dart';
+import 'package:capy_car/ui/carona/visualizar/%5Bid%5D/carona_view_model.dart';
+import 'package:capy_car/ui/components/appBottomNavigation_view_model.dart';
 import 'package:capy_car/ui/components/appDrawer_view_model.dart';
+import 'package:capy_car/ui/rota/rota_view_model.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_carro_viewmodel.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_foto_viewmodel.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_localizacao_viewmodel.dart';
@@ -47,6 +51,10 @@ void setupDependecies() {
   injector.addSingleton<CadastrarCarroViewmodel>(CadastrarCarroViewmodel.new);
   injector.addSingleton<CaronaHomeViewModel>(CaronaHomeViewModel.new);
   injector.addSingleton<AppDrawerViewModel>(AppDrawerViewModel.new);
+  injector.addSingleton<RotaViewModel>(RotaViewModel.new);
+  injector.addSingleton<AppBottomNavigationViewModel>(AppBottomNavigationViewModel.new);
+  injector.addSingleton<CadastrarCaronaViewModel>(CadastrarCaronaViewModel.new);
+  injector.addSingleton<CaronaViewModel>(CaronaViewModel.new);
 
 
 

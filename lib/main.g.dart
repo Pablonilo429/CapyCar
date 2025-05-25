@@ -39,13 +39,13 @@ List<RouteEntity> get routes => [
     routeBuilder: b6Builder,
   ),
   RouteEntity(
-    key: 'carona/visualizar/carona',
-    uri: Uri.parse('carona/visualizar/carona'),
+    key: 'carona/visualizar/lista_carona_anterior',
+    uri: Uri.parse('carona/visualizar/lista_carona_anterior'),
     routeBuilder: b7Builder,
   ),
   RouteEntity(
-    key: 'carona/visualizar/lista_carona_anterior',
-    uri: Uri.parse('carona/visualizar/lista_carona_anterior'),
+    key: 'carona/visualizar/[id]/carona',
+    uri: Uri.parse('carona/visualizar/[id]/carona'),
     routeBuilder: b8Builder,
   ),
   RouteEntity(
@@ -105,8 +105,11 @@ const routePaths = (
       path: '/carona/visualizar',
       caronasUsuario: '/carona/visualizar/caronas_usuario',
       caronaAnterior: '/carona/visualizar/carona_anterior',
-      carona: '/carona/visualizar/carona',
       listaCaronaAnterior: '/carona/visualizar/lista_carona_anterior',
+      $id: (
+        path: '/carona/visualizar/[id]',
+        carona: '/carona/visualizar/[id]/carona',
+      ),
     ),
   ),
   mensagem: '/mensagem',

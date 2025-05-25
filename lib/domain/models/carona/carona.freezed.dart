@@ -16,7 +16,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Carona {
 
- String? get id; String get motoristaId; Rota get rota; bool get isVolta; List<String>? get idsPassageiros; int get qtdePassageiros; String get status; DateTime get horarioSaidaCarona; DateTime get horarioChegada; DateTime get dataCarona; double get preco; bool get isFinalizada;
+ String? get id; String get motoristaId;@JsonKey(fromJson: Rota.fromJson, toJson: _rotaToJson) Rota get rota; bool get isVolta; List<String>? get idsPassageiros; int get qtdePassageiros; String get status; DateTime get horarioSaidaCarona; DateTime get horarioChegada; DateTime get dataCarona; double get preco; bool get isFinalizada;
 /// Create a copy of Carona
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -49,7 +49,7 @@ abstract mixin class $CaronaCopyWith<$Res>  {
   factory $CaronaCopyWith(Carona value, $Res Function(Carona) _then) = _$CaronaCopyWithImpl;
 @useResult
 $Res call({
- String? id, String motoristaId, Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, double preco, bool isFinalizada
+ String? id, String motoristaId,@JsonKey(fromJson: Rota.fromJson, toJson: _rotaToJson) Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, double preco, bool isFinalizada
 });
 
 
@@ -100,12 +100,12 @@ $RotaCopyWith<$Res> get rota {
 @JsonSerializable()
 
 class _Carona implements Carona {
-  const _Carona({this.id, required this.motoristaId, required this.rota, required this.isVolta, final  List<String>? idsPassageiros, required this.qtdePassageiros, required this.status, required this.horarioSaidaCarona, required this.horarioChegada, required this.dataCarona, required this.preco, required this.isFinalizada}): _idsPassageiros = idsPassageiros;
+  const _Carona({this.id, required this.motoristaId, @JsonKey(fromJson: Rota.fromJson, toJson: _rotaToJson) required this.rota, required this.isVolta, final  List<String>? idsPassageiros, required this.qtdePassageiros, required this.status, required this.horarioSaidaCarona, required this.horarioChegada, required this.dataCarona, required this.preco, required this.isFinalizada}): _idsPassageiros = idsPassageiros;
   factory _Carona.fromJson(Map<String, dynamic> json) => _$CaronaFromJson(json);
 
 @override final  String? id;
 @override final  String motoristaId;
-@override final  Rota rota;
+@override@JsonKey(fromJson: Rota.fromJson, toJson: _rotaToJson) final  Rota rota;
 @override final  bool isVolta;
  final  List<String>? _idsPassageiros;
 @override List<String>? get idsPassageiros {
@@ -157,7 +157,7 @@ abstract mixin class _$CaronaCopyWith<$Res> implements $CaronaCopyWith<$Res> {
   factory _$CaronaCopyWith(_Carona value, $Res Function(_Carona) _then) = __$CaronaCopyWithImpl;
 @override @useResult
 $Res call({
- String? id, String motoristaId, Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, double preco, bool isFinalizada
+ String? id, String motoristaId,@JsonKey(fromJson: Rota.fromJson, toJson: _rotaToJson) Rota rota, bool isVolta, List<String>? idsPassageiros, int qtdePassageiros, String status, DateTime horarioSaidaCarona, DateTime horarioChegada, DateTime dataCarona, double preco, bool isFinalizada
 });
 
 

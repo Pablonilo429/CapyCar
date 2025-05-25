@@ -9,7 +9,9 @@ class CredentialsRota {
     this.cidadeSaida = '',
     this.campus = '',
     this.pontos = const [],
-  });
+  }) {
+    pontos = List<String>.from(pontos);
+  }
 
   void setNomeRota(String nomeRota) {
     this.nomeRota = nomeRota;
@@ -30,5 +32,9 @@ class CredentialsRota {
   // Método para adicionar um ponto individual à lista
   void addPonto(String ponto) {
     pontos.add(ponto);
+  }
+
+  void removePonto(String ponto) {
+    pontos.remove(ponto);
   }
 }

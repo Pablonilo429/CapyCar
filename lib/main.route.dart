@@ -8,10 +8,10 @@ import 'ui/auth/registrar/registrar_page.dart' as a1;
 import 'ui/auth/senha/esqueci_senha_page.dart' as a2;
 import 'ui/carona/cadastro/cadastrar_carona_page.dart' as a3;
 import 'ui/carona/carona_home_page.dart' as a4;
+import 'ui/carona/visualizar/[id]/carona_page.dart' as a8;
 import 'ui/carona/visualizar/carona_anterior_page.dart' as a6;
-import 'ui/carona/visualizar/carona_page.dart' as a7;
 import 'ui/carona/visualizar/caronas_usuario_page.dart' as a5;
-import 'ui/carona/visualizar/lista_carona_anterior_page.dart' as a8;
+import 'ui/carona/visualizar/lista_carona_anterior_page.dart' as a7;
 import 'ui/mensagem_page.dart' as a9;
 import 'ui/rota/rota_page.dart' as a10;
 import 'ui/usuario/cadastro/cadastrar_carro_page.dart' as a11;
@@ -36,13 +36,13 @@ Route b5Builder(BuildContext ctx, RouteSettings settings) =>
 Route b6Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(ctx, settings, const a6.CaronaAnteriorPage());
 Route b7Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a7.CaronaPage());
-Route b8Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(
       ctx,
       settings,
-      const a8.ListaCaronaAnteriorPage(),
+      const a7.ListaCaronaAnteriorPage(),
     );
+Route b8Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a8.CaronaPage());
 Route b9Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(ctx, settings, const a9.MensagemPage());
 Route b10Builder(BuildContext ctx, RouteSettings settings) =>

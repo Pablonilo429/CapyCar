@@ -16,6 +16,8 @@ class CaronaHomeViewModel extends ChangeNotifier {
 
   Usuario? get usuario => _usuario;
 
+  late final StreamSubscription _userSubscription;
+
   CaronaHomeViewModel(this._caronaRepository, this._authRepository){
     _userSubscription = _authRepository.userObserver().listen((usuario) {
       _usuario = usuario;
@@ -33,7 +35,6 @@ class CaronaHomeViewModel extends ChangeNotifier {
   late final buscarCaronasCommand = Command0(_buscarCaronas);
 
 
-  late final StreamSubscription _userSubscription;
 
   AsyncResult<List<Carona?>> _buscarCaronas() async {
     // Limpa imediatamente para forçar a UI a mostrar "nenhuma carona"

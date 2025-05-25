@@ -11,6 +11,7 @@ sealed class Carona with _$Carona {
   const factory Carona({
     String? id,
     required String motoristaId,
+    @JsonKey(fromJson: Rota.fromJson, toJson: _rotaToJson)
     required Rota rota,
     required bool isVolta,
     List<String>? idsPassageiros,
@@ -25,3 +26,6 @@ sealed class Carona with _$Carona {
 
   factory Carona.fromJson(Map<String, dynamic> json) => _$CaronaFromJson(json);
 }
+Map<String, dynamic> _rotaToJson(Rota rota) => rota.toJson();
+
+

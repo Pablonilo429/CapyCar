@@ -35,7 +35,9 @@ class RemoteCaronaRepository implements CaronaRepository {
 
       for (final doc in caronasAtuais) {
         final data = doc.data() as Map<String, dynamic>;
-        final horarioChegada = (data['horarioChegada'] as Timestamp).toDate();
+        final horarioChegadaStr = data['horarioChegada'] as String;
+        final horarioChegada = DateTime.parse(horarioChegadaStr);
+
         if (horarioChegada.isBefore(DateTime.now())) {
           await _storeService.updateDocument(
             collection: _collection,
@@ -50,6 +52,7 @@ class RemoteCaronaRepository implements CaronaRepository {
           );
         }
       }
+
 
       final carona = Carona(
         id: '',
@@ -81,6 +84,7 @@ class RemoteCaronaRepository implements CaronaRepository {
       _streamController.add(newCarona);
       return Success(newCarona);
     } catch (e) {
+      print(e);
       return Failure(Exception('Erro ao criar carona: $e'));
     }
   }
@@ -272,7 +276,8 @@ class RemoteCaronaRepository implements CaronaRepository {
 
       for (final doc in caronasAtivas) {
         final data = doc.data() as Map<String, dynamic>;
-        final horarioChegada = (data['horarioChegada'] as Timestamp).toDate();
+        final horarioChegadaStr = data['horarioChegada'] as String;
+        final horarioChegada = DateTime.parse(horarioChegadaStr);
 
         if (horarioChegada.isBefore(DateTime.now())) {
           await _storeService.updateDocument(
@@ -283,7 +288,7 @@ class RemoteCaronaRepository implements CaronaRepository {
         } else {
           return Failure(
             Exception(
-              'O usuário já está em uma carona ${isVolta ? 'de volta' : 'de ida'} não finalizada.',
+              'Você já está em uma carona',
             ),
           );
         }

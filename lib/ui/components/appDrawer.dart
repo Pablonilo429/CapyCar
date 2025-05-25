@@ -76,6 +76,14 @@ class _AppDrawerState extends State<AppDrawer> {
                 children: [
                   _buildItem(
                     context,
+                    icon: Icons.hail,
+                    text: 'Caronas',
+                    onTap: () {
+                      Routefly.navigate(routePaths.carona.caronaHome);
+                    },
+                  ),
+                  _buildItem(
+                    context,
                     icon: Icons.edit,
                     text: 'Editar Perfil',
                     onTap: () {
@@ -98,14 +106,15 @@ class _AppDrawerState extends State<AppDrawer> {
                       Routefly.navigate(routePaths.carona.visualizar.caronaAnterior);
                     },
                   ),
-                  _buildItem(
-                    context,
-                    icon: Icons.location_on,
-                    text: 'Cadastrar/Editar Rotas',
-                    onTap: () {
-                      Routefly.navigate(routePaths.rota);
-                    },
-                  ),
+                  if(viewModel.usuario!.isMotorista)
+                    _buildItem(
+                      context,
+                      icon: Icons.location_on,
+                      text: 'Cadastrar/Editar Rotas',
+                      onTap: () {
+                        Routefly.navigate(routePaths.rota);
+                      },
+                    ),
                   _buildItem(
                     context,
                     icon: Icons.drive_eta,

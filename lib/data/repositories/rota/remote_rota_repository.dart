@@ -12,63 +12,56 @@ class RemoteRotaRepository implements RotaRepository {
   final FirestoreService _storeService = FirestoreService();
   final String _collection = 'usuarios';
 
-
   @override
   AsyncResult<Rota> criarRota(
     String userId,
     CredentialsRota credentials,
   ) async {
     try {
-      // Validação
-      final validated = await CredentialsRotaValidator().validateResult(
-        credentials,
+      final doc = await _storeService.getDocumentById(
+        collection: _collection,
+        docId: userId,
       );
 
-      return await validated.fold(
-        (creds) async {
-          final doc = await _storeService.getDocumentById(
-            collection: _collection,
-            docId: userId,
-          );
+      if (!doc.exists) {
+        return Failure(Exception('Usuário não encontrado'));
+      }
 
-          if (!doc.exists) {
-            return Failure(Exception('Usuário não encontrado'));
-          }
+      if (credentials.pontos.isEmpty) {
+        return Failure(Exception("Adicione pelo menos um ponto"));
+      }
+      if (credentials.pontos.length > 10) {
+        return Failure(Exception("O número máximo de pontos é 10"));
+      }
 
-          final userData = doc.data() as Map<String, dynamic>;
-          final rotasJson = List<Map<String, dynamic>>.from(
-            userData['rotasCadastradas'] ?? [],
-          );
-
-          // Criar rota sem ID manual, deixando o Firestore gerar o ID
-          final newRotaRef = await _storeService.addDocument(
-            collection: _collection,
-            data: {},
-          );
-          final newRotaId = newRotaRef.id;
-          final rota = Rota(
-            id: newRotaId,
-            nome: creds.nomeRota,
-            saida: creds.cidadeSaida,
-            campus: creds.campus,
-            pontos: creds.pontos,
-          );
-
-          rotasJson.add(rota.toJson());
-
-          await _storeService.updateDocument(
-            collection: _collection,
-            docId: userId,
-            data: {'rotasCadastradas': rotasJson},
-          );
-
-          return Success(rota);
-        },
-        (error) async {
-          // Se a validação falhar, você pode retornar uma falha
-          return Failure(Exception('Erro na validação: $error'));
-        },
+      final userData = doc.data() as Map<String, dynamic>;
+      final rotasJson = List<Map<String, dynamic>>.from(
+        userData['rotasCadastradas'] ?? [],
       );
+
+      // Criar rota sem ID manual, deixando o Firestore gerar o ID
+      final newRotaRef = await _storeService.addDocument(
+        collection: _collection,
+        data: {},
+      );
+      final newRotaId = newRotaRef.id;
+      final rota = Rota(
+        id: newRotaId,
+        nome: credentials.nomeRota,
+        saida: credentials.cidadeSaida,
+        campus: credentials.campus,
+        pontos: credentials.pontos,
+      );
+
+      rotasJson.add(rota.toJson());
+
+      await _storeService.updateDocument(
+        collection: _collection,
+        docId: userId,
+        data: {'rotasCadastradas': rotasJson},
+      );
+
+      return Success(rota);
     } catch (e) {
       return Failure(Exception('Erro ao criar rota: $e'));
     }
@@ -77,64 +70,52 @@ class RemoteRotaRepository implements RotaRepository {
   @override
   AsyncResult<Rota> editarRota(String userId, Rota rota) async {
     try {
-      // Validação das credenciais de Rota
-      final validated = await CredentialsRotaValidator().validateResult(
-        CredentialsRota(
-          nomeRota: rota.nome,
-          cidadeSaida: rota.saida,
-          campus: rota.campus,
-          pontos: rota.pontos,
-        ),
+      // Validação passou, então seguimos com o processo de editar a rota
+      final doc = await _storeService.getDocumentById(
+        collection: _collection,
+        docId: userId,
       );
 
-      // Se a validação passar, prossegue com a edição da rota
-      return await validated.fold(
-        (creds) async {
-          // Validação passou, então seguimos com o processo de editar a rota
-          final doc = await _storeService.getDocumentById(
-            collection: _collection,
-            docId: userId,
-          );
+      if (!doc.exists) {
+        return Failure(Exception('Usuário não encontrado'));
+      }
 
-          if (!doc.exists) {
-            return Failure(Exception('Usuário não encontrado'));
-          }
-
-          final userData = doc.data() as Map<String, dynamic>;
-          final rotasJson = List<Map<String, dynamic>>.from(
-            userData['rotasCadastradas'] ?? [],
-          );
-
-          final index = rotasJson.indexWhere((r) => r['id'] == rota.id);
-          if (index == -1) {
-            return Failure(Exception('Rota não encontrada'));
-          }
-
-          // Atualizando a rota com os dados validados
-          rotasJson[index] =
-              rota
-                  .copyWith(
-                    nome: creds.nomeRota,
-                    saida: creds.cidadeSaida,
-                    campus: creds.campus,
-                    pontos: creds.pontos,
-                  )
-                  .toJson();
-
-          // Atualiza o documento do usuário com as rotas modificadas
-          await _storeService.updateDocument(
-            collection: _collection,
-            docId: userId,
-            data: {'rotasCadastradas': rotasJson},
-          );
-
-          return Success(rota);
-        },
-        (error) async {
-          // Se a validação falhar, retorna uma falha
-          return Failure(Exception('Erro na validação: $error'));
-        },
+      final userData = doc.data() as Map<String, dynamic>;
+      final rotasJson = List<Map<String, dynamic>>.from(
+        userData['rotasCadastradas'] ?? [],
       );
+
+      final index = rotasJson.indexWhere((r) => r['id'] == rota.id);
+      if (index == -1) {
+        return Failure(Exception('Rota não encontrada'));
+      }
+
+      // Atualizando a rota com os dados validados
+      rotasJson[index] =
+          rota
+              .copyWith(
+                nome: rota.nome,
+                saida: rota.saida,
+                campus: rota.campus,
+                pontos: rota.pontos,
+              )
+              .toJson();
+
+      if (rota.pontos.isEmpty) {
+        return Failure(Exception("Adicione pelo menos um ponto"));
+      }
+      if (rota.pontos.length > 10) {
+        return Failure(Exception("O número máximo de pontos é 10"));
+      }
+
+      // Atualiza o documento do usuário com as rotas modificadas
+      await _storeService.updateDocument(
+        collection: _collection,
+        docId: userId,
+        data: {'rotasCadastradas': rotasJson},
+      );
+
+      return Success(rota);
     } catch (e) {
       return Failure(Exception('Erro ao editar rota: $e'));
     }

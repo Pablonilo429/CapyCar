@@ -9,8 +9,6 @@ class CredentialsCaronaValidator extends LucidValidator<CredentialsCarona> {
 
     ruleFor((c) => c.horarioChegada, key: 'horarioChegada').isNotNull();
 
-    ruleFor((c) => c.idMotorista, key: 'idMotorista').isNotNull();
-
     ruleFor((c) => c.preco, key: 'preco')
         .greaterThan(0, message: 'O preço deve ser maior que zero');
 

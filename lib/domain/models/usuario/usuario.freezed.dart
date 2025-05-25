@@ -23,7 +23,7 @@ Usuario _$UsuarioFromJson(
 /// @nodoc
 mixin _$Usuario {
 
- String get uId; String get nome; String? get fotoPerfilUrl; String? get nomeSocial; String get emailInstitucional; DateTime? get dataNascimento; String? get numeroCelular; String? get campus; String? get cidade; String? get bairro; bool get isMotorista; bool get isAtivo; bool get isPrimeiroLogin; Carro? get carro; List<Rota>? get rotasCadastradas;
+ String get uId; String get nome; String get fotoPerfilUrl; String? get nomeSocial; String get emailInstitucional; DateTime? get dataNascimento; String? get numeroCelular; String? get campus; String? get cidade; String? get bairro; bool get isMotorista; bool get isAtivo; bool get isPrimeiroLogin; Carro? get carro; List<Rota>? get rotasCadastradas;
 /// Create a copy of Usuario
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -56,7 +56,7 @@ abstract mixin class $UsuarioCopyWith<$Res>  {
   factory $UsuarioCopyWith(Usuario value, $Res Function(Usuario) _then) = _$UsuarioCopyWithImpl;
 @useResult
 $Res call({
- String uId, String nome, String? fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, bool isPrimeiroLogin, Carro? carro, List<Rota>? rotasCadastradas
+ String uId, String nome, String fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, bool isPrimeiroLogin, Carro? carro, List<Rota>? rotasCadastradas
 });
 
 
@@ -73,12 +73,12 @@ class _$UsuarioCopyWithImpl<$Res>
 
 /// Create a copy of Usuario
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = freezed,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? isPrimeiroLogin = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = null,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? isPrimeiroLogin = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
   return _then(_self.copyWith(
 uId: null == uId ? _self.uId : uId // ignore: cast_nullable_to_non_nullable
 as String,nome: null == nome ? _self.nome : nome // ignore: cast_nullable_to_non_nullable
-as String,fotoPerfilUrl: freezed == fotoPerfilUrl ? _self.fotoPerfilUrl : fotoPerfilUrl // ignore: cast_nullable_to_non_nullable
-as String?,nomeSocial: freezed == nomeSocial ? _self.nomeSocial : nomeSocial // ignore: cast_nullable_to_non_nullable
+as String,fotoPerfilUrl: null == fotoPerfilUrl ? _self.fotoPerfilUrl : fotoPerfilUrl // ignore: cast_nullable_to_non_nullable
+as String,nomeSocial: freezed == nomeSocial ? _self.nomeSocial : nomeSocial // ignore: cast_nullable_to_non_nullable
 as String?,emailInstitucional: null == emailInstitucional ? _self.emailInstitucional : emailInstitucional // ignore: cast_nullable_to_non_nullable
 as String,dataNascimento: freezed == dataNascimento ? _self.dataNascimento : dataNascimento // ignore: cast_nullable_to_non_nullable
 as DateTime?,numeroCelular: freezed == numeroCelular ? _self.numeroCelular : numeroCelular // ignore: cast_nullable_to_non_nullable
@@ -113,12 +113,12 @@ $CarroCopyWith<$Res>? get carro {
 @JsonSerializable()
 
 class UsuarioDados implements Usuario {
-  const UsuarioDados({required this.uId, required this.nome, this.fotoPerfilUrl, this.nomeSocial, required this.emailInstitucional, this.dataNascimento, this.numeroCelular, this.campus, this.cidade, this.bairro, required this.isMotorista, required this.isAtivo, required this.isPrimeiroLogin, this.carro, final  List<Rota>? rotasCadastradas}): _rotasCadastradas = rotasCadastradas;
+  const UsuarioDados({required this.uId, required this.nome, required this.fotoPerfilUrl, this.nomeSocial, required this.emailInstitucional, this.dataNascimento, this.numeroCelular, this.campus, this.cidade, this.bairro, required this.isMotorista, required this.isAtivo, required this.isPrimeiroLogin, this.carro, final  List<Rota>? rotasCadastradas}): _rotasCadastradas = rotasCadastradas;
   factory UsuarioDados.fromJson(Map<String, dynamic> json) => _$UsuarioDadosFromJson(json);
 
 @override final  String uId;
 @override final  String nome;
-@override final  String? fotoPerfilUrl;
+@override final  String fotoPerfilUrl;
 @override final  String? nomeSocial;
 @override final  String emailInstitucional;
 @override final  DateTime? dataNascimento;
@@ -173,7 +173,7 @@ abstract mixin class $UsuarioDadosCopyWith<$Res> implements $UsuarioCopyWith<$Re
   factory $UsuarioDadosCopyWith(UsuarioDados value, $Res Function(UsuarioDados) _then) = _$UsuarioDadosCopyWithImpl;
 @override @useResult
 $Res call({
- String uId, String nome, String? fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, bool isPrimeiroLogin, Carro? carro, List<Rota>? rotasCadastradas
+ String uId, String nome, String fotoPerfilUrl, String? nomeSocial, String emailInstitucional, DateTime? dataNascimento, String? numeroCelular, String? campus, String? cidade, String? bairro, bool isMotorista, bool isAtivo, bool isPrimeiroLogin, Carro? carro, List<Rota>? rotasCadastradas
 });
 
 
@@ -190,12 +190,12 @@ class _$UsuarioDadosCopyWithImpl<$Res>
 
 /// Create a copy of Usuario
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = freezed,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? isPrimeiroLogin = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? uId = null,Object? nome = null,Object? fotoPerfilUrl = null,Object? nomeSocial = freezed,Object? emailInstitucional = null,Object? dataNascimento = freezed,Object? numeroCelular = freezed,Object? campus = freezed,Object? cidade = freezed,Object? bairro = freezed,Object? isMotorista = null,Object? isAtivo = null,Object? isPrimeiroLogin = null,Object? carro = freezed,Object? rotasCadastradas = freezed,}) {
   return _then(UsuarioDados(
 uId: null == uId ? _self.uId : uId // ignore: cast_nullable_to_non_nullable
 as String,nome: null == nome ? _self.nome : nome // ignore: cast_nullable_to_non_nullable
-as String,fotoPerfilUrl: freezed == fotoPerfilUrl ? _self.fotoPerfilUrl : fotoPerfilUrl // ignore: cast_nullable_to_non_nullable
-as String?,nomeSocial: freezed == nomeSocial ? _self.nomeSocial : nomeSocial // ignore: cast_nullable_to_non_nullable
+as String,fotoPerfilUrl: null == fotoPerfilUrl ? _self.fotoPerfilUrl : fotoPerfilUrl // ignore: cast_nullable_to_non_nullable
+as String,nomeSocial: freezed == nomeSocial ? _self.nomeSocial : nomeSocial // ignore: cast_nullable_to_non_nullable
 as String?,emailInstitucional: null == emailInstitucional ? _self.emailInstitucional : emailInstitucional // ignore: cast_nullable_to_non_nullable
 as String,dataNascimento: freezed == dataNascimento ? _self.dataNascimento : dataNascimento // ignore: cast_nullable_to_non_nullable
 as DateTime?,numeroCelular: freezed == numeroCelular ? _self.numeroCelular : numeroCelular // ignore: cast_nullable_to_non_nullable

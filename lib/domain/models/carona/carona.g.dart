@@ -27,7 +27,7 @@ _Carona _$CaronaFromJson(Map<String, dynamic> json) => _Carona(
 Map<String, dynamic> _$CaronaToJson(_Carona instance) => <String, dynamic>{
   'id': instance.id,
   'motoristaId': instance.motoristaId,
-  'rota': instance.rota,
+  'rota': _rotaToJson(instance.rota),
   'isVolta': instance.isVolta,
   'idsPassageiros': instance.idsPassageiros,
   'qtdePassageiros': instance.qtdePassageiros,
