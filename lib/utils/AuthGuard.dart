@@ -23,7 +23,8 @@ class AuthGuard extends StatelessWidget {
         // Rotas livres (sem login)
         const rotasPublicas = [
           '/auth/login',
-          '/auth/register',
+          '/auth/registrar',
+          'auth/registrar/final_registrar'
         ];
 
         final isRotaPublica = rotasPublicas.contains(currentPath);

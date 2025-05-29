@@ -23,4 +23,13 @@ abstract interface class CaronaRepository {
     bool? isVolta, // busca textual
     String? rotaFiltro,
   );
+  AsyncResult<List<Carona?>> getAllByUserCarona(
+      {required String userId,
+        required bool isFinalizada}
+      );
+
+  AsyncResult<Unit> criarSalaCarona(Carona carona);
+  AsyncResult<Unit> adicionarPassageiroNaSala(String caronaId, String novoPassageiroUid);
+
+
 }

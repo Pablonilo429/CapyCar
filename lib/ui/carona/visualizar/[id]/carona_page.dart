@@ -1,9 +1,8 @@
 import 'package:capy_car/config/dependencies.dart'; // Para o injector
+import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/carona/visualizar/%5Bid%5D/carona_view_model.dart';
 import 'package:capy_car/ui/components/appBar.dart';
 import 'package:capy_car/ui/components/appDrawer.dart';
-import 'package:capy_car/domain/models/usuario/usuario.dart'; // Ajuste o caminho
-import 'package:capy_car/domain/models/carona/carona.dart'; // Ajuste o caminho
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:routefly/routefly.dart';
@@ -23,37 +22,16 @@ class _CaronaPageState extends State<CaronaPage> {
   @override
   void initState() {
     super.initState();
-    // Pegar o ID da carona da rota
-    // É importante que Routefly.query esteja disponível síncronamente aqui,
-    // ou a lógica de busca precise ser adaptada (ex: usando um FutureBuilder no build).
-    // Para este exemplo, assumo que está disponível e é pego antes da primeira build.
     _idCarona = Routefly.query['id'] as String?;
 
     if (_idCarona != null) {
-      // Inicia a busca dos dados da carona
-      // O ideal é que o ViewModel tenha um método de inicialização ou
-      // que o comando _buscarCaronaCommand seja público para ser executado aqui.
-      // Vou assumir que você tornará _buscarCaronaCommand acessível ou terá um método init.
-      // Exemplo: viewModel.initCarona(_idCarona!);
-      // Ou, se o comando for público: viewModel.buscarCaronaCommand.execute(_idCarona!);
-      // Para este exemplo, vou chamar diretamente o método _buscarCarona,
-      // mas o ideal é usar o Command.
-      // NO SEU CÓDIGO REAL, USE: viewModel.buscarCaronaCommand.execute(_idCarona!);
-      // Temporariamente, para o exemplo rodar, vou simular a chamada.
-      // No seu ViewModel, o _buscarCaronaCommand já é 'late final', então pode ser acessado.
-      // Certifique-se que o comando no seu ViewModel é público (sem o underscore inicial)
-      // ou crie um método público que o execute.
-      // Ex: no ViewModel: late final buscarCaronaCommand = Command1(_buscarCarona);
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (_idCarona != null) {
-          // Se o comando _buscarCaronaCommand for público (ex: buscarCaronaCommand):
           viewModel.buscarCaronaCommand.execute(_idCarona!);
         }
       });
     } else {
-      // Tratar caso o ID não seja encontrado
       debugPrint("ID da carona não encontrado na rota.");
-      // Poderia mostrar um SnackBar ou navegar de volta
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -62,14 +40,87 @@ class _CaronaPageState extends State<CaronaPage> {
               backgroundColor: Colors.red,
             ),
           );
-          // Navigator.of(context).pop(); // Opcional: voltar se ID não existe
+          Routefly.navigate(routePaths.carona.caronaHome);
         }
       });
     }
 
     // Adicionar listener para o comando de cancelar carona
     viewModel.cancelarCaronaCommand.addListener(_listenableCancelarCarona);
+    viewModel.entrarCaronaCommand.addListener(_listenableEntrarCarona);
+    viewModel.sairCaronaCommand.addListener(_listenableSairCarona);
+    viewModel.removerPassageiroCaronaCommand.addListener(
+      _listenableRemoverPassageiroCarona,
+    );
     // Adicione listeners para outros comandos se necessário (entrar, sair)
+  }
+
+  void _listenableEntrarCarona() {
+    if (!mounted) return;
+    if (viewModel.entrarCaronaCommand.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Ingressou na carona com sucesso!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+
+    if (viewModel.entrarCaronaCommand.isFailure) {
+      final error = viewModel.entrarCaronaCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Erro ao entrar na carona: ${error.error.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _listenableSairCarona() {
+    if (!mounted) return;
+    if (viewModel.sairCaronaCommand.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Saiu da carona com sucesso!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+
+    if (viewModel.sairCaronaCommand.isFailure) {
+      final error = viewModel.sairCaronaCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text("Erro ao sair da carona: ${error.error.toString()}"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  void _listenableRemoverPassageiroCarona() {
+    if (!mounted) return;
+    if (viewModel.removerPassageiroCaronaCommand.isSuccess) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Passageiro removido com sucesso!"),
+          backgroundColor: Colors.green,
+        ),
+      );
+    }
+
+    if (viewModel.removerPassageiroCaronaCommand.isFailure) {
+      final error = viewModel.sairCaronaCommand.value as FailureCommand;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            "Erro ao remover passageiro da carona: ${error.error.toString()}",
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   void _listenableCancelarCarona() {
@@ -82,6 +133,7 @@ class _CaronaPageState extends State<CaronaPage> {
           backgroundColor: Colors.green,
         ),
       );
+      Routefly.navigate(routePaths.carona.caronaHome);
       // Opcional: navegar para outra tela após cancelamento
       // Routefly.pop(); ou Routefly.navigate(...);
     }
@@ -102,11 +154,11 @@ class _CaronaPageState extends State<CaronaPage> {
   @override
   void dispose() {
     viewModel.cancelarCaronaCommand.removeListener(_listenableCancelarCarona);
-    // Remova outros listeners se adicionados
-    // viewModel.dispose(); // Se o ViewModel for gerenciado pelo injector e tiver um ciclo de vida,
-    // o injector pode cuidar disso. Se não, e você o criou aqui, chame dispose.
-    // No seu exemplo da RotaPage, o dispose do viewModel não é chamado,
-    // então vou seguir esse padrão.
+    viewModel.entrarCaronaCommand.removeListener(_listenableEntrarCarona);
+    viewModel.sairCaronaCommand.removeListener(_listenableSairCarona);
+    viewModel.removerPassageiroCaronaCommand.removeListener(
+      _listenableRemoverPassageiroCarona,
+    );
     super.dispose();
   }
 
@@ -174,8 +226,8 @@ class _CaronaPageState extends State<CaronaPage> {
         isPop: true, // Para mostrar o botão de voltar
       ),
       drawer: AppDrawer(),
-      body: AnimatedBuilder(
-        animation: viewModel, // Escuta o CaronaViewModel
+      body: ListenableBuilder(
+        listenable: viewModel, // Escuta o CaronaViewModel
         builder: (context, _) {
           if (viewModel.buscarCaronaCommand.isRunning &&
               viewModel.carona == null) {
@@ -213,11 +265,15 @@ class _CaronaPageState extends State<CaronaPage> {
 
           // Se chegou aqui, viewModel.carona não é nulo
           final carona = viewModel.carona!;
-          final motorista = viewModel.motorista;
+          final motorista = viewModel.motorista!;
           final passageiros = viewModel.passageiros;
           final usuarioAtual = viewModel.usuario;
 
-          final bool isMotoristaAtual = usuarioAtual?.uId == motorista?.uId;
+          final bool isMotoristaAtual = usuarioAtual?.uId == motorista.uId;
+          final bool isPassageiro = viewModel.passageiros.any(
+            (p) => p.uId == usuarioAtual?.uId,
+          );
+          String caronaStatus = carona.status;
 
           final horaChegadaFormatada = DateFormat.Hm().format(
             carona.horarioChegada,
@@ -225,6 +281,14 @@ class _CaronaPageState extends State<CaronaPage> {
           final horaSaidaFormatada = DateFormat.Hm().format(
             carona.horarioSaidaCarona,
           );
+          if (!carona.isFinalizada &&
+              DateTime.now().isAfter(carona.horarioSaidaCarona)) {
+            caronaStatus = 'Andamento';
+          }
+          if (!carona.isFinalizada &&
+              DateTime.now().isBefore(carona.horarioSaidaCarona)) {
+            caronaStatus = 'Agendada';
+          }
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -232,103 +296,233 @@ class _CaronaPageState extends State<CaronaPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Seção Motorista
-                Text(
-                  "Motorista",
-                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Theme.of(
-                      context,
-                    ).colorScheme.onSurface.withOpacity(0.7),
-                  ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "Motorista",
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(
+                          context,
+                        ).colorScheme.onSurface.withOpacity(0.7),
+                      ),
+                    ),
+                    _buildStatusBadge(context, caronaStatus),
+                  ],
                 ),
+
                 const SizedBox(height: 8),
                 Row(
                   children: [
                     CircleAvatar(
                       radius: 30,
                       backgroundImage:
-                          (motorista?.fotoPerfilUrl != null &&
-                                  motorista!.fotoPerfilUrl.isNotEmpty)
+                          (motorista.fotoPerfilUrl.isNotEmpty)
                               ? NetworkImage(motorista.fotoPerfilUrl)
-                              : AssetImage('assets/logo/motorista.png'),
+                              : const AssetImage('assets/logo/motorista.png')
+                                  as ImageProvider,
+                      backgroundColor: Colors.grey[300],
                       child:
-                          (motorista!.fotoPerfilUrl.isEmpty)
+                          (motorista.fotoPerfilUrl.isEmpty)
                               ? const Icon(Icons.person, size: 30)
                               : null,
-                      backgroundColor: Colors.grey[300],
                     ),
                     const SizedBox(width: 12),
                     Expanded(
                       child: Text(
-                        motorista?.nome ?? "Carregando...",
+                        motorista.nome,
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
                       ),
                     ),
-                    if (isMotoristaAtual)
-                      ElevatedButton.icon(
-                        icon: const Icon(
-                          Icons.cancel_outlined,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                        label: const Text(
-                          "Cancelar Carona",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onPressed:
-                            viewModel.cancelarCaronaCommand.isRunning
-                                ? null
-                                : () {
-                                  // Adicionar confirmação antes de cancelar
-                                  showDialog(
-                                    context: context,
-                                    builder: (BuildContext dialogContext) {
-                                      return AlertDialog(
-                                        title: const Text("Cancelar Carona"),
-                                        content: const Text(
-                                          "Tem certeza que deseja cancelar esta carona?",
-                                        ),
-                                        actions: <Widget>[
-                                          TextButton(
-                                            child: const Text("Não"),
-                                            onPressed: () {
-                                              Navigator.of(dialogContext).pop();
-                                            },
-                                          ),
-                                          TextButton(
-                                            child: const Text("Sim, Cancelar"),
-                                            onPressed: () {
-                                              Navigator.of(dialogContext).pop();
-                                              viewModel.cancelarCaronaCommand
-                                                  .execute();
-                                            },
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 8,
+                    if (!carona.isFinalizada)
+                      /// Botão de ação com base nas regras
+                      if (isMotoristaAtual) // a. Cancelar se for o motorista
+                        ElevatedButton.icon(
+                          icon: const Icon(
+                            Icons.cancel_outlined,
+                            color: Colors.white,
+                            size: 18,
                           ),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(20),
+                          label: const Text(
+                            "Cancelar Carona",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed:
+                              viewModel.cancelarCaronaCommand.isRunning
+                                  ? null
+                                  : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext dialogContext) {
+                                        return AlertDialog(
+                                          title: const Text("Cancelar Carona"),
+                                          content: const Text(
+                                            "Tem certeza que deseja cancelar esta carona?",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text("Não"),
+                                              onPressed:
+                                                  () =>
+                                                      Navigator.of(
+                                                        dialogContext,
+                                                      ).pop(),
+                                            ),
+                                            TextButton(
+                                              child: const Text(
+                                                "Sim, cancelar",
+                                              ),
+                                              onPressed: () {
+                                                Navigator.of(
+                                                  dialogContext,
+                                                ).pop();
+                                                viewModel.cancelarCaronaCommand
+                                                    .execute();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        )
+                      else if (isPassageiro) // b. Sair se for passageiro
+                        ElevatedButton.icon(
+                          icon: const Icon(
+                            Icons.logout,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                          label: const Text(
+                            "Sair da Carona",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed:
+                              viewModel.sairCaronaCommand.isRunning
+                                  ? null
+                                  : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext dialogContext) {
+                                        return AlertDialog(
+                                          title: const Text("Sair da Carona"),
+                                          content: const Text(
+                                            "Tem certeza que deseja sair desta carona?",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text("Não"),
+                                              onPressed:
+                                                  () =>
+                                                      Navigator.of(
+                                                        dialogContext,
+                                                      ).pop(),
+                                            ),
+                                            TextButton(
+                                              child: const Text("Sim, sair"),
+                                              onPressed: () {
+                                                Navigator.of(
+                                                  dialogContext,
+                                                ).pop();
+                                                viewModel.sairCaronaCommand
+                                                    .execute();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
+                          ),
+                        )
+                      else // c. Entrar se não for passageiro
+                        ElevatedButton.icon(
+                          icon: const Icon(
+                            Icons.login,
+                            color: Colors.white,
+                            size: 18,
+                          ),
+                          label: const Text(
+                            "Entrar na Carona",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed:
+                              viewModel.entrarCaronaCommand.isRunning
+                                  ? null
+                                  : () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (BuildContext dialogContext) {
+                                        return AlertDialog(
+                                          title: const Text("Entrar na Carona"),
+                                          content: const Text(
+                                            "Tem certeza que deseja entrar nesta carona?",
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              child: const Text("Não"),
+                                              onPressed:
+                                                  () =>
+                                                      Navigator.of(
+                                                        dialogContext,
+                                                      ).pop(),
+                                            ),
+                                            TextButton(
+                                              child: const Text("Sim, entrar"),
+                                              onPressed: () {
+                                                Navigator.of(
+                                                  dialogContext,
+                                                ).pop();
+                                                viewModel.entrarCaronaCommand
+                                                    .execute();
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.green,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 8,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20),
+                            ),
                           ),
                         ),
-                      ),
                   ],
                 ),
                 const SizedBox(height: 20),
 
                 // Seção Caronas (Passageiros)
                 Text(
-                  "Caronas", // Ou "Passageiros"
+                  "Passageiros", // Ou "Passageiros"
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Theme.of(
@@ -355,30 +549,13 @@ class _CaronaPageState extends State<CaronaPage> {
                                   child: CircleAvatar(
                                     radius: 25,
                                     backgroundImage:
-                                        (passageiro.fotoPerfilUrl != null &&
-                                                passageiro
-                                                    .fotoPerfilUrl
-                                                    .isNotEmpty)
+                                        (passageiro.fotoPerfilUrl.isNotEmpty)
                                             ? NetworkImage(
                                               passageiro.fotoPerfilUrl,
                                             )
-                                            : AssetImage('assets/logo/passageiro.png'),
-                                    child:
-                                        (passageiro.fotoPerfilUrl == null ||
-                                                passageiro
-                                                    .fotoPerfilUrl
-                                                    .isEmpty)
-                                            ? Text(
-                                              passageiro.nome.isNotEmpty
-                                                  ? passageiro.nome[0]
-                                                      .toUpperCase()
-                                                  : "?",
-                                              style: const TextStyle(
-                                                fontSize: 20,
-                                                color: Colors.white,
-                                              ),
-                                            )
-                                            : null,
+                                            : AssetImage(
+                                              'assets/logo/passageiro.png',
+                                            ),
                                     backgroundColor:
                                         Colors
                                             .blueGrey, // Cor de fallback para avatar
@@ -397,40 +574,38 @@ class _CaronaPageState extends State<CaronaPage> {
                         ),
                       ),
                     const SizedBox(width: 10),
-                    ElevatedButton.icon(
-                      icon: const Icon(
-                        Icons.chat_bubble_outline,
-                        color: Colors.white,
-                        size: 20,
-                      ),
-                      label: const Text(
-                        "Chat",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () {
-                        // TODO: Implementar navegação para tela de Chat
-                        // Ex: Routefly.navigate('/chat/${carona.id}');
-                        debugPrint("Abrir chat da carona ${carona.id}");
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
-                              "Funcionalidade de Chat para carona ID: ${carona.id} (não implementado)",
-                            ),
+                    if (isPassageiro ||
+                        isMotoristaAtual && !carona.isFinalizada)
+                      ElevatedButton.icon(
+                        icon: const Icon(
+                          Icons.chat_bubble_outline,
+                          color: Colors.white,
+                          size: 20,
+                        ),
+                        label: const Text(
+                          "Chat",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          Routefly.navigate(
+                            routePaths.carona.visualizar.$id.chat.changes({
+                              'id': '${carona.id}',
+                            }),
+                            arguments: carona.roomId,
+                          );
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF007AFF),
+                          // Azul da imagem
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 16,
+                            vertical: 10,
                           ),
-                        );
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF007AFF),
-                        // Azul da imagem
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 10,
-                        ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
                 const SizedBox(height: 24),
@@ -497,7 +672,7 @@ class _CaronaPageState extends State<CaronaPage> {
                 _buildInfoCard(
                   title: "Preço da Carona:", // Removido o ":" do título no card
                   child: Text(
-                    "R\$ ${carona.preco.toStringAsFixed(2).replaceAll('.', ',') ?? 'N/A'}",
+                    "R\$ ${carona.preco.toStringAsFixed(2).replaceAll('.', ',')}",
                     style: const TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -531,6 +706,50 @@ class _CaronaPageState extends State<CaronaPage> {
             ),
           );
         },
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge(BuildContext context, String status) {
+    // Or RideStatus status
+    Color backgroundColor;
+    String text;
+
+    switch (status) {
+      // Assuming status is a String for this example
+      case "Finalizada":
+        backgroundColor = Colors.green;
+        text = "Finalizada";
+        break;
+      case "Agendada":
+        backgroundColor = Colors.blue;
+        text = "Agendada";
+        break;
+      case "Andamento":
+        backgroundColor = Colors.orange;
+        text = "Em Andamento";
+        break;
+      case "Cancelada":
+        backgroundColor = Colors.red;
+        text = "Cancelada";
+        break;
+      default:
+        return const SizedBox.shrink(); // Don't show anything if status is unknown or not set
+    }
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+      decoration: BoxDecoration(
+        color: backgroundColor,
+        borderRadius: BorderRadius.circular(15),
+      ),
+      child: Text(
+        text,
+        style: const TextStyle(
+          color: Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
       ),
     );
   }

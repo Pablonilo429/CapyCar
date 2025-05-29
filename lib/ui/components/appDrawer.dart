@@ -12,9 +12,7 @@ class AppDrawer extends StatefulWidget {
   State<AppDrawer> createState() => _AppDrawerState();
 }
 
-
 class _AppDrawerState extends State<AppDrawer> {
-
   final viewModel = injector.get<AppDrawerViewModel>();
 
   @override
@@ -47,26 +45,26 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
               child: Column(
                 children: [
-                  viewModel.usuario!.fotoPerfilUrl != null ?
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: NetworkImage(
-                        viewModel.usuario!.fotoPerfilUrl!),
-                  ) :
-                  CircleAvatar(
-                    radius: 35,
-                    backgroundImage: viewModel.usuario!.isMotorista
-                        ? const AssetImage('assets/logo/motorista.png')
-                        : const AssetImage('assets/logo/passageiro.png'),
-                  )
-                  ,
+                  viewModel.usuario!.fotoPerfilUrl.isNotEmpty
+                      ? CircleAvatar(
+                        radius: 35,
+                        backgroundImage: NetworkImage(
+                          viewModel.usuario!.fotoPerfilUrl,
+                        ),
+                      )
+                      : CircleAvatar(
+                        radius: 35,
+                        backgroundImage:
+                            viewModel.usuario!.isMotorista
+                                ? const AssetImage('assets/logo/motorista.png')
+                                : const AssetImage(
+                                  'assets/logo/passageiro.png',
+                                ),
+                      ),
                   const SizedBox(height: 8),
                   Text(
-                    '${viewModel.usuario!.nomeSocial ?? viewModel.usuario!.nome} - Campus ${viewModel.usuario!.campus}',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 14,
-                    ),
+                    '${viewModel.usuario!.nomeSocial?.isEmpty ?? true ? viewModel.usuario!.nome : viewModel.usuario!.nomeSocial} - Campus ${viewModel.usuario!.campus}',
+                    style: const TextStyle(color: Colors.white, fontSize: 14),
                   ),
                 ],
               ),
@@ -103,10 +101,12 @@ class _AppDrawerState extends State<AppDrawer> {
                     icon: Icons.list_alt,
                     text: 'Listar suas viagens',
                     onTap: () {
-                      Routefly.navigate(routePaths.carona.visualizar.caronaAnterior);
+                      Routefly.navigate(
+                        routePaths.carona.visualizar.caronaAnterior,
+                      );
                     },
                   ),
-                  if(viewModel.usuario!.isMotorista)
+                  if (viewModel.usuario!.isMotorista)
                     _buildItem(
                       context,
                       icon: Icons.location_on,
@@ -125,14 +125,15 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
             const Divider(),
-            LogoutButton()
+            LogoutButton(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildItem(BuildContext context, {
+  Widget _buildItem(
+    BuildContext context, {
     required IconData icon,
     required String text,
     required VoidCallback onTap,
@@ -144,4 +145,3 @@ class _AppDrawerState extends State<AppDrawer> {
     );
   }
 }
-

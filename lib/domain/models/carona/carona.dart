@@ -22,6 +22,7 @@ sealed class Carona with _$Carona {
     required DateTime dataCarona,
     required double preco,
     required bool isFinalizada,
+    String? roomId,
   }) = _Carona;
 
   factory Carona.fromJson(Map<String, dynamic> json) => _$CaronaFromJson(json);

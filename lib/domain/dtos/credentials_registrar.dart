@@ -12,7 +12,7 @@ class CredentialsRegistrar {
 
   CredentialsRegistrar({
     this.nomeCompleto = '',
-    this.nomeSocial,
+    this.nomeSocial = '',
     this.dataNascimento,
     this.emailInstitucional = '',
     this.termosCondicoes = true,

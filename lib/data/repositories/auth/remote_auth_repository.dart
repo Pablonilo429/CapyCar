@@ -23,6 +23,8 @@ import 'package:capy_car/utils/validation/LucidValidatorExtension.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:result_dart/src/unit.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
 class RemoteAuthRepository implements AuthRepository {
   final FirebaseAuthService _authService;
@@ -65,6 +67,16 @@ class RemoteAuthRepository implements AuthRepository {
         final usuario = await _authService.getUsuarioData(user.uid);
         if (usuario is! Usuario) return Failure(Exception('Usuário inválido'));
 
+        if(usuario.isPrimeiroLogin){
+          await FirebaseChatCore.instance.createUserInFirestore(
+            types.User(
+              firstName: usuario.nomeSocial?.isEmpty ?? true ? usuario.nome : usuario.nomeSocial,
+              id: usuario.uId, // UID from Firebase Authentication
+              imageUrl: "https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png",
+            ),
+          );
+        }
+
         return Success(usuario);
       } catch (e) {
         return Failure(Exception(e.toString()));
@@ -73,32 +85,28 @@ class RemoteAuthRepository implements AuthRepository {
   }
 
   @override
-  AsyncResult<Usuario> registar(CredentialsRegistrar credentials) async {
+  AsyncResult<Unit> registar(CredentialsRegistrar credentials) async {
     try {
       final user = await _authService.registerWithEmailAndPassword(
         credentials.emailInstitucional,
         credentials.senha,
         {
           'nomeCompleto': credentials.nomeCompleto,
-          'nomeSocial': credentials.nomeSocial,
+          'nomeSocial': credentials.nomeSocial ?? '',
           'dataNascimento': credentials.dataNascimento?.toIso8601String(),
-          'numeroCelular': credentials.numeroCelular,
+          'numeroCelular': credentials.numeroCelular ?? '',
           'isPassageiro': true,
           'isMotorista': false,
           'emailInstitucional': credentials.emailInstitucional,
           'isAtivo': true,
           'isPrimeiroLogin': true,
-          'urlFotoPerfil': '',
+          'fotoPerfilUrl': '',
         },
       );
 
       if (user == null) return Failure(Exception('Erro ao registrar usuário'));
 
-      final usuario = await _authService.getUsuarioData(user.uid);
-      if (usuario == null)
-        return Failure(Exception('Erro ao recuperar dados do usuário'));
-
-      return Success(usuario);
+      return Success.unit();
     } catch (e) {
       return Failure(Exception(e.toString()));
     }
@@ -156,7 +164,7 @@ class RemoteAuthRepository implements AuthRepository {
         return Failure(Exception('Falha ao enviar imagem'));
       }
 
-      await _authService.updateUsuario(userId, {'urlFotoPerfil': imageUrl});
+      await _authService.updateUsuario(userId, {'fotoPerfilUrl': imageUrl});
       return Success(unit);
     } catch (e) {
       return Failure(Exception('Erro ao registrar foto: ${e.toString()}'));
@@ -216,6 +224,7 @@ class RemoteAuthRepository implements AuthRepository {
           'campus': creds.campus,
           'cidade': creds.cidade,
           'bairro': creds.bairro,
+          'isPrimeiroLogin': false,
         };
 
         // Remove campos nulos

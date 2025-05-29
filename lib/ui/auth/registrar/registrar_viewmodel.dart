@@ -12,7 +12,7 @@ class RegistrarViewModel extends ChangeNotifier{
 
   late final registrarCommand = Command1(_registrar);
 
-  AsyncResult<Usuario> _registrar(CredentialsRegistrar credentials){
+  AsyncResult<Unit> _registrar(CredentialsRegistrar credentials){
     return _authRepository.registar(credentials);
   }
 

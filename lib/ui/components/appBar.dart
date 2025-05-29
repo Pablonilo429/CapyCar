@@ -25,7 +25,7 @@ class _CustomAppBarState extends State<CustomAppBar> {
           widget.isPop
               ? IconButton(
                 iconSize: 30.0,
-                icon: const Icon(Icons.menu),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Routefly.navigate(routePaths.carona.caronaHome);
                 },

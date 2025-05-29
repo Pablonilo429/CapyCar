@@ -37,7 +37,7 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
             icon: Icon(Icons.add),
             label: 'Oferecer Viagem',
           ),
-        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Sua Carona'),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Suas Caronas'),
       ],
       onTap: (index) {
         switch (index) {
@@ -46,7 +46,10 @@ class _AppBottomNavigationState extends State<AppBottomNavigation> {
           case 1:
             if (viewModel.usuario!.isMotorista) {
               Routefly.navigate(routePaths.carona.cadastro.cadastrarCarona);
+              return;
             }
+            Routefly.navigate(routePaths.carona.visualizar.caronasUsuario);
+
           case 2:
             {
               Routefly.navigate(routePaths.carona.visualizar.caronasUsuario);

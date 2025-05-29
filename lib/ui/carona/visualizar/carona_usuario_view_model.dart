@@ -9,7 +9,7 @@ import 'package:result_dart/result_dart.dart';
 import 'package:capy_car/data/repositories/carona/carona_repository.dart';
 import 'package:capy_car/domain/models/carona/carona.dart';
 
-class CaronaHomeViewModel extends ChangeNotifier {
+class CaronasUsuarioViewModel extends ChangeNotifier {
   final CaronaRepository _caronaRepository;
   final AuthRepository _authRepository;
   Usuario? _usuario;
@@ -18,16 +18,13 @@ class CaronaHomeViewModel extends ChangeNotifier {
 
   late final StreamSubscription _userSubscription;
 
-  CaronaHomeViewModel(this._caronaRepository, this._authRepository) {
+  CaronasUsuarioViewModel(this._caronaRepository, this._authRepository) {
     _userSubscription = _authRepository.userObserver().listen((usuario) {
       _usuario = usuario;
       notifyListeners();
     });
   }
 
-  final ValueNotifier<String?> campusSelecionado = ValueNotifier('Seropédica');
-  final ValueNotifier<bool?> isVolta = ValueNotifier(false);
-  final ValueNotifier<String> textoBusca = ValueNotifier('');
   final ValueNotifier<List<Carona?>> caronas = ValueNotifier([]);
   final ValueNotifier<Map<String, String>> fotosUsuarios = ValueNotifier({});
   final isLoading = ValueNotifier<bool>(true);
@@ -40,13 +37,9 @@ class CaronaHomeViewModel extends ChangeNotifier {
     caronas.value = [];
     // _buscarUsuario();
     try {
-      if (campusSelecionado.value!.isEmpty) {
-        campusSelecionado.value = usuario!.campus;
-      }
-      final result = await _caronaRepository.getAllCarona(
-        campusSelecionado.value,
-        isVolta.value,
-        textoBusca.value.isNotEmpty ? textoBusca.value : null,
+      final result = await _caronaRepository.getAllByUserCarona(
+        isFinalizada: false,
+        userId: usuario!.uId,
       );
 
       return result.fold((lista) async {
@@ -72,21 +65,6 @@ class CaronaHomeViewModel extends ChangeNotifier {
     } finally {
       isLoading.value = false;
     }
-  }
-
-  void setCampus(String novoCampus) {
-    campusSelecionado.value = novoCampus;
-    buscarCaronasCommand.execute(); // corrigido
-  }
-
-  void toggleVolta(bool value) {
-    isVolta.value = value;
-    buscarCaronasCommand.execute(); // corrigido
-  }
-
-  void setTextoBusca(String novoTexto) {
-    textoBusca.value = novoTexto;
-    buscarCaronasCommand.execute(); // corrigido
   }
 
   @override

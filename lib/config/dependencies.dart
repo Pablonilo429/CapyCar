@@ -16,6 +16,8 @@ import 'package:capy_car/ui/auth/senha/esqueci_senha_viewmodel.dart';
 import 'package:capy_car/ui/carona/cadastro/cadastrar_carona_view_model.dart';
 import 'package:capy_car/ui/carona/carona_home_viewmodel.dart';
 import 'package:capy_car/ui/carona/visualizar/%5Bid%5D/carona_view_model.dart';
+import 'package:capy_car/ui/carona/visualizar/carona_anterior_view_model.dart';
+import 'package:capy_car/ui/carona/visualizar/carona_usuario_view_model.dart';
 import 'package:capy_car/ui/components/appBottomNavigation_view_model.dart';
 import 'package:capy_car/ui/components/appDrawer_view_model.dart';
 import 'package:capy_car/ui/rota/rota_view_model.dart';
@@ -27,12 +29,10 @@ import 'package:capy_car/ui/usuario/usuario_viewmodel.dart';
 final injector = AutoInjector();
 
 void setupDependecies() {
-
   //Services
   injector.addSingleton(CloudinaryService.new);
   injector.addSingleton(FirebaseAuthService.new);
   injector.addSingleton(FirestoreService.new);
-
 
   //Repositories
   injector.addSingleton<AuthRepository>(RemoteAuthRepository.new);
@@ -46,20 +46,22 @@ void setupDependecies() {
   injector.addSingleton<UsuarioViewModel>(UsuarioViewModel.new);
   injector.addSingleton<EsqueciSenhaViewModel>(EsqueciSenhaViewModel.new);
   injector.addSingleton<LogoutViewModel>(LogoutViewModel.new);
-  injector.addSingleton<CadastrarLocalizacaoViewmodel>(CadastrarLocalizacaoViewmodel.new);
+  injector.addSingleton<CadastrarLocalizacaoViewmodel>(
+    CadastrarLocalizacaoViewmodel.new,
+  );
   injector.addSingleton<CadastarFotoViewModel>(CadastarFotoViewModel.new);
   injector.addSingleton<CadastrarCarroViewmodel>(CadastrarCarroViewmodel.new);
   injector.addSingleton<CaronaHomeViewModel>(CaronaHomeViewModel.new);
   injector.addSingleton<AppDrawerViewModel>(AppDrawerViewModel.new);
   injector.addSingleton<RotaViewModel>(RotaViewModel.new);
-  injector.addSingleton<AppBottomNavigationViewModel>(AppBottomNavigationViewModel.new);
+  injector.addSingleton<AppBottomNavigationViewModel>(
+    AppBottomNavigationViewModel.new,
+  );
   injector.addSingleton<CadastrarCaronaViewModel>(CadastrarCaronaViewModel.new);
   injector.addSingleton<CaronaViewModel>(CaronaViewModel.new);
-
-
-
+  injector.addSingleton<CaronasUsuarioViewModel>(CaronasUsuarioViewModel.new);
+  injector.addSingleton<CaronaAnteriorViewModel>(CaronaAnteriorViewModel.new);
 
   injector.commit();
   //Outros
-
 }

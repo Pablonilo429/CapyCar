@@ -12,6 +12,8 @@ import 'package:capy_car/utils/validation/LucidValidatorExtension.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:result_dart/src/unit.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 
 class RemoteCaronaRepository implements CaronaRepository {
   final _streamController = StreamController<Carona>.broadcast();
@@ -42,7 +44,7 @@ class RemoteCaronaRepository implements CaronaRepository {
           await _storeService.updateDocument(
             collection: _collection,
             docId: doc.id,
-            data: {'isFinalizada': true, 'status': 'concluída'},
+            data: {'isFinalizada': true, 'status': 'Finalizada'},
           );
         } else {
           return Failure(
@@ -53,6 +55,11 @@ class RemoteCaronaRepository implements CaronaRepository {
         }
       }
 
+      final resultChat = await FirebaseChatCore.instance.createGroupRoom(
+        users: [types.User(id: credentials.idMotorista)],
+        name: 'Carona motorista ${credentials.idMotorista}',
+        imageUrl: null, // Substitua por uma URL real se desejar
+      );
 
       final carona = Carona(
         id: '',
@@ -71,6 +78,7 @@ class RemoteCaronaRepository implements CaronaRepository {
         dataCarona: DateTime.now(),
         preco: credentials.preco,
         isFinalizada: false,
+        roomId: resultChat.id
       );
 
       final data = carona.toJson()..remove('id');
@@ -81,6 +89,9 @@ class RemoteCaronaRepository implements CaronaRepository {
 
       final doc = await docRef.get();
       final newCarona = carona.copyWith(id: doc.id);
+
+
+
       _streamController.add(newCarona);
       return Success(newCarona);
     } catch (e) {
@@ -156,7 +167,7 @@ class RemoteCaronaRepository implements CaronaRepository {
   @override
   AsyncResult<List<Carona?>> getAllCarona(
     String? campus,
-    bool? isVolta,// busca textual
+    bool? isVolta, // busca textual
     String? rotaFiltro,
   ) async {
     try {
@@ -167,25 +178,22 @@ class RemoteCaronaRepository implements CaronaRepository {
         isVoltaFiltro: isVolta,
       );
 
-      final caronas = docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        return Carona.fromJson(data).copyWith(id: doc.id);
-      }).toList();
-      print(caronas.length);
+      final caronas =
+          docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return Carona.fromJson(data).copyWith(id: doc.id);
+          }).toList();
 
-      if(caronas.isEmpty){
-
+      if (caronas.isEmpty) {
         return Failure(Exception('Não há caronas para as próximas 24 horas.'));
       }
 
       return Success(caronas);
     } catch (e) {
-
       print("Erro ao buscar caronas: $e");
       return Failure(Exception('Erro ao buscar caronas: $e'));
     }
   }
-
 
   /// Cancela uma carona
   @override
@@ -194,7 +202,7 @@ class RemoteCaronaRepository implements CaronaRepository {
       await _storeService.updateDocument(
         collection: _collection,
         docId: id,
-        data: {'status': 'cancelada', 'isFinalizada': true},
+        data: {'status': 'Cancelada', 'isFinalizada': true},
       );
       return const Success(unit);
     } catch (e) {
@@ -286,11 +294,7 @@ class RemoteCaronaRepository implements CaronaRepository {
             data: {'isFinalizada': true, 'status': 'concluída'},
           );
         } else {
-          return Failure(
-            Exception(
-              'Você já está em uma carona',
-            ),
-          );
+          return Failure(Exception('Você já está em uma carona'));
         }
       }
 
@@ -323,7 +327,20 @@ class RemoteCaronaRepository implements CaronaRepository {
       final updatedCarona = Carona.fromJson(
         updatedDoc.data() as Map<String, dynamic>,
       ).copyWith(id: updatedDoc.id);
+
       _streamController.add(updatedCarona);
+
+      final rooms = await FirebaseChatCore.instance.room(updatedCarona.roomId ?? '').first;
+
+      final sala = rooms;
+
+
+      final novaLista = List<types.User>.from(sala.users)
+        ..add(types.User(id: userId));
+
+      final salaAtualizada = sala.copyWith(users: novaLista);
+
+      FirebaseChatCore.instance.updateRoom(salaAtualizada);
 
       return const Success(unit);
     } catch (e) {
@@ -333,5 +350,101 @@ class RemoteCaronaRepository implements CaronaRepository {
 
   void dispose() {
     _streamController.close();
+  }
+
+  @override
+  AsyncResult<List<Carona?>> getAllByUserCarona({
+    required String userId,
+    required bool isFinalizada,
+  }) async {
+    final List<Carona> caronasUsuario = [];
+
+    try {
+      // Caronas como motorista
+      final docsMotorista = await _storeService.getDocumentsWithFilter(
+        collection: _collection,
+        filters: {'motoristaId': userId, 'isFinalizada': isFinalizada},
+      );
+
+      final caronasMotorista =
+          docsMotorista.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return Carona.fromJson(data).copyWith(id: doc.id);
+          }).toList();
+
+      caronasUsuario.addAll(caronasMotorista);
+
+      // Caronas como passageiro
+      final snapshotPassageiro =
+          await _storeService
+              .getCollection(_collection)
+              .where('idsPassageiros', arrayContains: userId)
+              .where('isFinalizada', isEqualTo: isFinalizada)
+              .get();
+
+      final caronasPassageiro =
+          snapshotPassageiro.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return Carona.fromJson(data).copyWith(id: doc.id);
+          }).toList();
+
+      caronasUsuario.addAll(caronasPassageiro);
+
+      // Remover duplicatas (por ID)
+      final uniqueCaronas =
+          {
+            for (var carona in caronasUsuario) carona.id!: carona,
+          }.values.toList();
+
+      return Success(uniqueCaronas);
+    } catch (e) {
+      return Failure(Exception('Erro ao buscar caronas do usuário: $e'));
+    }
+  }
+
+  @override
+  AsyncResult<Unit> adicionarPassageiroNaSala(
+    String caronaId,
+    String novoPassageiroUid,
+  ) async {
+    try {
+      final rooms = await FirebaseChatCore.instance.rooms().first;
+
+      final sala = rooms.firstWhere(
+        (room) => room.metadata?['caronaId'] == caronaId,
+        orElse: () => throw Exception('Sala da carona não encontrada'),
+      );
+
+      final jaParticipa = sala.users.any(
+        (user) => user.id == novoPassageiroUid,
+      );
+      if (jaParticipa) return Success(unit);
+
+      final novaLista = List<types.User>.from(sala.users)
+        ..add(types.User(id: novoPassageiroUid));
+
+      final salaAtualizada = sala.copyWith(users: novaLista);
+
+      FirebaseChatCore.instance.updateRoom(salaAtualizada);
+
+      return Success(unit);
+    } catch (e, stack) {
+      return Failure(Exception('Erro ao adicionar passageiro: $e'));
+    }
+  }
+
+  @override
+  AsyncResult<Unit> criarSalaCarona(Carona carona) async {
+    try {
+      final room = await FirebaseChatCore.instance.createGroupRoom(
+        users: [types.User(id: carona.motoristaId)],
+        name: 'Carona ${carona.rota}',
+        imageUrl: null, // Substitua por uma URL real se desejar
+        metadata: {'caronaId': carona.id},
+      );
+      return Success(unit);
+    } catch (e) {
+      return Failure(Exception('Erro ao criar Sala Carona: $e'));
+    }
   }
 }

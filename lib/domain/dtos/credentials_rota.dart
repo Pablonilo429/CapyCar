@@ -5,7 +5,7 @@ class CredentialsRota {
   List<String> pontos;
 
   CredentialsRota({
-    this.nomeRota = '',
+    this.nomeRota = "rota carona",
     this.cidadeSaida = '',
     this.campus = '',
     this.pontos = const [],

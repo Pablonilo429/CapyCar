@@ -219,10 +219,9 @@ class _RegistrarPageState extends State<RegistrarPage> {
               viewModel.registrarCommand.isRunning
                   ? null
                   : () {
-                    if(validator.validate(credentials).isValid && aceitoTermos){
+                    if (validator.validate(credentials).isValid) {
                       viewModel.registrarCommand.execute(credentials);
                     }
-
                   },
           icon: const Icon(Icons.person_add),
           label: const Text('Cadastrar'),

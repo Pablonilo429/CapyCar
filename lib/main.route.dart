@@ -4,62 +4,68 @@ import 'package:flutter/widgets.dart';
 import 'package:routefly/routefly.dart';
 
 import 'ui/auth/login/login_page.dart' as a0;
-import 'ui/auth/registrar/registrar_page.dart' as a1;
-import 'ui/auth/senha/esqueci_senha_page.dart' as a2;
-import 'ui/carona/cadastro/cadastrar_carona_page.dart' as a3;
-import 'ui/carona/carona_home_page.dart' as a4;
-import 'ui/carona/visualizar/[id]/carona_page.dart' as a8;
-import 'ui/carona/visualizar/carona_anterior_page.dart' as a6;
-import 'ui/carona/visualizar/caronas_usuario_page.dart' as a5;
-import 'ui/carona/visualizar/lista_carona_anterior_page.dart' as a7;
-import 'ui/mensagem_page.dart' as a9;
-import 'ui/rota/rota_page.dart' as a10;
-import 'ui/usuario/cadastro/cadastrar_carro_page.dart' as a11;
-import 'ui/usuario/cadastro/cadastrar_foto_page.dart' as a12;
-import 'ui/usuario/cadastro/cadastrar_localizacao_page.dart' as a13;
-import 'ui/usuario/cadastro/cadastrar_papel_page.dart' as a14;
-import 'ui/usuario/editar/editar_carro_page.dart' as a15;
-import 'ui/usuario/editar/editar_perfil_page.dart' as a16;
+import 'ui/auth/registrar/final_registrar_page.dart' as a1;
+import 'ui/auth/registrar/registrar_page.dart' as a2;
+import 'ui/auth/senha/esqueci_senha_page.dart' as a3;
+import 'ui/carona/cadastro/cadastrar_carona_page.dart' as a4;
+import 'ui/carona/carona_home_page.dart' as a5;
+import 'ui/carona/visualizar/[id]/carona_page.dart' as a9;
+import 'ui/carona/visualizar/[id]/chat_page.dart' as a10;
+import 'ui/carona/visualizar/carona_anterior_page.dart' as a7;
+import 'ui/carona/visualizar/caronas_usuario_page.dart' as a6;
+import 'ui/carona/visualizar/lista_carona_anterior_page.dart' as a8;
+import 'ui/mensagem_page.dart' as a11;
+import 'ui/rota/rota_page.dart' as a12;
+import 'ui/usuario/cadastro/cadastrar_carro_page.dart' as a13;
+import 'ui/usuario/cadastro/cadastrar_foto_page.dart' as a14;
+import 'ui/usuario/cadastro/cadastrar_localizacao_page.dart' as a15;
+import 'ui/usuario/cadastro/cadastrar_papel_page.dart' as a16;
+import 'ui/usuario/editar/editar_carro_page.dart' as a17;
+import 'ui/usuario/editar/editar_perfil_page.dart' as a18;
 
 Route b0Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(ctx, settings, const a0.LoginPage());
 Route b1Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a1.RegistrarPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a1.FinalRegistrarPage());
 Route b2Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a2.EsqueciSenhaPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a2.RegistrarPage());
 Route b3Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a3.CadastrarCaronaPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a3.EsqueciSenhaPage());
 Route b4Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a4.CaronaHomePage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a4.CadastrarCaronaPage());
 Route b5Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a5.CaronasUsuarioPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a5.CaronaHomePage());
 Route b6Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a6.CaronaAnteriorPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a6.CaronasUsuarioPage());
 Route b7Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(
-      ctx,
-      settings,
-      const a7.ListaCaronaAnteriorPage(),
-    );
+    Routefly.defaultRouteBuilder(ctx, settings, const a7.CaronaAnteriorPage());
 Route b8Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a8.CaronaPage());
-Route b9Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a9.MensagemPage());
-Route b10Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a10.RotaPage());
-Route b11Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a11.CadastrarCarroPage());
-Route b12Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a12.CadastrarFotoPage());
-Route b13Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(
       ctx,
       settings,
-      const a13.CadastrarLocalizacaoPage(),
+      const a8.ListaCaronaAnteriorPage(),
     );
+Route b9Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a9.CaronaPage());
+Route b10Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a10.ChatPage());
+Route b11Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a11.MensagemPage());
+Route b12Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a12.RotaPage());
+Route b13Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a13.CadastrarCarroPage());
 Route b14Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a14.CadastrarPapelPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a14.CadastrarFotoPage());
 Route b15Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a15.EditarCarroPage());
+    Routefly.defaultRouteBuilder(
+      ctx,
+      settings,
+      const a15.CadastrarLocalizacaoPage(),
+    );
 Route b16Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a16.EditarPerfilPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a16.CadastrarPapelPage());
+Route b17Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a17.EditarCarroPage());
+Route b18Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a18.EditarPerfilPage());

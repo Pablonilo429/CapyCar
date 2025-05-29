@@ -9,80 +9,90 @@ List<RouteEntity> get routes => [
     routeBuilder: b0Builder,
   ),
   RouteEntity(
+    key: 'auth/registrar/final_registrar',
+    uri: Uri.parse('auth/registrar/final_registrar'),
+    routeBuilder: b1Builder,
+  ),
+  RouteEntity(
     key: 'auth/registrar',
     uri: Uri.parse('auth/registrar'),
-    routeBuilder: b1Builder,
+    routeBuilder: b2Builder,
   ),
   RouteEntity(
     key: 'auth/senha/esqueci_senha',
     uri: Uri.parse('auth/senha/esqueci_senha'),
-    routeBuilder: b2Builder,
+    routeBuilder: b3Builder,
   ),
   RouteEntity(
     key: 'carona/cadastro/cadastrar_carona',
     uri: Uri.parse('carona/cadastro/cadastrar_carona'),
-    routeBuilder: b3Builder,
+    routeBuilder: b4Builder,
   ),
   RouteEntity(
     key: 'carona/carona_home',
     uri: Uri.parse('carona/carona_home'),
-    routeBuilder: b4Builder,
+    routeBuilder: b5Builder,
   ),
   RouteEntity(
     key: 'carona/visualizar/caronas_usuario',
     uri: Uri.parse('carona/visualizar/caronas_usuario'),
-    routeBuilder: b5Builder,
+    routeBuilder: b6Builder,
   ),
   RouteEntity(
     key: 'carona/visualizar/carona_anterior',
     uri: Uri.parse('carona/visualizar/carona_anterior'),
-    routeBuilder: b6Builder,
+    routeBuilder: b7Builder,
   ),
   RouteEntity(
     key: 'carona/visualizar/lista_carona_anterior',
     uri: Uri.parse('carona/visualizar/lista_carona_anterior'),
-    routeBuilder: b7Builder,
+    routeBuilder: b8Builder,
   ),
   RouteEntity(
     key: 'carona/visualizar/[id]/carona',
     uri: Uri.parse('carona/visualizar/[id]/carona'),
-    routeBuilder: b8Builder,
+    routeBuilder: b9Builder,
+  ),
+  RouteEntity(
+    key: 'carona/visualizar/[id]/chat',
+    uri: Uri.parse('carona/visualizar/[id]/chat'),
+    routeBuilder: b10Builder,
   ),
   RouteEntity(
     key: 'mensagem',
     uri: Uri.parse('mensagem'),
-    routeBuilder: b9Builder,
+    routeBuilder: b11Builder,
   ),
-  RouteEntity(key: 'rota', uri: Uri.parse('rota'), routeBuilder: b10Builder),
+  RouteEntity(key: 'rota', uri: Uri.parse('rota'), routeBuilder: b12Builder),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_carro',
     uri: Uri.parse('usuario/cadastro/cadastrar_carro'),
-    routeBuilder: b11Builder,
+    routeBuilder: b13Builder,
   ),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_foto',
     uri: Uri.parse('usuario/cadastro/cadastrar_foto'),
-    routeBuilder: b12Builder,
+    routeBuilder: b14Builder,
   ),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_localizacao',
     uri: Uri.parse('usuario/cadastro/cadastrar_localizacao'),
-    routeBuilder: b13Builder,
+    routeBuilder: b15Builder,
   ),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_papel',
     uri: Uri.parse('usuario/cadastro/cadastrar_papel'),
-    routeBuilder: b14Builder,
+    routeBuilder: b16Builder,
   ),
   RouteEntity(
     key: 'usuario/editar/editar_carro',
     uri: Uri.parse('usuario/editar/editar_carro'),
-    routeBuilder: b15Builder,
+    routeBuilder: b17Builder,
   ),
   RouteEntity(
     key: 'usuario/editar/editar_perfil',
     uri: Uri.parse('usuario/editar/editar_perfil'),
-    routeBuilder: b16Builder,
+    routeBuilder: b18Builder,
   ),
 ];
 
@@ -91,7 +101,10 @@ const routePaths = (
   auth: (
     path: '/auth',
     login: '/auth/login',
-    registrar: '/auth/registrar',
+    registrar: (
+      path: '/auth/registrar',
+      finalRegistrar: '/auth/registrar/final_registrar',
+    ),
     senha: (path: '/auth/senha', esqueciSenha: '/auth/senha/esqueci_senha'),
   ),
   carona: (
@@ -109,6 +122,7 @@ const routePaths = (
       $id: (
         path: '/carona/visualizar/[id]',
         carona: '/carona/visualizar/[id]/carona',
+        chat: '/carona/visualizar/[id]/chat',
       ),
     ),
   ),

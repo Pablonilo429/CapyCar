@@ -31,77 +31,137 @@ class CaronaViewModel extends ChangeNotifier {
   late final buscarCaronaCommand = Command1(_buscarCarona);
   late final entrarCaronaCommand = Command0(_entrarCarona);
   late final sairCaronaCommand = Command0(_sairCarona);
+  late final removerPassageiroCaronaCommand = Command1(
+    _removerPassageiroCarona,
+  );
   late final cancelarCaronaCommand = Command0(_cancelarCarona);
 
   AsyncResult<Carona> _buscarCarona(String id) async {
     final resultUsuario = await _authRepository.getUser();
-
     resultUsuario.fold(
-      (user) {
-        _usuario = user;
-        notifyListeners();
-      },
-      (exception) {
-        debugPrint('Erro ao carregar usuário');
-      },
+      (user) => _usuario = user,
+      (_) => debugPrint('Erro ao carregar usuário'),
     );
+
+    // Limpar dados antigos antes de buscar novos para evitar mostrar dados inconsistentes rapidamente
+    // _carona = null;
+    // _passageiros = [];
+    // _motorista = null;
+    // notifyListeners(); // Opcional: notificar que está limpando/carregando
 
     final resultCarona = await _caronaRepository.getCarona(id);
+    if (!resultCarona.isSuccess()) {
+      _carona = null; // Limpar se a busca falhar
+      _passageiros = [];
+      _motorista = null;
+      notifyListeners();
+      return resultCarona;
+    }
 
-    resultCarona.fold(
-      (carona) {
-        _carona = carona;
-        notifyListeners();
-      },
-      (exception) {
-        debugPrint('Erro ao carregar carona');
-      },
-    );
+    final caronaAtualizada = resultCarona.getOrThrow();
+    _carona = caronaAtualizada;
+    _passageiros = []; // Limpar antes de preencher
 
-    // Buscar passageiros da carona
-    if (carona!.idsPassageiros?.isNotEmpty ?? false) {
+    if (caronaAtualizada.idsPassageiros?.isNotEmpty ?? false) {
       final passageirosFuturos = await Future.wait(
-        carona!.idsPassageiros!.map(_authRepository.getUserById),
+        caronaAtualizada.idsPassageiros!.map(_authRepository.getUserById),
       );
-
       _passageiros =
           passageirosFuturos
               .where((result) => result.isSuccess())
               .map((result) => result.getOrThrow())
               .toList();
-
-      notifyListeners();
     }
 
     final resultMotorista = await _authRepository.getUserById(
-      carona!.motoristaId,
+      caronaAtualizada.motoristaId,
     );
+    resultMotorista.fold((motorista) => _motorista = motorista, (_) {
+      _motorista = null; // Limpar se falhar
+      debugPrint('Erro ao carregar motorista');
+    });
 
-    resultMotorista.fold(
-      (motorista) {
-        _motorista = motorista;
-        notifyListeners();
-      },
-      (exception) {
-        debugPrint('Erro ao carregar motorista');
-      },
-    );
-
+    notifyListeners();
     return resultCarona;
   }
 
   AsyncResult<Unit> _entrarCarona() async {
-    return await _caronaRepository.entrarCarona(usuario!.uId, carona!.id!);
+    if (_carona == null || _usuario == null) {
+      debugPrint("Erro: Carona ou Usuário nulo antes de entrar na carona.");
+      return Failure(Exception("Dados da carona ou usuário indisponíveis."));
+    }
+
+    final result = await _caronaRepository.entrarCarona(
+      _usuario!.uId,
+      _carona!.id!,
+    );
+
+    return await result.fold((success) async {
+      // Recarregar os dados da carona para refletir a entrada
+      await _buscarCarona(
+        _carona!.id!,
+      ); // _buscarCarona já chama notifyListeners
+      return Success.unit();
+    }, (failure) => Failure(failure));
   }
 
   AsyncResult<Unit> _sairCarona() async {
-    return await _caronaRepository.sairCarona(
-      caronaId: carona!.id!,
-      userId: usuario!.uId,
+    if (_carona == null || _usuario == null) {
+      debugPrint("Erro: Carona ou Usuário nulo antes de sair da carona.");
+      return Failure(Exception("Dados da carona ou usuário indisponíveis."));
+    }
+
+    final result = await _caronaRepository.sairCarona(
+      caronaId: _carona!.id!,
+      userId: _usuario!.uId,
     );
+
+    return await result.fold((success) async {
+      // Recarregar os dados da carona para refletir a saída
+      await _buscarCarona(
+        _carona!.id!,
+      ); // _buscarCarona já chama notifyListeners
+      return Success.unit();
+    }, (failure) => Failure(failure));
+  }
+
+  AsyncResult<Unit> _removerPassageiroCarona(String passageiroId) async {
+    if (_carona == null) {
+      debugPrint("Erro: Carona nula antes de remover passageiro.");
+      return Failure(Exception("Dados da carona indisponíveis."));
+    }
+
+    final result = await _caronaRepository.sairCarona(
+      // sairCarona é usado para remover também
+      caronaId: _carona!.id!,
+      userId: passageiroId,
+    );
+
+    return await result.fold((success) async {
+      // Recarregar os dados da carona para refletir a remoção
+      await _buscarCarona(
+        _carona!.id!,
+      ); // _buscarCarona já chama notifyListeners
+      return Success.unit();
+    }, (failure) => Failure(failure));
   }
 
   AsyncResult<Unit> _cancelarCarona() async {
-    return await _caronaRepository.cancelarCarona(carona!.id!);
+    if (_carona == null) {
+      debugPrint("Erro: Carona nula antes de cancelar.");
+      return Failure(Exception("Dados da carona indisponíveis."));
+    }
+    final caronaId = _carona!.id!; // Salvar ID caso _carona seja nulificado
+    final result = await _caronaRepository.cancelarCarona(caronaId);
+
+    return result.fold((success) {
+      // Após cancelar, os dados desta carona não são mais relevantes aqui.
+      // Poderia limpar o estado local ou deixar que a navegação na View cuide disso.
+      _carona = null;
+      _passageiros = [];
+      _motorista = null;
+      notifyListeners(); // Notificar que a carona foi removida/cancelada
+      return Success.unit();
+    }, (failure) => Failure(failure));
   }
 }

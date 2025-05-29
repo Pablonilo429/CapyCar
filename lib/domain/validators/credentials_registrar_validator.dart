@@ -11,7 +11,7 @@ class CredentialsRegistrarValidator
       key: 'nomeCompleto',
     ).notEmpty().minLength(1).maxLength(200);
 
-    ruleFor((c) => c.nomeSocial, key: 'nomeSocial').minLength(1).maxLength(200);
+    ruleFor((c) => c.nomeSocial, key: 'nomeSocial').maxLength(200);
 
     ruleFor((c) => c.dataNascimento, key: 'dateOfBirth')
         .lessThan(
@@ -31,7 +31,7 @@ class CredentialsRegistrarValidator
     ruleFor(
       (c) => c.numeroCelular,
       key: 'numeroCelular',
-    ).minLength(9).maxLength(11);
+    ).maxLength(11);
 
     ruleFor((c) => c.senha, key: 'senha')
         .mustHaveSpecialCharacter()

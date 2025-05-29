@@ -35,6 +35,10 @@ class _CadastrarLocalizacaoPageState extends State<CadastrarLocalizacaoPage> {
   }
 
   void _listenable() {
+    if (viewModel.cadastrarLocalizacaoCommand.isSuccess) {
+      Routefly.navigate(routePaths.usuario.cadastro.cadastrarFoto);
+    }
+
     if (viewModel.cadastrarLocalizacaoCommand.isFailure) {
       final error =
           viewModel.cadastrarLocalizacaoCommand.value as FailureCommand;
@@ -158,20 +162,9 @@ class _CadastrarLocalizacaoPageState extends State<CadastrarLocalizacaoPage> {
                           viewModel.cadastrarLocalizacaoCommand.isRunning
                               ? null
                               : () {
-                                if (validator
-                                    .validate(credentials)
-                                    .isValid) {
-                                  viewModel.cadastrarLocalizacaoCommand
-                                      .execute(credentials);
-                                }
-                                if (viewModel
-                                        .cadastrarLocalizacaoCommand
-                                        .isSuccess) {
-                                  Routefly.navigate(
-                                    routePaths
-                                        .usuario
-                                        .cadastro
-                                        .cadastrarFoto,
+                                if (validator.validate(credentials).isValid) {
+                                  viewModel.cadastrarLocalizacaoCommand.execute(
+                                    credentials,
                                   );
                                 }
                               },

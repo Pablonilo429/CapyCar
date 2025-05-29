@@ -39,6 +39,10 @@ class _CadastrarFotoPageState extends State<CadastrarFotoPage> {
   }
 
   void _listenable() {
+    if (viewModel.cadastrarFotoCommand.isSuccess) {
+      Routefly.navigate(routePaths.usuario.cadastro.cadastrarPapel);
+    }
+
     if (viewModel.cadastrarFotoCommand.isFailure) {
       final error = viewModel.cadastrarFotoCommand.value as FailureCommand;
 
@@ -138,10 +142,7 @@ class _CadastrarFotoPageState extends State<CadastrarFotoPage> {
                         );
                         if (viewModel.cadastrarFotoCommand.isSuccess) {
                           Routefly.navigate(
-                            routePaths
-                                .usuario
-                                .cadastro
-                                .cadastrarPapel,
+                            routePaths.usuario.cadastro.cadastrarPapel,
                           );
                         }
                       } else {

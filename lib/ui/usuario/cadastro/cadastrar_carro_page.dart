@@ -32,6 +32,9 @@ class _CadastrarCarroPageState extends State<CadastrarCarroPage> {
   }
 
   void _listenable() {
+    if(viewModel.cadastrarLocalizacaoCommand.isSuccess){
+      Routefly.navigate(routePaths.mensagem);
+    }
     if (viewModel.cadastrarLocalizacaoCommand.isFailure) {
       final error =
           viewModel.cadastrarLocalizacaoCommand.value as FailureCommand;
@@ -132,9 +135,6 @@ class _CadastrarCarroPageState extends State<CadastrarCarroPage> {
                       onPressed: viewModel.cadastrarLocalizacaoCommand.isRunning ? null : () {
                         if(validator.validate(credentials).isValid){
                           viewModel.cadastrarLocalizacaoCommand.execute(credentials);
-                        }
-                        if(viewModel.cadastrarLocalizacaoCommand.isSuccess){
-                          Routefly.navigate(routePaths.mensagem);
                         }
                       },
                       style: ElevatedButton.styleFrom(

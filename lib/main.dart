@@ -5,6 +5,7 @@ import 'package:capy_car/main_viewmodel.dart';
 import 'package:capy_car/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:lucid_validation/lucid_validation.dart';
 import 'package:routefly/routefly.dart';
 import 'package:url_strategy/url_strategy.dart';
@@ -40,48 +41,143 @@ class _MainAppState extends State<MainApp> {
   void initState() {
     super.initState();
 
-    mainViewModel.addListener(() {
-      if (mainViewModel.usuario == null) {
-        Routefly.navigate(routePaths.auth.login);
-      } else {
-        if (mainViewModel.usuario?.campus == null ||
-            mainViewModel.usuario?.campus == '' &&
-                mainViewModel.usuario?.isPrimeiroLogin == true) {
-          Routefly.navigate(routePaths.usuario.cadastro.cadastrarLocalizacao);
-        } else if (mainViewModel.usuario?.isPrimeiroLogin == true) {
-          Routefly.navigate(routePaths.usuario.cadastro.cadastrarPapel);
-        } else {
-          Routefly.navigate(routePaths.carona.caronaHome);
-        }
-      }
-    });
+    // mainViewModel.addListener(() {
+    //   if (mainViewModel.usuario?.campus == null ||
+    //       mainViewModel.usuario?.campus == '' &&
+    //           mainViewModel.usuario?.isPrimeiroLogin == true) {
+    //     Routefly.navigate(routePaths.usuario.cadastro.cadastrarLocalizacao);
+    //   } else if (mainViewModel.usuario?.isPrimeiroLogin == true) {
+    //     Routefly.navigate(routePaths.usuario.cadastro.cadastrarPapel);
+    //   } else {
+    //     Routefly.navigate(routePaths.carona.caronaHome);
+    //   }
+    // });
   }
 
-  FutureOr<RouteInformation> authMiddleware(RouteInformation routeInfo) {
-    final path = routeInfo.uri.path;
+  FutureOr<RouteInformation> authMiddleware(RouteInformation routeInfo) async {
+    final String currentPath = routeInfo.uri.path;
 
-    print(routeInfo.uri.path);
-    // Exceções públicas
-    final isPublic =
-        path == '/auth/login' ||
-        path == '/auth/registrar' ||
-        path == '/auth/senha/esqueci_senha';
+    final mainViewModel = injector.get<MainViewModel>();
 
-    // Checagem de login
-    final isLoggedIn = injector.get<MainViewModel>().usuario != null;
+    // Aguarda o primeiro valor do usuário
+    await mainViewModel.onUsuarioReady;
 
-    // Se não logado e a rota não for pública, redireciona para login
-    if (!isLoggedIn && !isPublic) {
-      return routeInfo.redirect(Uri.parse('/auth/login'));
+    final usuario = mainViewModel.usuario;
+    final bool isLoggedIn = usuario != null;
+
+    const String pathLogin = '/auth/login'; // Ex: routePaths.auth.login
+    const String pathHome =
+        '/carona/carona_home'; // Ex: routePaths.carona.caronaHome
+    const String pathCadastrarLocalizacao =
+        '/usuario/cadastro/cadastrar_localizacao'; // Ex: routePaths.usuario.cadastro.cadastrarLocalizacao
+    const String pathCadastrarPapel =
+        '/usuario/cadastro/cadastrar_papel'; // Ex: routePaths.usuario.cadastro.cadastrarPapel
+
+    final List<String> publicAuthPaths = [
+      pathLogin,
+      '/auth/registrar',
+      '/auth/senha/esqueci_senha',
+      '/auth/registrar/final_registrar',
+    ];
+
+    final List<String> firstLoginSetupPaths = [
+      pathCadastrarLocalizacao,
+      pathCadastrarPapel,
+    ];
+
+    final bool isTargetingPublicAuthPath = publicAuthPaths.contains(
+      currentPath,
+    );
+    final bool isTargetingFirstLoginSetupPath = firstLoginSetupPaths.contains(
+      currentPath,
+    );
+
+    // Logs para depuração (remova ou use um logger em produção)
+    print('[AuthGuard] Current Path: $currentPath, IsLoggedIn: $isLoggedIn');
+    if (isLoggedIn) {
+      print(
+        '[AuthGuard] User: ${mainViewModel.usuario}, IsPrimeiroLogin: ${mainViewModel.usuario?.isPrimeiroLogin}, Campus: ${mainViewModel.usuario?.campus}',
+      );
     }
 
-    // Se já logado e tentando acessar login ou registro, redireciona para a home
-    if (isLoggedIn && isPublic) {
-      return routeInfo.redirect(Uri.parse('/home'));
-    }
+    if (isLoggedIn) {
+      // Assumindo que mainViewModel.usuario não é nulo aqui devido a `isLoggedIn`
+      final usuario = mainViewModel.usuario!;
+      final bool isPrimeiroLogin = usuario.isPrimeiroLogin == true;
 
-    // Caso contrário, segue com a navegação
-    return routeInfo;
+      if (isPrimeiroLogin) {
+        final bool campusInfoMissing =
+            usuario.campus == null || usuario.campus!.isEmpty;
+
+        if (campusInfoMissing) {
+          // Usuário precisa preencher a localização
+          if (currentPath == pathCadastrarLocalizacao) {
+            print(
+              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusMissing. Permitindo em $pathCadastrarLocalizacao',
+            );
+            return routeInfo; // Permite, pois já está na página correta
+          } else {
+            print(
+              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusMissing. Redirecionando para $pathCadastrarLocalizacao de $currentPath',
+            );
+            return routeInfo.redirect(Uri.parse(pathCadastrarLocalizacao));
+          }
+        } else {
+          // Informações do campus estão presentes
+          // Usuário precisa preencher o papel
+          if (currentPath == pathCadastrarPapel) {
+            print(
+              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusOK. Permitindo em $pathCadastrarPapel',
+            );
+            return routeInfo; // Permite, pois já está na página correta
+          } else {
+            // Se o usuário está no fluxo de primeiro login, com campus preenchido,
+            // mas não está na página de cadastrar papel, redirecione-o para lá.
+            // Isso evita que ele acesse outras páginas (como home ou auth) durante este estágio.
+            print(
+              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusOK. Redirecionando para $pathCadastrarPapel de $currentPath',
+            );
+            return routeInfo.redirect(Uri.parse(pathCadastrarPapel));
+          }
+        }
+      } else {
+        // isPrimeiroLogin é false (Cadastro completo)
+        // Se logado e cadastro completo, e tentando acessar páginas de autenticação -> redireciona para home
+        if (isTargetingPublicAuthPath) {
+          print(
+            '[AuthGuard] LoggedIn/SetupComplete. Redirecionando de PublicAuthPath ($currentPath) para $pathHome',
+          );
+          return routeInfo.redirect(Uri.parse(pathHome));
+        }
+        // Se logado e cadastro completo, e tentando acessar páginas de configuração de primeiro login -> redireciona para home
+        if (isTargetingFirstLoginSetupPath) {
+          print(
+            '[AuthGuard] LoggedIn/SetupComplete. Redirecionando de FirstLoginSetupPath ($currentPath) para $pathHome',
+          );
+          return routeInfo.redirect(Uri.parse(pathHome));
+        }
+      }
+
+      // Se logado, e não caiu em nenhuma das condições de redirecionamento acima
+      // (ou seja, isPrimeiroLogin=false e não está acessando auth/setup paths, ou está na página correta do fluxo de primeiro login)
+      print('[AuthGuard] LoggedIn. Permitindo navegação para $currentPath');
+      return routeInfo;
+    } else {
+      // Não está logado
+      if (isTargetingPublicAuthPath) {
+        // Se não logado e tentando acessar uma página pública de autenticação, permite.
+        print(
+          '[AuthGuard] NotLoggedIn. Permitindo navegação para PublicAuthPath ($currentPath)',
+        );
+        return routeInfo;
+      } else {
+        // Se não logado e tentando acessar qualquer outra página (protegida), redireciona para login.
+        print(
+          '[AuthGuard] NotLoggedIn. Redirecionando de ProtectedPath ($currentPath) para $pathLogin',
+        );
+        return routeInfo.redirect(Uri.parse(pathLogin));
+      }
+    }
   }
 
   @override
@@ -106,118 +202,7 @@ class _MainAppState extends State<MainApp> {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      supportedLocales: const [
-        Locale('pt', 'BR'), // ou apenas Locale('pt')
-      ],
-    );
-
-    // return MaterialApp(
-    //   title: 'Flutter Demo',
-    //   theme: ThemeData(
-    //     // This is the theme of your application.
-    //     //
-    //     // TRY THIS: Try running your application with "flutter run". You'll see
-    //     // the application has a purple toolbar. Then, without quitting the app,
-    //     // try changing the seedColor in the colorScheme below to Colors.green
-    //     // and then invoke "hot reload" (save your changes or press the "hot
-    //     // reload" button in a Flutter-supported IDE, or press "r" if you used
-    //     // the command line to start the app).
-    //     //
-    //     // Notice that the counter didn't reset back to zero; the application
-    //     // state is not lost during the reload. To reset the state, use hot
-    //     // restart instead.
-    //     //
-    //     // This works for code too, not just values: Most code changes can be
-    //     // tested with just a hot reload.
-    //     colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-    //   ),
-    //   home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    // );
-  }
-}
-
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
-    return Scaffold(
-      appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      supportedLocales: const [Locale('pt', 'BR')],
     );
   }
 }

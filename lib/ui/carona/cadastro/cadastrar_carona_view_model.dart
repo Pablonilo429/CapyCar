@@ -148,6 +148,7 @@ class CadastrarCaronaViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
+
   void _updateHorariosDateTime() {
     if (_selectedTimeSaida != null) {
       credentials.setHorarioSaida(
@@ -197,4 +198,6 @@ class CadastrarCaronaViewModel extends ChangeNotifier {
     // _setLoading(false); // Similarly, command runner or wrapper.
     return result;
   }
+
+
 }

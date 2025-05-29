@@ -21,7 +21,7 @@ abstract interface class AuthRepository {
 
   AsyncResult<Unit> esqueciSenha(CredentialsEsqueciSenha credentials);
 
-  AsyncResult<Usuario> registar(CredentialsRegistrar credentials);
+  AsyncResult<Unit> registar(CredentialsRegistrar credentials);
 
   AsyncResult<Usuario> registarLocalizacao(CredentialsLocalizacao credentials);
 

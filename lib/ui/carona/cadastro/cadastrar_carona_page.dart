@@ -106,7 +106,10 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
     final tempCredentialsForPontoValidation = CredentialsRota(
       campus: viewModel.credentials.rota?.campus ?? '',
       cidadeSaida: viewModel.credentials.rota?.cidadeSaida ?? '',
-      nomeRota: viewModel.credentials.rota?.nomeRota ?? 'cadastrado',
+      nomeRota:
+          viewModel.credentials.rota?.nomeRota?.isEmpty ?? true
+              ? 'cadastrado'
+              : viewModel.credentials.rota?.nomeRota,
       pontos: viewModel.credentials.rota!.pontos,
     );
 

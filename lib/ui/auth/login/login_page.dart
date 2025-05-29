@@ -1,6 +1,7 @@
 import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/domain/dtos/credentials_login.dart';
 import 'package:capy_car/domain/validators/credentials_login_validator.dart';
+import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/auth/login/login_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:result_command/result_command.dart';
@@ -30,6 +31,9 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _listenable(){
+    if(viewModel.loginCommand.isSuccess){
+      Routefly.navigate(routePaths.carona.caronaHome);
+    }
     if (viewModel.loginCommand.isFailure){
       final error = viewModel.loginCommand.value as FailureCommand;
 

@@ -22,6 +22,7 @@ _Carona _$CaronaFromJson(Map<String, dynamic> json) => _Carona(
   dataCarona: DateTime.parse(json['dataCarona'] as String),
   preco: (json['preco'] as num).toDouble(),
   isFinalizada: json['isFinalizada'] as bool,
+  roomId: json['roomId'] as String?,
 );
 
 Map<String, dynamic> _$CaronaToJson(_Carona instance) => <String, dynamic>{
@@ -37,4 +38,5 @@ Map<String, dynamic> _$CaronaToJson(_Carona instance) => <String, dynamic>{
   'dataCarona': instance.dataCarona.toIso8601String(),
   'preco': instance.preco,
   'isFinalizada': instance.isFinalizada,
+  'roomId': instance.roomId,
 };
