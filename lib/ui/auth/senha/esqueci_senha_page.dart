@@ -1,6 +1,7 @@
 import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/domain/dtos/credentials_esqueci_senha.dart';
 import 'package:capy_car/domain/validators/credentials_esqueci_senha_validator.dart';
+import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/auth/senha/esqueci_senha_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:result_command/result_command.dart';
@@ -20,8 +21,6 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
 
   final emailController = TextEditingController();
   bool _cadastroConcluido = false;
-
-
 
   void _onCadastroFinalizado() {}
 
@@ -59,6 +58,22 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        title: Row(
+          children: [
+            IconButton(
+              iconSize: 30.0,
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Routefly.navigate(routePaths.auth.login);
+              },
+            ),
+          ],
+        ),
+      ),
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
@@ -72,9 +87,9 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
         child: Center(
           child: SingleChildScrollView(
             child:
-            _cadastroConcluido
-                ? _buildSucessoContent()
-                : _buildFormularioContent(),
+                _cadastroConcluido
+                    ? _buildSucessoContent()
+                    : _buildFormularioContent(),
           ),
         ),
       ),
@@ -94,7 +109,6 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
         ),
         const SizedBox(height: 24),
 
-
         TextFormField(
           controller: emailController,
           onChanged: credentials.setEmail,
@@ -104,19 +118,16 @@ class _EsqueciSenhaPageState extends State<EsqueciSenhaPage> {
         ),
         const SizedBox(height: 12),
 
-
         const SizedBox(height: 16),
 
         ElevatedButton.icon(
           style: _botaoEstilo,
           onPressed:
-          viewModel.esqueciSenhaCommand.isRunning
-              ? null
-              : () {
-
-            viewModel.esqueciSenhaCommand.execute(credentials);
-
-          },
+              viewModel.esqueciSenhaCommand.isRunning
+                  ? null
+                  : () {
+                    viewModel.esqueciSenhaCommand.execute(credentials);
+                  },
           icon: const Icon(Icons.person_add),
           label: const Text('Cadastrar'),
         ),

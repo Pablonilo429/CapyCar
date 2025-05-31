@@ -33,12 +33,12 @@ class CloudinaryService {
 
   Future<bool> deleteImage(String userId, String urlImage) async {
     final response = await cloudinary.destroy(
-      userId,
+      "CapyCar/Usuarios/$userId",
       url: urlImage,
       resourceType: CloudinaryResourceType.image,
     );
 
-    if (response.isSuccessful) {
+    if (response.isResultOk) {
       return true;
     } else {
       debugPrint('Erro ao deletar imagem: ${response.error}');

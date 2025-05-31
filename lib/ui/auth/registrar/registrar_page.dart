@@ -88,6 +88,22 @@ class _RegistrarPageState extends State<RegistrarPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0.0,
+        title: Row(
+          children: [
+            IconButton(
+              iconSize: 30.0,
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                Routefly.navigate(routePaths.auth.login);
+              },
+            ),
+          ],
+        ),
+      ),
       body: Container(
         width: double.infinity,
         decoration: const BoxDecoration(
@@ -167,7 +183,7 @@ class _RegistrarPageState extends State<RegistrarPage> {
           onChanged: credentials.setNumeroCelular,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: validator.byField(credentials, "numeroCelular"),
-          decoration: _buildInputDecoration('Celular'),
+          decoration: _buildInputDecoration('Celular(DDD + Número)'),
         ),
         const SizedBox(height: 12),
 

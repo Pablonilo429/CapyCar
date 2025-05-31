@@ -27,6 +27,75 @@ class _AppDrawerState extends State<AppDrawer> {
   //   super.dispose();
   // }
 
+  Future<void> _showBecomeDriverModal(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: true, // Permite fechar clicando fora do modal
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          title: const Text(
+            'Deseja se tornar um motorista?',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
+          ),
+          contentPadding: const EdgeInsets.all(20.0),
+          actionsAlignment: MainAxisAlignment.center,
+          actionsPadding: const EdgeInsets.only(bottom: 20.0),
+          actions: <Widget>[
+            // Botão X no canto superior direito (opcional, pois barrierDismissible já existe)
+            // Positioned( // Para posicionar o X, precisaríamos de um Stack no builder do AlertDialog ou um Dialog customizado
+            //   right: 0.0,
+            //   top: 0.0,
+            //   child: IconButton(
+            //     icon: Icon(Icons.close),
+            //     onPressed: () {
+            //       Navigator.of(dialogContext).pop();
+            //     },
+            //   ),
+            // ),
+            TextButton(
+              style: TextButton.styleFrom(
+                backgroundColor: Colors.grey[300],
+                foregroundColor: Colors.black87,
+                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+              ),
+              child: const Text('Não'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Fecha o modal
+              },
+            ),
+            const SizedBox(width: 10),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF5BB0F8), // Azul similar ao header
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10.0),
+                ),
+                elevation: 3,
+              ),
+              child: const Text('Sim'),
+              onPressed: () {
+                Navigator.of(dialogContext).pop(); // Fecha o modal
+                Routefly.navigate(routePaths.usuario.cadastro.cadastrarCarro);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -91,7 +160,7 @@ class _AppDrawerState extends State<AppDrawer> {
                   _buildItem(
                     context,
                     icon: Icons.directions_car,
-                    text: 'Cadastrar/Editar Carro',
+                    text: 'Editar Carro',
                     onTap: () {
                       Routefly.navigate(routePaths.usuario.editar.editarCarro);
                     },
@@ -115,11 +184,14 @@ class _AppDrawerState extends State<AppDrawer> {
                         Routefly.navigate(routePaths.rota);
                       },
                     ),
+                  if (!viewModel.usuario!.isMotorista)
                   _buildItem(
                     context,
                     icon: Icons.drive_eta,
                     text: 'Tornar-se motorista',
-                    onTap: () {},
+                    onTap: () {
+                      _showBecomeDriverModal(context);
+                    },
                   ),
                 ],
               ),

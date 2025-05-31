@@ -24,7 +24,7 @@ class CredentialsCaronaValidator extends LucidValidator<CredentialsCarona> {
 
 
     // Validação condicional da diferença de horários
-    ruleFor((c) => c, key: 'horarios')
+    ruleFor((c) => c, key: 'horarioSaida')
         .when((carona) =>
     carona.horarioSaida != null && carona.horarioChegada != null)
         .must((carona) =>

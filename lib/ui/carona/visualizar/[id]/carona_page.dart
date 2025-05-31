@@ -3,6 +3,7 @@ import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/carona/visualizar/%5Bid%5D/carona_view_model.dart';
 import 'package:capy_car/ui/components/appBar.dart';
 import 'package:capy_car/ui/components/appDrawer.dart';
+import 'package:capy_car/ui/usuario/usuario_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:routefly/routefly.dart';
@@ -323,10 +324,6 @@ class _CaronaPageState extends State<CaronaPage> {
                               : const AssetImage('assets/logo/motorista.png')
                                   as ImageProvider,
                       backgroundColor: Colors.grey[300],
-                      child:
-                          (motorista.fotoPerfilUrl.isEmpty)
-                              ? const Icon(Icons.person, size: 30)
-                              : null,
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -541,24 +538,33 @@ class _CaronaPageState extends State<CaronaPage> {
                             scrollDirection: Axis.horizontal,
                             itemCount: passageiros.length,
                             itemBuilder: (context, index) {
-                              final passageiro = passageiros[index];
+                              final passageiro = passageiros[index]; // Seu objeto Usuario
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
-                                child: Tooltip(
-                                  message: passageiro.nome,
-                                  child: CircleAvatar(
-                                    radius: 25,
-                                    backgroundImage:
-                                        (passageiro.fotoPerfilUrl.isNotEmpty)
-                                            ? NetworkImage(
-                                              passageiro.fotoPerfilUrl,
-                                            )
-                                            : AssetImage(
-                                              'assets/logo/passageiro.png',
-                                            ),
-                                    backgroundColor:
-                                        Colors
-                                            .blueGrey, // Cor de fallback para avatar
+                                child: GestureDetector( // Adicionado GestureDetector
+                                  onTap: () {
+                                    // Ação ao clicar: mostrar o diálogo
+                                    showDialog(
+                                      context: context, // Contexto do itemBuilder
+                                      builder: (BuildContext dialogContext) {
+                                        // Retorna a instância do seu UsuarioModal
+                                        return UsuarioModal(user: passageiro);
+                                      },
+                                    );
+                                  },
+                                  child: Tooltip(
+                                    message: passageiro.nome,
+                                    child: CircleAvatar(
+                                      radius: 25,
+                                      backgroundImage: (passageiro.fotoPerfilUrl != null && passageiro.fotoPerfilUrl.isNotEmpty)
+                                          ? NetworkImage(passageiro.fotoPerfilUrl)
+                                          : const AssetImage('assets/logo/passageiro.png') as ImageProvider, // Cast para ImageProvider
+                                      backgroundColor: Colors.blueGrey, // Cor de fallback para avatar
+                                      // onBackgroundImageError: (exception, stackTrace) {
+                                      //   // Opcional: tratar erro de carregamento da NetworkImage
+                                      //   print("Erro ao carregar imagem do avatar: $exception");
+                                      // },
+                                    ),
                                   ),
                                 ),
                               );

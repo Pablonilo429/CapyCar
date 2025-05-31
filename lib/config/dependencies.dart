@@ -24,6 +24,8 @@ import 'package:capy_car/ui/rota/rota_view_model.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_carro_viewmodel.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_foto_viewmodel.dart';
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_localizacao_viewmodel.dart';
+import 'package:capy_car/ui/usuario/editar/editar_carro_view_model.dart';
+import 'package:capy_car/ui/usuario/editar/editar_perfil_view_model.dart';
 import 'package:capy_car/ui/usuario/usuario_viewmodel.dart';
 
 final injector = AutoInjector();
@@ -61,6 +63,8 @@ void setupDependecies() {
   injector.addSingleton<CaronaViewModel>(CaronaViewModel.new);
   injector.addSingleton<CaronasUsuarioViewModel>(CaronasUsuarioViewModel.new);
   injector.addSingleton<CaronaAnteriorViewModel>(CaronaAnteriorViewModel.new);
+  injector.addSingleton<EditarCarroViewModel>(EditarCarroViewModel.new);
+  injector.addSingleton<EditarPerfilViewModel>(EditarPerfilViewModel.new);
 
   injector.commit();
   //Outros

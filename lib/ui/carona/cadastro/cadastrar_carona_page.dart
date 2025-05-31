@@ -73,12 +73,12 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
         ),
       );
       _formKey.currentState?.reset();
-      viewModel.onRotaSalvaSelecionada(null); // Reset selection
-      viewModel.credentials = CredentialsCarona(
-        rota: CredentialsRota(),
-        idMotorista: viewModel.currentUser?.uId ?? '',
-      ); // Reset credentials
-      viewModel.setSelectedDate(DateTime.now()); // Reset date
+      // viewModel.onRotaSalvaSelecionada(null); // Reset selection
+      // viewModel.credentials = CredentialsCarona(
+      //   rota: CredentialsRota(),
+      //   idMotorista: viewModel.currentUser?.uId ?? '',
+      // ); // Reset credentials
+      // viewModel.setSelectedDate(DateTime.now()); // Reset date
       setState(() {});
     } else if (viewModel.disponibilizarCaronaCommand.isFailure) {
       final error =
@@ -103,23 +103,31 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
   }
 
   String? _validatePontoItemInput(String? currentTextValue) {
+    // Use a default empty CredentialsRota if viewModel.credentials.rota is null.
+    // This pattern is similar to how you handle potentially null rotas in other validators.
+    final CredentialsRota effectiveRota = viewModel.credentials.rota ?? CredentialsRota();
+
+    // Now, construct tempCredentialsForPontoValidation using effectiveRota,
+    // which will have default empty values if the original rota was null.
     final tempCredentialsForPontoValidation = CredentialsRota(
-      campus: viewModel.credentials.rota?.campus ?? '',
-      cidadeSaida: viewModel.credentials.rota?.cidadeSaida ?? '',
-      nomeRota:
-          viewModel.credentials.rota?.nomeRota?.isEmpty ?? true
-              ? 'cadastrado'
-              : viewModel.credentials.rota?.nomeRota,
-      pontos: viewModel.credentials.rota!.pontos,
+      campus: effectiveRota.campus, // Will be '' if effectiveRota is a new default instance
+      cidadeSaida: effectiveRota.cidadeSaida, // Will be ''
+      nomeRota: effectiveRota.nomeRota?.isEmpty ?? true
+          ? 'cadastrado' // Default name if original nomeRota is null/empty or rota was null
+          : effectiveRota.nomeRota,
+      pontos: effectiveRota.pontos, // Will be an empty list [] if effectiveRota is a new default instance
     );
 
-    // Use the _rotaValidator instance from your State class
+    // Get the specific field validator for 'pontos_items'.
+    // This rule in your CredentialsRotaValidator is expected to validate the currentTextValue
+    // (e.g., check if it's empty, a duplicate, matches a pattern, etc.).
     var specificFieldValidator = _rotaValidator.byField(
-      tempCredentialsForPontoValidation,
-      'pontos_items', // Assuming 'pontos_items' is the rule for individual point validation
+      tempCredentialsForPontoValidation, // Contains context like existing points
+      'pontos_items', // The validation rule for an individual point item
     );
 
-    return specificFieldValidator();
+    // Call the specificFieldValidator with the current value of the TextFormField.
+    return specificFieldValidator(currentTextValue);
   }
 
   InputDecoration _buildInputDecoration({

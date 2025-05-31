@@ -1,7 +1,5 @@
 class CredentialsEditarUsuario {
-  String nomeCompleto;
   String? nomeSocial;
-  DateTime? dataNascimento;
   String? numeroCelular;
   String? urlFotoPerfil;
   String campus;
@@ -9,28 +7,19 @@ class CredentialsEditarUsuario {
   String bairro;
 
   CredentialsEditarUsuario({
-    this.nomeCompleto = '',
     this.nomeSocial,
-    this.dataNascimento,
     this.numeroCelular = '',
-    this.urlFotoPerfil,
+    this.urlFotoPerfil = '',
     this.bairro = '',
     this.campus = '',
     this.cidade = '',
   });
 
-  // Métodos set individuais
-  void setNomeCompleto(String nomeCompleto) {
-    this.nomeCompleto = nomeCompleto;
-  }
 
   void setNomeSocial(String? nomeSocial) {
     this.nomeSocial = nomeSocial;
   }
 
-  void setDataNascimento(DateTime? dataNascimento) {
-    this.dataNascimento = dataNascimento;
-  }
 
   void setNumeroCelular(String? numeroCelular) {
     this.numeroCelular = numeroCelular;

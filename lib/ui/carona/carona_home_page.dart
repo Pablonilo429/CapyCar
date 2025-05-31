@@ -176,7 +176,7 @@ class _CaronaHomePageState extends State<CaronaHomePage> {
           children: [
             CircleAvatar(
               backgroundImage:
-                  fotoUrl != null
+                  fotoUrl!.isNotEmpty
                       ? NetworkImage(fotoUrl)
                       : const AssetImage('assets/logo/motorista.png')
                           as ImageProvider,

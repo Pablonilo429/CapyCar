@@ -142,6 +142,9 @@ class _ChatPageState extends State<ChatPage> {
                 ),
                 showUserAvatars: true,
                 showUserNames: true,
+                theme: DefaultChatTheme(
+                  primaryColor: Theme.of(context).primaryColor
+                ),
                 // Options for text-only chat:
                 // You can customize theme, date headers, etc.
                 // Example:

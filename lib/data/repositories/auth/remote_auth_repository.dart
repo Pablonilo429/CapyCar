@@ -148,8 +148,10 @@ class RemoteAuthRepository implements AuthRepository {
         return Failure(Exception('Usuário não autenticado'));
       }
 
+
       final userId = currentUser.uid;
       var imagemComprimida = await _compactarImagem.comprimirList(foto);
+
 
       if (imagemComprimida.lengthInBytes > 5 * 1024 * 1024) {
         return Failure(Exception('Imagem maior que 5 MB. Envie outra imagem'));
@@ -186,7 +188,7 @@ class RemoteAuthRepository implements AuthRepository {
         return Failure(Exception('Não foi possível excluir a imagem'));
       }
 
-      await _authService.updateUsuario(userId, {'urlFotoPerfil': null});
+      await _authService.updateUsuario(userId, {'fotoPerfilUrl': ''});
       return Success(unit);
     } catch (e) {
       return Failure(Exception('Erro ao excluir foto: ${e.toString()}'));
@@ -216,11 +218,9 @@ class RemoteAuthRepository implements AuthRepository {
         final userId = currentUser.uid;
 
         final updateData = {
-          'nomeCompleto': creds.nomeCompleto,
           'nomeSocial': creds.nomeSocial,
-          'dataNascimento': creds.dataNascimento?.toIso8601String(),
           'numeroCelular': creds.numeroCelular,
-          'urlFotoPerfil': creds.urlFotoPerfil,
+          'fotoPerfilUrl': creds.urlFotoPerfil,
           'campus': creds.campus,
           'cidade': creds.cidade,
           'bairro': creds.bairro,

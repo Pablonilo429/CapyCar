@@ -112,10 +112,10 @@ class _CaronaAnteriorPageState extends State<CaronaAnteriorPage> {
           children: [
             CircleAvatar(
               backgroundImage:
-                  fotoUrl != null
-                      ? NetworkImage(fotoUrl)
-                      : const AssetImage('assets/logo/motorista.png')
-                          as ImageProvider,
+              fotoUrl?.isNotEmpty ?? false
+                  ? NetworkImage(fotoUrl!)
+                  : const AssetImage('assets/logo/motorista.png')
+              as ImageProvider,
               radius: 25,
             ),
             const SizedBox(width: 12),

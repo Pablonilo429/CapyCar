@@ -26,7 +26,6 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
     viewModel.usuario;
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,7 +36,6 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
         padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 20),
         child: Column(
           children: [
-
             // 🧾 Lista de Caronas
             Expanded(
               child: ValueListenableBuilder<List<Carona?>>(
@@ -71,17 +69,18 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
         ),
       ),
 
-
       // 🔽 Barra inferior
-      bottomNavigationBar: AppBottomNavigation(index:  viewModel.usuario!.isMotorista ? 2 : 1),
+      bottomNavigationBar: AppBottomNavigation(
+        index: viewModel.usuario!.isMotorista ? 2 : 1,
+      ),
     );
   }
 
   Widget _buildCaronaCard(
-      BuildContext context,
-      Carona carona,
-      String? fotoUrl,
-      ) {
+    BuildContext context,
+    Carona carona,
+    String? fotoUrl,
+  ) {
     final horaChegadaFormatada = DateFormat.Hm().format(carona.horarioChegada);
     final horaSaidaFormatada = DateFormat.Hm().format(
       carona.horarioSaidaCarona,
@@ -101,7 +100,11 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
 
     return InkWell(
       onTap: () {
-        Routefly.navigate(routePaths.carona.visualizar.$id.carona.changes({'id': '${carona.id}'}));
+        Routefly.navigate(
+          routePaths.carona.visualizar.$id.carona.changes({
+            'id': '${carona.id}',
+          }),
+        );
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -115,10 +118,10 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
           children: [
             CircleAvatar(
               backgroundImage:
-              fotoUrl != null
-                  ? NetworkImage(fotoUrl)
-                  : const AssetImage('assets/logo/motorista.png')
-              as ImageProvider,
+                  fotoUrl?.isNotEmpty ?? false
+                      ? NetworkImage(fotoUrl!)
+                      : const AssetImage('assets/logo/motorista.png')
+                          as ImageProvider,
               radius: 25,
             ),
             const SizedBox(width: 12),
@@ -128,13 +131,13 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
                 children: [
                   carona.isVolta
                       ? Text(
-                    "Volta: ${carona.rota.campus} - ${carona.rota.saida} - saída: $horaSaidaFormatada",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  )
+                        "Volta: ${carona.rota.campus} - ${carona.rota.saida} - saída: $horaSaidaFormatada",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      )
                       : Text(
-                    "Ida: ${carona.rota.saida} - ${carona.rota.campus} - chegada: $horaChegadaFormatada",
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                  ),
+                        "Ida: ${carona.rota.saida} - ${carona.rota.campus} - chegada: $horaChegadaFormatada",
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
 
                   if (pontos != null && pontos.isNotEmpty)
                     Text(
@@ -144,7 +147,6 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
                         color: Colors.black54,
                       ),
                     ),
-
                 ],
               ),
             ),
@@ -161,7 +163,7 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
     String text;
 
     switch (status) {
-    // Assuming status is a String for this example
+      // Assuming status is a String for this example
       case "Finalizada":
         backgroundColor = Colors.green;
         text = "Finalizada";
@@ -199,4 +201,3 @@ class _CaronasUsuarioPageState extends State<CaronasUsuarioPage> {
     );
   }
 }
-
