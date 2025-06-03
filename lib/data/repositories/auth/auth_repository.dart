@@ -27,6 +27,7 @@ abstract interface class AuthRepository {
 
   AsyncResult<Unit> registrarFoto(Uint8List foto);
 
+
   AsyncResult<Usuario> registarCarro(CredentialsCarro credentials);
 
   AsyncResult<Usuario> editarUsuario(CredentialsEditarUsuario credentials);

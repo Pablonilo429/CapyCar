@@ -31,7 +31,7 @@ class CredentialsRegistrarValidator
     ruleFor(
       (c) => c.numeroCelular,
       key: 'numeroCelular',
-    ).validPhoneBROrNull(message: "Insira corretamente o número de celular incluíndo DDD");
+    ).validPhoneBR(message: "Insira corretamente o número de celular incluíndo DDD");
 
     ruleFor((c) => c.senha, key: 'senha')
         .mustHaveSpecialCharacter()

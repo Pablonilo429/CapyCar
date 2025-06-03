@@ -1,4 +1,6 @@
+import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/main.dart';
+import 'package:capy_car/ui/usuario/cadastro/cadastrar_papel_viewmodel.dart';
 import 'package:flutter/material.dart';
 import 'package:routefly/routefly.dart';
 
@@ -12,10 +14,25 @@ class CadastrarPapelPage extends StatefulWidget {
 class _CadastrarPapelPageState extends State<CadastrarPapelPage> {
   String? papelSelecionado;
 
+  final viewModel = injector.get<CadastrarPapelViewModel>();
+
   void _selecionarPapel(String papel) {
     setState(() {
       papelSelecionado = papel;
     });
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    viewModel.setPapelCommand.addListener(_listenable);
+  }
+
+  void _listenable() {
+    if (viewModel.setPapelCommand.isSuccess) {
+      Routefly.navigate(routePaths.mensagem);
+    }
   }
 
   @override
@@ -51,12 +68,17 @@ class _CadastrarPapelPageState extends State<CadastrarPapelPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _papelCard('Passageiro', 'https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151994/logo_capy_car_passageiro.webp'),
+                _papelCard(
+                  'Passageiro',
+                  'https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151994/logo_capy_car_passageiro.webp',
+                ),
                 const SizedBox(width: 24),
-                _papelCard('Motorista', 'https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png'),
+                _papelCard(
+                  'Motorista',
+                  'https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png',
+                ),
               ],
             ),
-
           ],
         ),
       ),
@@ -67,7 +89,13 @@ class _CadastrarPapelPageState extends State<CadastrarPapelPage> {
     final isSelecionado = papelSelecionado == papel;
 
     return GestureDetector(
-      onTap: () => papel == "Motorista" ? Routefly.navigate(routePaths.usuario.cadastro.cadastrarCarro) : Routefly.navigate(routePaths.mensagem),
+      onTap:
+          () =>
+              papel == "Motorista"
+                  ? Routefly.navigate(
+                    routePaths.usuario.cadastro.cadastrarCarro,
+                  )
+                  : viewModel.setPapelCommand.execute(),
       // onTap: () => _selecionarPapel(papel),
       child: Column(
         children: [
@@ -75,9 +103,10 @@ class _CadastrarPapelPageState extends State<CadastrarPapelPage> {
             padding: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              border: isSelecionado
-                  ? Border.all(color: Colors.white, width: 4)
-                  : null,
+              border:
+                  isSelecionado
+                      ? Border.all(color: Colors.white, width: 4)
+                      : null,
             ),
             child: CircleAvatar(
               radius: 50,
@@ -88,10 +117,7 @@ class _CadastrarPapelPageState extends State<CadastrarPapelPage> {
           const SizedBox(height: 8),
           Text(
             papel,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 16,
-            ),
+            style: const TextStyle(color: Colors.white, fontSize: 16),
           ),
         ],
       ),

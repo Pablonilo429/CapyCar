@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:routefly/routefly.dart';
 import 'package:result_command/result_command.dart'; // Para FailureCommand
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CaronaPage extends StatefulWidget {
   const CaronaPage({super.key});
@@ -25,26 +26,24 @@ class _CaronaPageState extends State<CaronaPage> {
     super.initState();
     _idCarona = Routefly.query['id'] as String?;
 
-    if (_idCarona != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (_idCarona != null) {
-          viewModel.buscarCaronaCommand.execute(_idCarona!);
-        }
-      });
-    } else {
-      debugPrint("ID da carona não encontrado na rota.");
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text("Erro: ID da carona não fornecido."),
-              backgroundColor: Colors.red,
-            ),
-          );
-          Routefly.navigate(routePaths.carona.caronaHome);
-        }
-      });
-    }
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return; // Sempre verifique se o widget está montado
+
+      if (_idCarona != null) {
+        // Você pode mostrar o alerta antes ou depois de iniciar o command
+        _mostrarAlertaChatInicial(); // <<< CHAMA O ALERTA AQUI
+        viewModel.buscarCaronaCommand.execute(_idCarona!);
+      } else {
+        debugPrint("ID da carona não encontrado na rota.");
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Erro: ID da carona não fornecido."),
+            backgroundColor: Colors.red,
+          ),
+        );
+        Routefly.navigate(routePaths.carona.caronaHome);
+      }
+    });
 
     // Adicionar listener para o comando de cancelar carona
     viewModel.cancelarCaronaCommand.addListener(_listenableCancelarCarona);
@@ -53,7 +52,42 @@ class _CaronaPageState extends State<CaronaPage> {
     viewModel.removerPassageiroCaronaCommand.addListener(
       _listenableRemoverPassageiroCarona,
     );
-    // Adicione listeners para outros comandos se necessário (entrar, sair)
+  }
+
+  Future<void> _mostrarAlertaChatInicial() async {
+    // Torna async
+    if (!mounted) return;
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool alertaJaMostrado = prefs.getBool('alertaChatCaronaMostrado') ?? false;
+
+    if (!alertaJaMostrado) {
+      showDialog(
+        context: context,
+        builder: (BuildContext dialogContext) {
+          return AlertDialog(
+            title: const Text("Lembrete Importante!"),
+            content: const SingleChildScrollView(
+              child: Text(
+                "Não se esqueça de verificar o chat da carona regularmente!\n\nÉ por lá que você pode combinar detalhes, tirar dúvidas e receber atualizações importantes do motorista ou de outros passageiros.",
+              ),
+            ),
+            actions: <Widget>[
+              TextButton(
+                child: const Text("Entendi"),
+                onPressed: () {
+                  prefs.setBool(
+                    'alertaChatCaronaMostrado',
+                    true,
+                  ); // Marca como mostrado
+                  Navigator.of(dialogContext).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
+    }
   }
 
   void _listenableEntrarCarona() {
@@ -290,6 +324,21 @@ class _CaronaPageState extends State<CaronaPage> {
               DateTime.now().isBefore(carona.horarioSaidaCarona)) {
             caronaStatus = 'Agendada';
           }
+          final caronaFinaliziada;
+          if (DateTime.now().isAfter(carona.horarioChegada)) {
+            caronaStatus = 'Finalizada';
+            caronaFinaliziada = true;
+          } else if (carona.isFinalizada) {
+            caronaStatus = 'Finalizada';
+            caronaFinaliziada = true;
+          } else {
+            caronaFinaliziada = false;
+          }
+          final bool mostrarBotaoRemoverGlobalmente;
+          mostrarBotaoRemoverGlobalmente =
+              isMotoristaAtual &&
+              !carona.isFinalizada &&
+              DateTime.now().isBefore(carona.horarioSaidaCarona);
 
           return SingleChildScrollView(
             padding: const EdgeInsets.all(16.0),
@@ -316,14 +365,26 @@ class _CaronaPageState extends State<CaronaPage> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage:
-                          (motorista.fotoPerfilUrl.isNotEmpty)
-                              ? NetworkImage(motorista.fotoPerfilUrl)
-                              : const AssetImage('assets/logo/motorista.png')
-                                  as ImageProvider,
-                      backgroundColor: Colors.grey[300],
+                    GestureDetector(
+                      child: CircleAvatar(
+                        radius: 30,
+                        backgroundImage:
+                            (motorista.fotoPerfilUrl.isNotEmpty)
+                                ? NetworkImage(motorista.fotoPerfilUrl)
+                                : const AssetImage('assets/logo/motorista.png')
+                                    as ImageProvider,
+                        backgroundColor: Colors.grey[300],
+                      ),
+                      onTap: () {
+                        // Ação ao clicar: mostrar o diálogo
+                        showDialog(
+                          context: context, // Contexto do itemBuilder
+                          builder: (BuildContext dialogContext) {
+                            // Retorna a instância do seu UsuarioModal
+                            return UsuarioModal(user: motorista);
+                          },
+                        );
+                      },
                     ),
                     const SizedBox(width: 12),
                     Expanded(
@@ -335,7 +396,7 @@ class _CaronaPageState extends State<CaronaPage> {
                         ),
                       ),
                     ),
-                    if (!carona.isFinalizada)
+                    if (!caronaFinaliziada)
                       /// Botão de ação com base nas regras
                       if (isMotoristaAtual) // a. Cancelar se for o motorista
                         ElevatedButton.icon(
@@ -436,7 +497,7 @@ class _CaronaPageState extends State<CaronaPage> {
                                                   dialogContext,
                                                 ).pop();
                                                 viewModel.sairCaronaCommand
-                                                    .execute();
+                                                    .execute(usuarioAtual!.uId);
                                               },
                                             ),
                                           ],
@@ -538,33 +599,124 @@ class _CaronaPageState extends State<CaronaPage> {
                             scrollDirection: Axis.horizontal,
                             itemCount: passageiros.length,
                             itemBuilder: (context, index) {
-                              final passageiro = passageiros[index]; // Seu objeto Usuario
+                              final passageiro =
+                                  passageiros[index]; // Seu objeto Usuario (passageiro da lista)
+
+                              // Opcional: Se o motorista estiver na lista de passageiros,
+                              // você pode querer evitar que ele se auto-remova.
+                              // final bool isEstePassageiroOMotorista = passageiro.uId == motorista.uId;
+
                               return Padding(
                                 padding: const EdgeInsets.only(right: 8.0),
-                                child: GestureDetector( // Adicionado GestureDetector
+                                child: GestureDetector(
                                   onTap: () {
-                                    // Ação ao clicar: mostrar o diálogo
                                     showDialog(
-                                      context: context, // Contexto do itemBuilder
+                                      context: context,
                                       builder: (BuildContext dialogContext) {
-                                        // Retorna a instância do seu UsuarioModal
                                         return UsuarioModal(user: passageiro);
                                       },
                                     );
                                   },
-                                  child: Tooltip(
-                                    message: passageiro.nome,
-                                    child: CircleAvatar(
-                                      radius: 25,
-                                      backgroundImage: (passageiro.fotoPerfilUrl != null && passageiro.fotoPerfilUrl.isNotEmpty)
-                                          ? NetworkImage(passageiro.fotoPerfilUrl)
-                                          : const AssetImage('assets/logo/passageiro.png') as ImageProvider, // Cast para ImageProvider
-                                      backgroundColor: Colors.blueGrey, // Cor de fallback para avatar
-                                      // onBackgroundImageError: (exception, stackTrace) {
-                                      //   // Opcional: tratar erro de carregamento da NetworkImage
-                                      //   print("Erro ao carregar imagem do avatar: $exception");
-                                      // },
-                                    ),
+                                  child: Stack(
+                                    clipBehavior: Clip.none,
+                                    children: [
+                                      Tooltip(
+                                        message: passageiro.nome,
+                                        child: CircleAvatar(
+                                          radius: 25,
+                                          backgroundImage:
+                                              (passageiro.fotoPerfilUrl !=
+                                                          null &&
+                                                      passageiro
+                                                          .fotoPerfilUrl
+                                                          .isNotEmpty)
+                                                  ? NetworkImage(
+                                                    passageiro.fotoPerfilUrl,
+                                                  )
+                                                  : const AssetImage(
+                                                        'assets/logo/passageiro.png',
+                                                      )
+                                                      as ImageProvider,
+                                          backgroundColor: Colors.blueGrey,
+                                        ),
+                                      ),
+
+                                      if (mostrarBotaoRemoverGlobalmente)
+                                        Positioned(
+                                          top: -5,
+                                          right: -5,
+                                          child: GestureDetector(
+                                            onTap: () async {
+                                              final bool?
+                                              confirmarRemocao = await showDialog<
+                                                bool
+                                              >(
+                                                context: context,
+                                                builder: (
+                                                  BuildContext dialogContext,
+                                                ) {
+                                                  return AlertDialog(
+                                                    title: const Text(
+                                                      'Confirmar Remoção',
+                                                    ),
+                                                    content: Text(
+                                                      'Deseja realmente remover o passageiro ${passageiro.nome}?',
+                                                    ),
+                                                    actions: <Widget>[
+                                                      TextButton(
+                                                        child: const Text(
+                                                          'Não',
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.of(
+                                                            dialogContext,
+                                                          ).pop(false);
+                                                        },
+                                                      ),
+                                                      TextButton(
+                                                        child: const Text(
+                                                          'Sim',
+                                                        ),
+                                                        onPressed: () {
+                                                          Navigator.of(
+                                                            dialogContext,
+                                                          ).pop(true);
+                                                        },
+                                                      ),
+                                                    ],
+                                                  );
+                                                },
+                                              );
+
+                                              if (confirmarRemocao == true) {
+                                                viewModel.sairCaronaCommand
+                                                    .execute(passageiro.uId);
+                                                setState(() {
+                                                  passageiros.remove(
+                                                    passageiro,
+                                                  );
+                                                });
+                                              }
+                                            },
+                                            child: Container(
+                                              padding: const EdgeInsets.all(2),
+                                              decoration: BoxDecoration(
+                                                color: Colors.red,
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                  color: Colors.white,
+                                                  width: 1.5,
+                                                ),
+                                              ),
+                                              child: const Icon(
+                                                Icons.close,
+                                                color: Colors.white,
+                                                size: 14,
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                    ],
                                   ),
                                 ),
                               );
@@ -580,8 +732,7 @@ class _CaronaPageState extends State<CaronaPage> {
                         ),
                       ),
                     const SizedBox(width: 10),
-                    if (isPassageiro ||
-                        isMotoristaAtual && !carona.isFinalizada)
+                    if (isPassageiro || isMotoristaAtual && !caronaFinaliziada)
                       ElevatedButton.icon(
                         icon: const Icon(
                           Icons.chat_bubble_outline,

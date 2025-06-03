@@ -7,18 +7,17 @@ import 'package:url_launcher/url_launcher.dart';
 // import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class BotaoWhatsapp extends StatelessWidget {
-  const BotaoWhatsapp({super.key});
+  const BotaoWhatsapp({super.key, required this.numeroWhatsapp});
 
-  // Seu link do WhatsApp
-  final String numeroWhatsapp =
-      "5521990040336"; // Apenas o número com código do país e DDD
   final String mensagemOpcional =
-      ""; // Você pode adicionar uma mensagem pré-definida aqui
+      "";
+
+  final String numeroWhatsapp; // Você pode adicionar uma mensagem pré-definida aqui
 
   Future<void> _abrirWhatsapp(BuildContext context) async {
     // Monta o link do wa.me
     // Se quiser adicionar uma mensagem: "&text=${Uri.encodeComponent(mensagemOpcional)}"
-    final Uri urlWhatsapp = Uri.parse("https://wa.me/$numeroWhatsapp");
+    final Uri urlWhatsapp = Uri.parse("https://wa.me/55$numeroWhatsapp");
 
     // Tenta abrir a URL
     // launchUrl retorna um Future<bool> indicando se foi bem-sucedido.

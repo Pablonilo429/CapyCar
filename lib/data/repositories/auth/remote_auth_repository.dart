@@ -67,16 +67,20 @@ class RemoteAuthRepository implements AuthRepository {
         final usuario = await _authService.getUsuarioData(user.uid);
         if (usuario is! Usuario) return Failure(Exception('Usuário inválido'));
 
-        if(usuario.isPrimeiroLogin){
+        if (usuario.isPrimeiroLogin) {
           await FirebaseChatCore.instance.createUserInFirestore(
             types.User(
-              firstName: usuario.nomeSocial?.isEmpty ?? true ? usuario.nome : usuario.nomeSocial,
+              firstName:
+                  usuario.nomeSocial?.isEmpty ?? true
+                      ? usuario.nome
+                      : usuario.nomeSocial,
               id: usuario.uId, // UID from Firebase Authentication
-              imageUrl: "https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png",
+              imageUrl:
+                  "https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png",
             ),
           );
         }
-
+        _streamController.add(usuario);
         return Success(usuario);
       } catch (e) {
         return Failure(Exception(e.toString()));
@@ -148,10 +152,13 @@ class RemoteAuthRepository implements AuthRepository {
         return Failure(Exception('Usuário não autenticado'));
       }
 
+      final usuario = await _authService.getUsuarioData(currentUser.uid);
+      if (usuario is! Usuario) {
+        return Failure(Exception('Usuário inválido'));
+      }
 
       final userId = currentUser.uid;
       var imagemComprimida = await _compactarImagem.comprimirList(foto);
-
 
       if (imagemComprimida.lengthInBytes > 5 * 1024 * 1024) {
         return Failure(Exception('Imagem maior que 5 MB. Envie outra imagem'));
@@ -165,6 +172,17 @@ class RemoteAuthRepository implements AuthRepository {
       if (imageUrl == null) {
         return Failure(Exception('Falha ao enviar imagem'));
       }
+
+      await FirebaseChatCore.instance.createUserInFirestore(
+        types.User(
+          firstName:
+              usuario.nomeSocial?.isEmpty ?? true
+                  ? usuario.nome
+                  : usuario.nomeSocial,
+          id: currentUser.uid, // UID from Firebase Authentication
+          imageUrl: imageUrl,
+        ),
+      );
 
       await _authService.updateUsuario(userId, {'fotoPerfilUrl': imageUrl});
       return Success(unit);
@@ -187,6 +205,25 @@ class RemoteAuthRepository implements AuthRepository {
       if (!sucesso) {
         return Failure(Exception('Não foi possível excluir a imagem'));
       }
+
+      final usuario = await _authService.getUsuarioData(currentUser.uid);
+      if (usuario is! Usuario) {
+        return Failure(Exception('Usuário inválido'));
+      }
+
+      await FirebaseChatCore.instance.createUserInFirestore(
+        types.User(
+          firstName:
+              usuario.nomeSocial?.isEmpty ?? true
+                  ? usuario.nome
+                  : usuario.nomeSocial,
+          id: currentUser.uid, // UID from Firebase Authentication
+          imageUrl:
+              usuario.isMotorista
+                  ? "https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png"
+                  : 'https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151994/logo_capy_car_passageiro.webp',
+        ),
+      );
 
       await _authService.updateUsuario(userId, {'fotoPerfilUrl': ''});
       return Success(unit);

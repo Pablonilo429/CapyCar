@@ -1,4 +1,6 @@
+import 'package:capy_car/main.dart';
 import 'package:flutter/material.dart';
+import 'package:routefly/routefly.dart';
 
 class FinalRegistrarPage extends StatefulWidget {
   const FinalRegistrarPage({super.key});
@@ -42,7 +44,9 @@ class _FinalRegistrarPageState extends State<FinalRegistrarPage> {
                 ),
                 const SizedBox(height: 64),
                 ElevatedButton.icon(
-                  onPressed: () => {},
+                  onPressed: () => {
+                    Routefly.navigate("/"),
+                  },
                   icon: const Icon(Icons.login),
                   label: const Text('Login'),
                   style: _botaoEstilo,

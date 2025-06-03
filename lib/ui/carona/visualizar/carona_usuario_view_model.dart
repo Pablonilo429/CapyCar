@@ -53,8 +53,8 @@ class CaronasUsuarioViewModel extends ChangeNotifier {
         for (final id in motoristasIds) {
           final usuarioResult = await _authRepository.getUserById(id);
           usuarioResult.fold((usuario) {
-            if (usuario.fotoPerfilUrl != null) {
-              mapa[id] = usuario.fotoPerfilUrl!;
+            if (usuario.fotoPerfilUrl.isNotEmpty) {
+              mapa[id] = usuario.fotoPerfilUrl;
             }
           }, (e) => debugPrint("Erro ao buscar foto do usuário $id: $e"));
         }

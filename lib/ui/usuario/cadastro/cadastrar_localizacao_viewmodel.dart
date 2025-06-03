@@ -16,7 +16,6 @@ class CadastrarLocalizacaoViewmodel extends ChangeNotifier {
   AsyncResult<Usuario> _registarLocalizacao(
     CredentialsLocalizacao credentials,
   ) {
-    _authRepository.setPrimeiroLogin();
     return _authRepository.registarLocalizacao(credentials);
   }
 }

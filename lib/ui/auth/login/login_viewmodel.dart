@@ -5,16 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:result_command/result_command.dart';
 import 'package:result_dart/result_dart.dart';
 
-
-class LoginViewModel extends ChangeNotifier{
+class LoginViewModel extends ChangeNotifier {
   final AuthRepository _authRepository;
 
   LoginViewModel(this._authRepository);
 
   late final loginCommand = Command1(_login);
 
-  AsyncResult<Usuario> _login(CredentialsLogin credentials){
-    return _authRepository.login(credentials);
-  }
+  Usuario? usuario;
 
+  AsyncResult<Usuario> _login(CredentialsLogin credentials) async {
+    final result = await _authRepository.login(credentials);
+    return result.map((user) {
+      usuario = user;
+      return user;
+    });
+  }
 }

@@ -30,7 +30,7 @@ class CaronaViewModel extends ChangeNotifier {
 
   late final buscarCaronaCommand = Command1(_buscarCarona);
   late final entrarCaronaCommand = Command0(_entrarCarona);
-  late final sairCaronaCommand = Command0(_sairCarona);
+  late final sairCaronaCommand = Command1(_sairCarona);
   late final removerPassageiroCaronaCommand = Command1(
     _removerPassageiroCarona,
   );
@@ -105,7 +105,7 @@ class CaronaViewModel extends ChangeNotifier {
     }, (failure) => Failure(failure));
   }
 
-  AsyncResult<Unit> _sairCarona() async {
+  AsyncResult<Unit> _sairCarona(String passageiroId) async {
     if (_carona == null || _usuario == null) {
       debugPrint("Erro: Carona ou Usuário nulo antes de sair da carona.");
       return Failure(Exception("Dados da carona ou usuário indisponíveis."));
@@ -113,7 +113,7 @@ class CaronaViewModel extends ChangeNotifier {
 
     final result = await _caronaRepository.sairCarona(
       caronaId: _carona!.id!,
-      userId: _usuario!.uId,
+      userId: passageiroId,
     );
 
     return await result.fold((success) async {

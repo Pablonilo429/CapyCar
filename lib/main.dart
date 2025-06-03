@@ -2,11 +2,13 @@ import 'dart:async';
 
 import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/main_viewmodel.dart';
+import 'package:capy_car/utils/LoaderWidget.dart';
 import 'package:capy_car/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:lucid_validation/lucid_validation.dart';
+import 'package:pwa_install/pwa_install.dart';
 import 'package:routefly/routefly.dart';
 import 'package:url_strategy/url_strategy.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,6 +23,11 @@ Future<void> main() async {
   setPathUrlStrategy();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   setupDependecies();
+  PWAInstall().setup(
+    installCallback: () {
+      debugPrint('APP INSTALLED!');
+    },
+  );
   runApp(const MainApp());
 }
 
@@ -189,20 +196,41 @@ class _MainAppState extends State<MainApp> {
   @override
   Widget build(BuildContext context) {
     LucidValidation.global.culture = Culture('pt', 'BR');
-    return MaterialApp.router(
-      title: "CapyCar",
-      theme: appTheme,
-      routerConfig: Routefly.routerConfig(
-        middlewares: [authMiddleware],
-        routes: routes,
-        initialPath: routePaths.auth.login,
-      ),
-      localizationsDelegates: const [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: const [Locale('pt', 'BR')],
+
+    return FutureBuilder(
+      future: mainViewModel.onUsuarioReady,
+      builder: (context, snapshot) {
+        if (snapshot.connectionState != ConnectionState.done) {
+          return MaterialApp(
+            locale: const Locale('pt', 'BR'), // <- forçando o locale
+            supportedLocales: const [Locale('pt', 'BR')],
+            localizationsDelegates: const [
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            home: Scaffold(body: Center(child: LoaderWidget())),
+          );
+        }
+
+        return MaterialApp.router(
+          title: "CapyCar",
+          locale: const Locale('pt', 'BR'),
+          // <- forçando o locale
+          theme: appTheme,
+          routerConfig: Routefly.routerConfig(
+            middlewares: [authMiddleware],
+            routes: routes,
+            initialPath: routePaths.auth.login,
+          ),
+          localizationsDelegates: const [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('pt', 'BR')],
+        );
+      },
     );
   }
 }

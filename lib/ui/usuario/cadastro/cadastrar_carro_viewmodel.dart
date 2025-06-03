@@ -16,6 +16,7 @@ class CadastrarCarroViewmodel extends ChangeNotifier{
   AsyncResult<Usuario> _registarCarro(
       CredentialsCarro credentials,
       ) {
+    _authRepository.setPrimeiroLogin();
     return _authRepository.registarCarro(credentials);
   }
 

@@ -169,6 +169,8 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
   Widget build(BuildContext context) {
     var locais =
         GetLocais(); // Consider making this a final field if it doesn't change
+    final double avatarRadius = 80.0; // Raio do CircleAvatar
+    final double avatarDiameter = avatarRadius * 2;
     return Scaffold(
       appBar: CustomAppBar(greeting: "Editar Perfil", isPop: true),
       body: SingleChildScrollView(
@@ -176,111 +178,119 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
-            // Inside the build method, replace the existing Padding for the profile picture:
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 20.0),
-              child: Stack(
-                alignment: Alignment.center,
-                // Ensures CircleAvatar is centered if Stack is larger
-                children: [
-                  GestureDetector(
-                    // For picking a new photo
-                    onTap: _showPhotoPicker,
-                    child: ValueListenableBuilder<Uint8List?>(
-                      valueListenable: _preRenderImage,
-                      builder: (context, newImageBytes, child) {
-                        ImageProvider<Object> backgroundImage;
-                        bool isActuallyDisplayingPlaceholder;
+              child: Center(
+                child: SizedBox(
+                  width: avatarDiameter,
+                  height: avatarDiameter,
+                  child: Stack(
+                    clipBehavior: Clip.none, // <<< ADICIONADO PARA PERMITIR OVERFLOW DO BADGE
+                    children: [
+                      // Foto de Perfil (CircleAvatar)
+                      GestureDetector(
+                        onTap: _showPhotoPicker,
+                        child: ValueListenableBuilder<Uint8List?>(
+                          valueListenable: _preRenderImage,
+                          builder: (context, newImageBytes, child) {
+                            ImageProvider<Object> backgroundImage;
+                            if (newImageBytes != null && newImageBytes.length > 20) {
+                              backgroundImage = MemoryImage(newImageBytes);
+                            } else if (viewModel.usuario?.fotoPerfilUrl != null &&
+                                viewModel.usuario!.fotoPerfilUrl.isNotEmpty) {
+                              backgroundImage = NetworkImage(viewModel.usuario!.fotoPerfilUrl);
+                            } else {
+                              backgroundImage = AssetImage('assets/logo/passageiro.png');
+                            }
+                            return CircleAvatar(
+                              radius: avatarRadius,
+                              backgroundColor: Colors.grey[200],
+                              backgroundImage: backgroundImage,
+                            );
+                          },
+                        ),
+                      ),
 
-                        if (newImageBytes != null &&
-                            newImageBytes.length > 20) {
-                          backgroundImage = MemoryImage(newImageBytes);
-                          isActuallyDisplayingPlaceholder = false;
-                        } else if (viewModel.usuario?.fotoPerfilUrl != null &&
-                            viewModel.usuario!.fotoPerfilUrl.isNotEmpty) {
-                          backgroundImage = NetworkImage(
-                            viewModel.usuario!.fotoPerfilUrl,
-                          );
-                          isActuallyDisplayingPlaceholder = false;
-                        } else {
-                          backgroundImage = AssetImage(
-                            'assets/logo/passageiro.png',
-                          ); // Default placeholder
-                          isActuallyDisplayingPlaceholder = true;
-                        }
-                        return CircleAvatar(
-                          radius: 80,
-                          backgroundColor: Colors.grey[200],
-                          backgroundImage: backgroundImage,
-                        );
-                      },
-                    ),
-                  ),
-                  // "X" Button to remove photo
-                  ValueListenableBuilder<Uint8List?>(
-                    valueListenable: _preRenderImage,
-                    // Listen to changes in local preview
-                    builder: (context, newImageBytes, _) {
-                      final bool hasLocalPreview =
-                          newImageBytes != null && newImageBytes.length > 20;
-                      final bool hasExistingNetworkImage =
-                          viewModel.usuario?.fotoPerfilUrl != null &&
-                          viewModel.usuario!.fotoPerfilUrl.isNotEmpty;
+                      // Botão "X" para remover foto (Badge) - ESTILO MODIFICADO
+                      ValueListenableBuilder<Uint8List?>(
+                        valueListenable: _preRenderImage,
+                        builder: (context, newImageBytes, _) {
+                          final bool hasLocalPreview =
+                              newImageBytes != null && newImageBytes.length > 20;
+                          final bool hasExistingNetworkImage =
+                              viewModel.usuario?.fotoPerfilUrl != null &&
+                                  viewModel.usuario!.fotoPerfilUrl.isNotEmpty;
 
-                      // Show button if there's a local preview OR an existing network image
-                      if (hasLocalPreview || hasExistingNetworkImage) {
-                        return Positioned(
-                          top: 0,
-                          // Adjust to position correctly relative to the CircleAvatar
-                          right: 0,
-                          // Adjust to position correctly relative to the CircleAvatar
-                          // You might need to calculate these based on CircleAvatar's radius
-                          // For a CircleAvatar(radius: 80), total diameter is 160.
-                          // Example: right: (MediaQuery.of(context).size.width / 2) - 80 - 10, // approximate
-                          child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black54,
-                              shape: BoxShape.circle,
-                            ),
-                            child: IconButton(
-                              icon: Icon(
-                                Icons.close,
-                                color: Colors.white,
-                                size: 18,
+                          if (hasLocalPreview || hasExistingNetworkImage) {
+                            return Positioned(
+                              top: -5.0,  // <<< MODIFICADO
+                              right: -5.0, // <<< MODIFICADO
+                              child: GestureDetector( // <<< MODIFICADO PARA GestureDetector
+                                onTap: () async { // <<< LÓGICA DE CONFIRMAÇÃO ADICIONADA
+                                  final bool? confirmarRemocao = await showDialog<bool>(
+                                    context: context,
+                                    builder: (BuildContext dialogContext) {
+                                      return AlertDialog(
+                                        title: const Text('Confirmar Remoção'),
+                                        content: const Text( // <<< MENSAGEM MODIFICADA
+                                            'Deseja realmente remover a foto de perfil?'),
+                                        actions: <Widget>[
+                                          TextButton(
+                                            child: const Text('Não'),
+                                            onPressed: () {
+                                              Navigator.of(dialogContext).pop(false);
+                                            },
+                                          ),
+                                          TextButton(
+                                            child: const Text('Sim'),
+                                            onPressed: () {
+                                              Navigator.of(dialogContext).pop(true);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  if (confirmarRemocao == true) {
+                                    // Lógica original de remoção da foto
+                                    if (hasLocalPreview) {
+                                      _preRenderImage.value = null;
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          content: Text("Seleção de foto cancelada."),
+                                          backgroundColor: Colors.blue, // Ou Colors.green
+                                        ),
+                                      );
+                                    } else if (hasExistingNetworkImage) {
+                                      viewModel.excluirFotoCommand.execute(
+                                        viewModel.usuario!.fotoPerfilUrl,
+                                      );
+                                    }
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.all(2), // <<< MODIFICADO
+                                  decoration: BoxDecoration(
+                                    color: Colors.red, // <<< MODIFICADO
+                                    shape: BoxShape.circle,
+                                    border: Border.all(color: Colors.white, width: 1.5), // <<< MODIFICADO/ADICIONADO
+                                  ),
+                                  child: const Icon( // <<< ÍCONE DENTRO DO CONTAINER
+                                    Icons.close,
+                                    color: Colors.white,
+                                    size: 14, // <<< MODIFICADO
+                                  ),
+                                ),
                               ),
-                              // Smaller icon
-                              padding: EdgeInsets.all(4),
-                              // Minimal padding
-                              constraints: BoxConstraints(),
-                              // To make it compact
-                              tooltip: 'Remover foto',
-                              onPressed: () {
-                                if (hasLocalPreview) {
-                                  // If a new image is in preview, just clear the preview
-                                  _preRenderImage.value = null;
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        "Seleção de foto cancelada.",
-                                      ),
-                                      backgroundColor: Colors.blue,
-                                    ),
-                                  );
-                                } else if (hasExistingNetworkImage) {
-                                  // If no local preview, but an existing network image, call delete command
-                                  viewModel.excluirFotoCommand.execute(
-                                    viewModel.usuario!.fotoPerfilUrl,
-                                  );
-                                }
-                              },
-                            ),
-                          ),
-                        );
-                      }
-                      return SizedBox.shrink(); // No button if no photo to remove
-                    },
+                            );
+                          }
+                          return SizedBox.shrink();
+                        },
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             const SizedBox(height: 20),
