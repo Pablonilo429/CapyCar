@@ -39,10 +39,7 @@ class _AppDrawerState extends State<AppDrawer> {
           title: const Text(
             'Deseja se tornar um motorista?',
             textAlign: TextAlign.center,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-            ),
+            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
           ),
           contentPadding: const EdgeInsets.all(20.0),
           actionsAlignment: MainAxisAlignment.center,
@@ -63,7 +60,10 @@ class _AppDrawerState extends State<AppDrawer> {
               style: TextButton.styleFrom(
                 backgroundColor: Colors.grey[300],
                 foregroundColor: Colors.black87,
-                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -76,9 +76,13 @@ class _AppDrawerState extends State<AppDrawer> {
             const SizedBox(width: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF5BB0F8), // Azul similar ao header
+                backgroundColor: const Color(0xFF5BB0F8),
+                // Azul similar ao header
                 foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 12),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 30,
+                  vertical: 12,
+                ),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(10.0),
                 ),
@@ -159,14 +163,6 @@ class _AppDrawerState extends State<AppDrawer> {
                   ),
                   _buildItem(
                     context,
-                    icon: Icons.directions_car,
-                    text: 'Editar Carro',
-                    onTap: () {
-                      Routefly.navigate(routePaths.usuario.editar.editarCarro);
-                    },
-                  ),
-                  _buildItem(
-                    context,
                     icon: Icons.list_alt,
                     text: 'Listar suas viagens',
                     onTap: () {
@@ -178,6 +174,17 @@ class _AppDrawerState extends State<AppDrawer> {
                   if (viewModel.usuario!.isMotorista)
                     _buildItem(
                       context,
+                      icon: Icons.directions_car,
+                      text: 'Editar Carro',
+                      onTap: () {
+                        Routefly.navigate(
+                          routePaths.usuario.editar.editarCarro,
+                        );
+                      },
+                    ),
+                  if (viewModel.usuario!.isMotorista)
+                    _buildItem(
+                      context,
                       icon: Icons.location_on,
                       text: 'Cadastrar/Editar Rotas',
                       onTap: () {
@@ -185,14 +192,14 @@ class _AppDrawerState extends State<AppDrawer> {
                       },
                     ),
                   if (!viewModel.usuario!.isMotorista)
-                  _buildItem(
-                    context,
-                    icon: Icons.drive_eta,
-                    text: 'Tornar-se motorista',
-                    onTap: () {
-                      _showBecomeDriverModal(context);
-                    },
-                  ),
+                    _buildItem(
+                      context,
+                      icon: Icons.drive_eta,
+                      text: 'Tornar-se motorista',
+                      onTap: () {
+                        _showBecomeDriverModal(context);
+                      },
+                    ),
                 ],
               ),
             ),

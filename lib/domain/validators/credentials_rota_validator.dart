@@ -10,11 +10,11 @@ class CredentialsRotaValidator extends LucidValidator<CredentialsRota> {
     ruleFor(
       (c) => c.cidadeSaida,
       key: 'cidadeSaida',
-    ).notEmpty().maxLength(100).minLength(1);
+    ).notEmpty(message: "A cidade de saída/chegada é obrigatória").maxLength(100, message: "A cidade de saída/chegada deve ter no máximo 100 caracteres").minLength(1, message: "A cidade de saída/chegada deve ter pelo menos 1 caractere");
     ruleFor(
       (c) => c.nomeRota,
       key: 'nomeRota',
-    ).notEmptyOrNull().maxLength(100).minLength(1);
+    ).notEmptyOrNull(message: "O nome da rota é obrigatório").maxLength(100, message: "O nome da rota deve ter no máximo 100 caracteres").minLength(1, message: "A rota deve ter pelo menos 1 caractere");
     ruleFor(
       (c) => c.pontos,
       key: 'pontos_items',

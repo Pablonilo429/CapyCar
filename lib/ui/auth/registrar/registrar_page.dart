@@ -29,6 +29,9 @@ class _RegistrarPageState extends State<RegistrarPage> {
   final confirmarSenhaController = TextEditingController();
   bool aceitoTermos = false;
   bool _cadastroConcluido = false;
+  bool _exibirSenha = false;
+  bool _exibirConfirmarSenha = false;
+
 
   Future<void> _selecionarDataNascimento() async {
     DateTime? dataSelecionada = await showDatePicker(
@@ -192,9 +195,22 @@ class _RegistrarPageState extends State<RegistrarPage> {
           onChanged: credentials.setSenha,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: validator.byField(credentials, "senha"),
-          obscureText: true,
-          decoration: _buildInputDecoration('Senha'),
+          obscureText: !_exibirSenha,
+          decoration: _buildInputDecoration('Senha').copyWith(
+            suffixIcon: IconButton(
+              icon: Icon(
+                color: Colors.black,
+                _exibirSenha ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _exibirSenha = !_exibirSenha;
+                });
+              },
+            ),
+          ),
         ),
+
         const SizedBox(height: 12),
 
         TextFormField(
@@ -202,9 +218,22 @@ class _RegistrarPageState extends State<RegistrarPage> {
           onChanged: credentials.setConfirmarSenha,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: validator.byField(credentials, "confirmarSenha"),
-          obscureText: true,
-          decoration: _buildInputDecoration('Confirme sua Senha'),
+          obscureText: !_exibirConfirmarSenha,
+          decoration: _buildInputDecoration('Confirme sua Senha').copyWith(
+            suffixIcon: IconButton(
+              icon: Icon(
+                color: Colors.black,
+                _exibirConfirmarSenha ? Icons.visibility : Icons.visibility_off,
+              ),
+              onPressed: () {
+                setState(() {
+                  _exibirConfirmarSenha = !_exibirConfirmarSenha;
+                });
+              },
+            ),
+          ),
         ),
+
         const SizedBox(height: 12),
 
         Row(

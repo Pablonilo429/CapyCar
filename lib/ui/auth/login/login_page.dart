@@ -27,6 +27,8 @@ class _LoginPageState extends State<LoginPage> {
   String?
   _errorMessage; // Alterado para uma variável de estado para erro do PWA
 
+  bool _exibirSenha = false;
+
   @override
   void initState() {
     super.initState();
@@ -35,10 +37,9 @@ class _LoginPageState extends State<LoginPage> {
 
   void _listenable() {
     if (viewModel.loginCommand.isSuccess) {
-
-      if(viewModel.usuario?.isPrimeiroLogin == true){
+      if (viewModel.usuario?.isPrimeiroLogin == true) {
         Routefly.replace(routePaths.usuario.cadastro.cadastrarLocalizacao);
-      }else{
+      } else {
         Routefly.navigate(routePaths.carona.caronaHome);
       }
       Routefly.navigate(routePaths.carona.caronaHome);
@@ -156,8 +157,21 @@ class _LoginPageState extends State<LoginPage> {
                           onChanged: credentials.setPassword,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
                           validator: validator.byField(credentials, "password"),
-                          obscureText: true,
+                          obscureText: !_exibirSenha,
                           decoration: InputDecoration(
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                color: Colors.black,
+                                _exibirSenha
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: () {
+                                setState(() {
+                                  _exibirSenha = !_exibirSenha;
+                                });
+                              },
+                            ),
                             hintText: 'senha',
                             filled: true,
                             fillColor: Colors.white,

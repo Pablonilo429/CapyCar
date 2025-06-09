@@ -185,6 +185,10 @@ class RemoteAuthRepository implements AuthRepository {
       );
 
       await _authService.updateUsuario(userId, {'fotoPerfilUrl': imageUrl});
+      final usuarioAtualizado = await _authService.getUsuarioData(
+        currentUser.uid,
+      );
+      _streamController.add(usuarioAtualizado);
       return Success(unit);
     } catch (e) {
       return Failure(Exception('Erro ao registrar foto: ${e.toString()}'));
@@ -226,6 +230,10 @@ class RemoteAuthRepository implements AuthRepository {
       );
 
       await _authService.updateUsuario(userId, {'fotoPerfilUrl': ''});
+      final usuarioAtualizado = await _authService.getUsuarioData(
+        currentUser.uid,
+      );
+      _streamController.add(usuarioAtualizado);
       return Success(unit);
     } catch (e) {
       return Failure(Exception('Erro ao excluir foto: ${e.toString()}'));

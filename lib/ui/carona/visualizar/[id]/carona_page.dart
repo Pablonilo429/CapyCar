@@ -261,8 +261,8 @@ class _CaronaPageState extends State<CaronaPage> {
         isPop: true, // Para mostrar o botão de voltar
       ),
       drawer: AppDrawer(),
-      body: ListenableBuilder(
-        listenable: viewModel, // Escuta o CaronaViewModel
+      body: AnimatedBuilder (
+        animation: viewModel, // Escuta o CaronaViewModel
         builder: (context, _) {
           if (viewModel.buscarCaronaCommand.isRunning &&
               viewModel.carona == null) {

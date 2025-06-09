@@ -7,7 +7,7 @@ class CredentialsEditarUsuarioValidator
     final now = DateTime.now();
 
 
-    ruleFor((c) => c.nomeSocial, key: 'nomeSocial').maxLength(200);
+    ruleFor((c) => c.nomeSocial, key: 'nomeSocial').maxLength(200, message: "O nome social deve ter no máximo 200 caracteres");
 
 
     ruleFor(
@@ -26,6 +26,6 @@ class CredentialsEditarUsuarioValidator
     ruleFor(
       (c) => c.bairro,
       key: 'bairro',
-    ).notEmpty().maxLength(100).minLength(1);
+    ).notEmpty(message: "O bairro é obrigatório").maxLength(100, message: "O bairro deve ter no máximo 100 caracteres").minLength(1, message: "O bairro deve ter pelo menos 1 caractere");
   }
 }

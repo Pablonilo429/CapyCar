@@ -108,7 +108,9 @@ class _EditarCarroPageState extends State<EditarCarroPage> {
     return Scaffold(
       appBar: CustomAppBar(greeting: "Editar Carro", isPop: true),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
+        reverse: true,
+        primary: true,
+        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[

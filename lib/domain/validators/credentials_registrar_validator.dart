@@ -9,7 +9,7 @@ class CredentialsRegistrarValidator
     ruleFor(
       (c) => c.nomeCompleto,
       key: 'nomeCompleto',
-    ).notEmpty().minLength(1).maxLength(200);
+    ).notEmpty(message: "O nome completo é obrigatório").minLength(1, message: "O nome completo deve ter pelo menos 1 caractere").maxLength(200, message: "O nome completo deve ter no máximo 200 caracteres");
 
     ruleFor((c) => c.nomeSocial, key: 'nomeSocial').maxLength(200);
 
@@ -34,16 +34,16 @@ class CredentialsRegistrarValidator
     ).validPhoneBR(message: "Insira corretamente o número de celular incluíndo DDD");
 
     ruleFor((c) => c.senha, key: 'senha')
-        .mustHaveSpecialCharacter()
-        .mustHaveNumber()
-        .mustHaveUppercase()
-        .mustHaveLowercase()
-        .maxLength(32)
-        .minLength(6);
+        .mustHaveSpecialCharacter(message: "A senha deve conter pelo menos um caractere especial")
+        .mustHaveNumber(message: "A senha deve conter pelo menos um número")
+        .mustHaveUppercase(message: "A senha deve conter pelo menos uma letra maiúscula")
+        .mustHaveLowercase(message: "A senha deve conter pelo menos uma letra minúscula")
+        .maxLength(32, message: "A senha deve ter no máximo 32 caracteres")
+        .minLength(6, message: "A senha deve ter pelo menos 6 caracteres");
 
     ruleFor(
       (c) => c.confirmarSenha,
       key: 'confirmarSenha',
-    ).equalTo((c) => c.senha);
+    ).equalTo((c) => c.senha, message: "As senhas precisam ser iguais");
   }
 }

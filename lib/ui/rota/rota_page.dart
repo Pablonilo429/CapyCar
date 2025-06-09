@@ -158,290 +158,323 @@ class _RotaPageState extends State<RotaPage> {
     return Scaffold(
       appBar: CustomAppBar(greeting: "Cadastrar/Editar Rotas", isPop: false),
       drawer: AppDrawer(),
-      body: AnimatedBuilder(
-        // Listen to viewModel for UI updates
-        animation: viewModel,
-        builder: (context, _) {
-          return Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
-            // Added bottom padding
-            child: ListView(
-              children: [
-                // Dropdown de rotas salvas
-                DropdownButtonFormField<String>(
-                  isExpanded: true,
-                  value: viewModel.selectedRotaIdOrNew,
-                  decoration: _buildInputDecoration(labelText: 'Rotas Salvas'),
-                  items: [
-                    const DropdownMenuItem(
-                      value: 'nova',
-                      child: Text('Criar Nova Rota'),
-                    ),
-                    ...viewModel.rotasSalvas.map(
-                      (r) => DropdownMenuItem(
-                        value: r.id!,
-                        child: Text(
-                          r.nome ?? 'Rota Sem Nome',
-                        ), // Provide fallback
-                      ),
-                    ),
-                  ],
-                  onChanged: (id) {
-                    viewModel.onRotaSelecionada(id);
-                    // Controllers will be updated by _sincronizarComViewModel
-                  },
+      body: SingleChildScrollView(
+        reverse: true,
+        primary: true,
+        child: AnimatedBuilder(
+          // Listen to viewModel for UI updates
+          animation: viewModel,
+          builder: (context, _) {
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+              // Added bottom padding
+              child: SingleChildScrollView(
+                primary: false,
+                keyboardDismissBehavior:
+                    ScrollViewKeyboardDismissBehavior.onDrag,
+                padding: EdgeInsets.fromLTRB(
+                  16,
+                  16,
+                  16,
+                  MediaQuery.of(context).viewInsets.bottom + 24,
                 ),
-                const SizedBox(height: 20),
-
-                // Nome da Rota (with Apagar Rota button next to label)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
                   children: [
-                    Text("Nome da Rota", style: _labelStyle),
-                    if (viewModel.selectedRotaIdOrNew != 'nova')
-                      TextButton.icon(
-                        style: TextButton.styleFrom(
-                          padding: EdgeInsets.zero,
-                          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                          visualDensity: VisualDensity.compact,
+                    // Dropdown de rotas salvas
+                    DropdownButtonFormField<String>(
+                      isExpanded: true,
+                      value: viewModel.selectedRotaIdOrNew,
+                      decoration: _buildInputDecoration(
+                        labelText: 'Rotas Salvas',
+                      ),
+                      items: [
+                        const DropdownMenuItem(
+                          value: 'nova',
+                          child: Text('Criar Nova Rota'),
                         ),
-                        onPressed:
-                            viewModel.excluirRotaCommand.isRunning
-                                ? null
-                                : () {
-                                  viewModel.excluirRotaCommand.execute();
-                                },
-                        icon: Icon(
-                          Icons.delete_outline,
-                          color: Theme.of(context).colorScheme.error,
-                          size: 20,
-                        ),
-                        label: Text(
-                          'Apagar Rota',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.error,
+                        ...viewModel.rotasSalvas.map(
+                          (r) => DropdownMenuItem(
+                            value: r.id!,
+                            child: Text(
+                              r.nome ?? 'Rota Sem Nome',
+                            ), // Provide fallback
                           ),
                         ),
+                      ],
+                      onChanged: (id) {
+                        viewModel.onRotaSelecionada(id);
+                        // Controllers will be updated by _sincronizarComViewModel
+                      },
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Nome da Rota (with Apagar Rota button next to label)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Nome da Rota", style: _labelStyle),
+                        if (viewModel.selectedRotaIdOrNew != 'nova')
+                          TextButton.icon(
+                            style: TextButton.styleFrom(
+                              padding: EdgeInsets.zero,
+                              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                              visualDensity: VisualDensity.compact,
+                            ),
+                            onPressed:
+                                viewModel.excluirRotaCommand.isRunning
+                                    ? null
+                                    : () {
+                                      viewModel.excluirRotaCommand.execute();
+                                    },
+                            icon: Icon(
+                              Icons.delete_outline,
+                              color: Theme.of(context).colorScheme.error,
+                              size: 20,
+                            ),
+                            label: Text(
+                              'Apagar Rota',
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.error,
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    TextFormField(
+                      controller: nomeController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: _buildInputDecoration(
+                        hintText: 'Ex: Rural - Ida',
                       ),
-                  ],
-                ),
-                const SizedBox(height: 6),
-                TextFormField(
-                  controller: nomeController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: _buildInputDecoration(
-                    hintText: 'Ex: Rural - Ida',
-                  ),
-                  onChanged: viewModel.credentials.setNomeRota,
-                  validator: viewModel.validator.byField(
-                    viewModel.credentials,
-                    'nomeRota',
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Saída
-                Text("Saída", style: _labelStyle),
-                const SizedBox(height: 6),
-                TextFormField(
-                  controller: saidaController,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  decoration: _buildInputDecoration(
-                    hintText: 'Bairro ou cidade de saída',
-                  ),
-                  onChanged: viewModel.credentials.setCidadeSaida,
-                  validator: viewModel.validator.byField(
-                    viewModel.credentials,
-                    'cidadeSaida',
-                  ),
-                ),
-                const SizedBox(height: 20),
-
-                // Campus
-                DropdownButtonFormField<String>(
-                  value:
-                      viewModel.credentials.campus.isEmpty
-                          ? null
-                          : viewModel.credentials.campus,
-                  decoration: _buildInputDecoration(labelText: 'Campus'),
-                  items: const [
-                    // Consider making these dynamic if they change
-                    DropdownMenuItem(
-                      value: 'Seropédica',
-                      child: Text('Seropédica'),
+                      onChanged: viewModel.credentials.setNomeRota,
+                      validator: viewModel.validator.byField(
+                        viewModel.credentials,
+                        'nomeRota',
+                      ),
                     ),
-                    DropdownMenuItem(
-                      value: 'Nova Iguaçu',
-                      child: Text('Nova Iguaçu'),
-                    ),
-                    DropdownMenuItem(
-                      value: 'Três Rios',
-                      child: Text('Três Rios'),
-                    ),
-                  ],
-                  onChanged: (value) {
-                    if (value != null) {
-                      viewModel.credentials.setCampus(value);
-                      setState(() {}); // Update UI for dropdown change
-                    }
-                  },
-                  validator: viewModel.validator.byField(
-                    viewModel.credentials,
-                    'campus',
-                  ),
-                ),
-                const SizedBox(height: 20),
+                    const SizedBox(height: 20),
 
-                // Adicionar ponto
-                Text("Adicionar Pontos da Carona", style: _labelStyle),
-                const SizedBox(height: 6),
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  // Align items to the top
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        key: _pontoFieldKey,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        controller: pontoController,
-                        validator: viewModel.validateCurrentPontoInput,
-                        enabled: viewModel.credentials.pontos.length < 10,
-                        decoration: _buildInputDecoration(
-                          hintText: 'Nome do ponto',
+                    // Saída
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Saída", style: _labelStyle),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    TextFormField(
+                      controller: saidaController,
+                      autovalidateMode: AutovalidateMode.onUserInteraction,
+                      decoration: _buildInputDecoration(
+                        hintText: 'Bairro ou cidade de saída',
+                      ),
+                      onChanged: viewModel.credentials.setCidadeSaida,
+                      validator: viewModel.validator.byField(
+                        viewModel.credentials,
+                        'cidadeSaida',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Campus
+                    DropdownButtonFormField<String>(
+                      value:
+                          viewModel.credentials.campus.isEmpty
+                              ? null
+                              : viewModel.credentials.campus,
+                      decoration: _buildInputDecoration(labelText: 'Campus'),
+                      items: const [
+                        // Consider making these dynamic if they change
+                        DropdownMenuItem(
+                          value: 'Seropédica',
+                          child: Text('Seropédica'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Nova Iguaçu',
+                          child: Text('Nova Iguaçu'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Três Rios',
+                          child: Text('Três Rios'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        if (value != null) {
+                          viewModel.credentials.setCampus(value);
+                          setState(() {}); // Update UI for dropdown change
+                        }
+                      },
+                      validator: viewModel.validator.byField(
+                        viewModel.credentials,
+                        'campus',
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // Adicionar ponto
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text("Adicionar Pontos da Carona", style: _labelStyle),
+                      ],
+                    ),
+                    const SizedBox(height: 6),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      // Align items to the top
+                      children: [
+                        Expanded(
+                          child: TextFormField(
+                            key: _pontoFieldKey,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
+                            controller: pontoController,
+                            validator: viewModel.validateCurrentPontoInput,
+                            enabled: viewModel.credentials.pontos.length < 10,
+                            decoration: _buildInputDecoration(
+                              hintText: 'Nome do ponto',
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Padding(
+                          // Padding to align button better if TextFormField has contentPadding
+                          padding: const EdgeInsets.only(top: 0),
+                          // Adjust if field height changes
+                          child: ElevatedButton(
+                            onPressed:
+                                (viewModel.credentials.pontos.length < 10)
+                                    ? () {
+                                      final isPontoValid =
+                                          _pontoFieldKey.currentState
+                                              ?.validate() ??
+                                          false;
+                                      if (isPontoValid) {
+                                        final pontoText =
+                                            pontoController.text.trim();
+                                        if (pontoText.isNotEmpty) {
+                                          viewModel.addPonto(pontoText);
+                                          pontoController.clear();
+                                          // Optional: Request focus back after a short delay
+                                          // Future.delayed(const Duration(milliseconds: 50), () {
+                                          //   FocusScope.of(context).requestFocus(_pontoFieldKey.currentContext != null ? Focus.of(_pontoFieldKey.currentContext!) : null);
+                                          // });
+                                        }
+                                      }
+                                    }
+                                    : null, // Disable if max points reached
+                            style: ElevatedButton.styleFrom(
+                              shape: const CircleBorder(),
+                              padding: const EdgeInsets.all(14), // Adjust size
+                              backgroundColor:
+                                  Theme.of(context).colorScheme.primary,
+                              foregroundColor:
+                                  Theme.of(context).colorScheme.onPrimary,
+                            ),
+                            child: const Icon(Icons.add),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    // Lista de pontos
+                    if (viewModel.credentials.pontos.isNotEmpty)
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 4,
+                        children:
+                            viewModel.credentials.pontos.map((ponto) {
+                              return Chip(
+                                label: Text(ponto),
+                                onDeleted: () => viewModel.removePonto(ponto),
+                                backgroundColor: Theme.of(
+                                  context,
+                                ).colorScheme.primaryContainer.withOpacity(0.6),
+                                deleteIconColor:
+                                    Theme.of(
+                                      context,
+                                    ).colorScheme.onPrimaryContainer,
+                                labelStyle: TextStyle(
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).colorScheme.onPrimaryContainer,
+                                ),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 6,
+                                  vertical: 2,
+                                ),
+                              );
+                            }).toList(),
+                      )
+                    else
+                      Container(
+                        // Placeholder when no points are added
+                        padding: const EdgeInsets.symmetric(vertical: 12.0),
+                        alignment: Alignment.center,
+                        child: Text(
+                          'Nenhum ponto adicionado.',
+                          style: TextStyle(color: Theme.of(context).hintColor),
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    Padding(
-                      // Padding to align button better if TextFormField has contentPadding
-                      padding: const EdgeInsets.only(top: 0),
-                      // Adjust if field height changes
+                    const SizedBox(height: 30), // More space before buttons
+                    // Botão Salvar (Apagar Rota foi movido para cima)
+                    Align(
+                      alignment: Alignment.centerRight,
                       child: ElevatedButton(
                         onPressed:
-                            (viewModel.credentials.pontos.length < 10)
-                                ? () {
-                                  final isPontoValid =
-                                      _pontoFieldKey.currentState?.validate() ??
-                                      false;
-                                  if (isPontoValid) {
-                                    final pontoText =
-                                        pontoController.text.trim();
-                                    if (pontoText.isNotEmpty) {
-                                      viewModel.addPonto(pontoText);
-                                      pontoController.clear();
-                                      // Optional: Request focus back after a short delay
-                                      // Future.delayed(const Duration(milliseconds: 50), () {
-                                      //   FocusScope.of(context).requestFocus(_pontoFieldKey.currentContext != null ? Focus.of(_pontoFieldKey.currentContext!) : null);
-                                      // });
-                                    }
+                            viewModel.salvarRotaCommand.isRunning
+                                ? null
+                                : () {
+                                  // Trigger validation for all fields in the form before saving
+                                  // This assumes your TextFormFields are part of a Form widget
+                                  // If not, ensure individual validators have run, or validate all manually.
+                                  if (viewModel.validator
+                                      .validate(viewModel.credentials)
+                                      .isValid) {
+                                    viewModel.salvarRotaCommand.execute();
+                                  } else {
+                                    // Optional: Show a generic message to check fields
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Por favor, corrija os erros no formulário.',
+                                        ),
+                                        backgroundColor: Colors.orange,
+                                      ),
+                                    );
                                   }
-                                }
-                                : null, // Disable if max points reached
+                                },
                         style: ElevatedButton.styleFrom(
-                          shape: const CircleBorder(),
-                          padding: const EdgeInsets.all(14), // Adjust size
                           backgroundColor:
                               Theme.of(context).colorScheme.primary,
                           foregroundColor:
                               Theme.of(context).colorScheme.onPrimary,
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                            vertical: 12,
+                          ),
+                          textStyle: Theme.of(context).textTheme.labelLarge,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(
+                              12.0,
+                            ), // Consistent rounding
+                          ),
                         ),
-                        child: const Icon(Icons.add),
+                        child: const Text('Salvar'),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
-
-                // Lista de pontos
-                if (viewModel.credentials.pontos.isNotEmpty)
-                  Wrap(
-                    spacing: 8,
-                    runSpacing: 4,
-                    children:
-                        viewModel.credentials.pontos.map((ponto) {
-                          return Chip(
-                            label: Text(ponto),
-                            onDeleted: () => viewModel.removePonto(ponto),
-                            backgroundColor: Theme.of(
-                              context,
-                            ).colorScheme.primaryContainer.withOpacity(0.6),
-                            deleteIconColor:
-                                Theme.of(
-                                  context,
-                                ).colorScheme.onPrimaryContainer,
-                            labelStyle: TextStyle(
-                              color:
-                                  Theme.of(
-                                    context,
-                                  ).colorScheme.onPrimaryContainer,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 6,
-                              vertical: 2,
-                            ),
-                          );
-                        }).toList(),
-                  )
-                else
-                  Container(
-                    // Placeholder when no points are added
-                    padding: const EdgeInsets.symmetric(vertical: 12.0),
-                    alignment: Alignment.center,
-                    child: Text(
-                      'Nenhum ponto adicionado.',
-                      style: TextStyle(color: Theme.of(context).hintColor),
-                    ),
-                  ),
-                const SizedBox(height: 30), // More space before buttons
-                // Botão Salvar (Apagar Rota foi movido para cima)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: ElevatedButton(
-                    onPressed:
-                        viewModel.salvarRotaCommand.isRunning
-                            ? null
-                            : () {
-                              // Trigger validation for all fields in the form before saving
-                              // This assumes your TextFormFields are part of a Form widget
-                              // If not, ensure individual validators have run, or validate all manually.
-                              if (viewModel.validator
-                                  .validate(viewModel.credentials)
-                                  .isValid) {
-                                viewModel.salvarRotaCommand.execute();
-                              } else {
-                                // Optional: Show a generic message to check fields
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Por favor, corrija os erros no formulário.',
-                                    ),
-                                    backgroundColor: Colors.orange,
-                                  ),
-                                );
-                              }
-                            },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Theme.of(context).colorScheme.primary,
-                      foregroundColor: Theme.of(context).colorScheme.onPrimary,
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 30,
-                        vertical: 12,
-                      ),
-                      textStyle: Theme.of(context).textTheme.labelLarge,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(
-                          12.0,
-                        ), // Consistent rounding
-                      ),
-                    ),
-                    child: const Text('Salvar'),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
+              ),
+            );
+          },
+        ),
       ),
     );
   }

@@ -1,5 +1,5 @@
 import 'package:capy_car/config/dependencies.dart';
-import 'package:capy_car/domain/models/carona/carona.dart'; // Corrigido de "caronas.dart"
+import 'package:capy_car/domain/models/carona/carona.dart';
 import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/components/appBar.dart';
 import 'package:capy_car/ui/carona/carona_home_viewmodel.dart';
@@ -27,53 +27,46 @@ class _CaronaHomePageState extends State<CaronaHomePage> {
     super.initState();
   }
 
-  // @override
-  // void dispose() {
-  //   viewModel.buscarCaronasCommand.dispose();
-  //   viewModel.campusSelecionado.dispose();
-  //   viewModel.isVolta.dispose();
-  //   viewModel.textoBusca.dispose();
-  //   viewModel.caronas.dispose();
-  //   super.dispose();
-  // }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(greeting: "Caronas", isPop: false),
-      drawer: AppDrawer(),
-      backgroundColor: Colors.white,
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 20),
-        child: Column(
-          children: [
-            // 🔍 Barra de pesquisa
-            ValueListenableBuilder<String>(
-              valueListenable: viewModel.textoBusca,
-              builder: (context, value, _) {
-                return TextField(
-                  decoration: InputDecoration(
-                    hintText: "Pesquisar Caronas...",
-                    prefixIcon: const Icon(Icons.search),
-                    filled: true,
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-                  ),
-                  onChanged: viewModel.setTextoBusca,
-                );
-              },
-            ),
-
-            const SizedBox(height: 12),
-
-            // 🎓 Filtro de Campus e Toggle de Volta
-            Row(
+    return AnimatedBuilder(
+      animation: viewModel,
+      builder: (context, snapshot) {
+        return Scaffold(
+          appBar: CustomAppBar(greeting: "Caronas", isPop: false),
+          drawer: AppDrawer(),
+          backgroundColor: Colors.white,
+          body: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 20),
+            child: Column(
               children: [
-                PopupMenuButton<String>(
-                  onSelected: (value) => viewModel.setCampus(value),
-                  itemBuilder:
-                      (context) => const [
+                // 🔍 Barra de pesquisa
+                ValueListenableBuilder<String>(
+                  valueListenable: viewModel.textoBusca,
+                  builder: (context, value, _) {
+                    return TextField(
+                      decoration: InputDecoration(
+                        hintText: "Pesquisar Caronas...",
+                        prefixIcon: const Icon(Icons.search),
+                        filled: true,
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                      ),
+                      onChanged: viewModel.setTextoBusca,
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 12),
+
+                // 🎓 Filtro de Campus e Toggle de Volta
+                Row(
+                  children: [
+                    PopupMenuButton<String>(
+                      onSelected: (value) => viewModel.setCampus(value),
+                      itemBuilder:
+                          (context) => const [
                         PopupMenuItem(
                           value: 'Seropédica',
                           child: Text('Campus Seropédica'),
@@ -87,73 +80,94 @@ class _CaronaHomePageState extends State<CaronaHomePage> {
                           child: Text('Campus Três Rios'),
                         ),
                       ],
-                  child: ValueListenableBuilder<String?>(
-                    valueListenable: viewModel.campusSelecionado,
-                    builder:
-                        (context, campus, _) => Chip(
+                      child: ValueListenableBuilder<String?>(
+                        valueListenable: viewModel.campusSelecionado,
+                        builder:
+                            (context, campus, _) => Chip(
                           label: Text(campus ?? 'Selecionar campus'),
                           avatar: const Icon(Icons.filter_alt, size: 18),
                         ),
-                  ),
-                ),
-                const Spacer(),
-                const Text("Volta"),
-                ValueListenableBuilder<bool?>(
-                  valueListenable: viewModel.isVolta,
-                  builder:
-                      (context, isVolta, _) => Switch(
+                      ),
+                    ),
+                    const Spacer(),
+                    const Text("Volta"),
+                    ValueListenableBuilder<bool?>(
+                      valueListenable: viewModel.isVolta,
+                      builder:
+                          (context, isVolta, _) => Switch(
                         value: isVolta ?? false,
                         onChanged: (val) => viewModel.toggleVolta(val),
                       ),
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 12),
+
+                // 🧾 Lista de Caronas com "Puxar para Recarregar"
+                Expanded(
+                  child: RefreshIndicator(
+                    onRefresh: () async {
+                      // Executa o comando para buscar as caronas novamente
+                      await viewModel.buscarCaronasCommand.execute();
+                    },
+                    child: ValueListenableBuilder<List<Carona?>>(
+                      valueListenable: viewModel.caronas,
+                      builder: (context, lista, _) {
+                        if (lista.isEmpty) {
+                          // Garante que o refresh funcione mesmo com a lista vazia
+                          return LayoutBuilder(
+                            builder: (context, constraints) {
+                              return SingleChildScrollView(
+                                physics: const AlwaysScrollableScrollPhysics(),
+                                child: ConstrainedBox(
+                                  constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                  child: const Center(
+                                    child: Text("Nenhuma carona encontrada."),
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        }
+
+                        return ValueListenableBuilder<Map<String, String>>(
+                          valueListenable: viewModel.fotosUsuarios,
+                          builder: (context, fotosMap, _) {
+                            return ListView.separated(
+                              itemCount: lista.length,
+                              separatorBuilder:
+                                  (_, __) => const SizedBox(height: 8),
+                              itemBuilder: (context, index) {
+                                final carona = lista[index];
+                                if (carona == null)
+                                  return const SizedBox.shrink();
+                                final fotoUrl = fotosMap[carona.motoristaId];
+                                return _buildCaronaCard(context, carona, fotoUrl);
+                              },
+                            );
+                          },
+                        );
+                      },
+                    ),
+                  ),
                 ),
               ],
             ),
+          ),
 
-            const SizedBox(height: 12),
-
-            // 🧾 Lista de Caronas
-            Expanded(
-              child: ValueListenableBuilder<List<Carona?>>(
-                valueListenable: viewModel.caronas,
-                builder: (context, lista, _) {
-                  if (lista.isEmpty) {
-                    return const Center(
-                      child: Text("Nenhuma carona encontrada."),
-                    );
-                  }
-
-                  return ValueListenableBuilder<Map<String, String>>(
-                    valueListenable: viewModel.fotosUsuarios,
-                    builder: (context, fotosMap, _) {
-                      return ListView.separated(
-                        itemCount: lista.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 8),
-                        itemBuilder: (context, index) {
-                          final carona = lista[index];
-                          if (carona == null) return const SizedBox.shrink();
-                          final fotoUrl = fotosMap[carona.motoristaId];
-                          return _buildCaronaCard(context, carona, fotoUrl);
-                        },
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
-        ),
-      ),
-
-      // 🔽 Barra inferior
-      bottomNavigationBar: AppBottomNavigation(index: 0),
+          // 🔽 Barra inferior
+          bottomNavigationBar: AppBottomNavigation(index: 0),
+        );
+      },
     );
   }
 
   Widget _buildCaronaCard(
-    BuildContext context,
-    Carona carona,
-    String? fotoUrl,
-  ) {
+      BuildContext context,
+      Carona carona,
+      String? fotoUrl,
+      ) {
     final horaChegadaFormatada = DateFormat.Hm().format(carona.horarioChegada);
     final horaSaidaFormatada = DateFormat.Hm().format(
       carona.horarioSaidaCarona,
@@ -163,7 +177,11 @@ class _CaronaHomePageState extends State<CaronaHomePage> {
 
     return InkWell(
       onTap: () {
-        Routefly.navigate(routePaths.carona.visualizar.$id.carona.changes({'id': '${carona.id}'}));
+        Routefly.navigate(
+          routePaths.carona.visualizar.$id.carona.changes({
+            'id': '${carona.id}',
+          }),
+        );
       },
       borderRadius: BorderRadius.circular(12),
       child: Container(
@@ -176,10 +194,10 @@ class _CaronaHomePageState extends State<CaronaHomePage> {
           children: [
             CircleAvatar(
               backgroundImage:
-                  fotoUrl!.isNotEmpty
-                      ? NetworkImage(fotoUrl)
-                      : const AssetImage('assets/logo/motorista.png')
-                          as ImageProvider,
+              fotoUrl != null && fotoUrl.isNotEmpty
+                  ? NetworkImage(fotoUrl)
+                  : const AssetImage('assets/logo/motorista.png')
+              as ImageProvider,
               radius: 25,
             ),
             const SizedBox(width: 12),
@@ -189,13 +207,13 @@ class _CaronaHomePageState extends State<CaronaHomePage> {
                 children: [
                   carona.isVolta
                       ? Text(
-                        "${carona.rota.campus} - ${carona.rota.saida} - saída: $horaSaidaFormatada",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      )
+                    "${carona.rota.campus} - ${carona.rota.saida} - saída: $horaSaidaFormatada",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  )
                       : Text(
-                        "${carona.rota.saida} - ${carona.rota.campus} - chegada: $horaChegadaFormatada",
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
+                    "${carona.rota.saida} - ${carona.rota.campus} - chegada: $horaChegadaFormatada",
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
 
                   // ✅ Pontos intermediários da rota
                   if (pontos != null && pontos.isNotEmpty)

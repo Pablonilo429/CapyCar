@@ -105,24 +105,31 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
   String? _validatePontoItemInput(String? currentTextValue) {
     // Use a default empty CredentialsRota if viewModel.credentials.rota is null.
     // This pattern is similar to how you handle potentially null rotas in other validators.
-    final CredentialsRota effectiveRota = viewModel.credentials.rota ?? CredentialsRota();
+    final CredentialsRota effectiveRota =
+        viewModel.credentials.rota ?? CredentialsRota();
 
     // Now, construct tempCredentialsForPontoValidation using effectiveRota,
     // which will have default empty values if the original rota was null.
     final tempCredentialsForPontoValidation = CredentialsRota(
-      campus: effectiveRota.campus, // Will be '' if effectiveRota is a new default instance
-      cidadeSaida: effectiveRota.cidadeSaida, // Will be ''
-      nomeRota: effectiveRota.nomeRota?.isEmpty ?? true
-          ? 'cadastrado' // Default name if original nomeRota is null/empty or rota was null
-          : effectiveRota.nomeRota,
-      pontos: effectiveRota.pontos, // Will be an empty list [] if effectiveRota is a new default instance
+      campus: effectiveRota.campus,
+      // Will be '' if effectiveRota is a new default instance
+      cidadeSaida: effectiveRota.cidadeSaida,
+      // Will be ''
+      nomeRota:
+          effectiveRota.nomeRota?.isEmpty ?? true
+              ? 'cadastrado' // Default name if original nomeRota is null/empty or rota was null
+              : effectiveRota.nomeRota,
+      pontos:
+          effectiveRota
+              .pontos, // Will be an empty list [] if effectiveRota is a new default instance
     );
 
     // Get the specific field validator for 'pontos_items'.
     // This rule in your CredentialsRotaValidator is expected to validate the currentTextValue
     // (e.g., check if it's empty, a duplicate, matches a pattern, etc.).
     var specificFieldValidator = _rotaValidator.byField(
-      tempCredentialsForPontoValidation, // Contains context like existing points
+      tempCredentialsForPontoValidation,
+      // Contains context like existing points
       'pontos_items', // The validation rule for an individual point item
     );
 
@@ -224,13 +231,20 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
       builder: (context, child) {
         // Sync controllers (moved to _onViewModelChanged and initState for more controlled updates)
         return Scaffold(
+          resizeToAvoidBottomInset: true,
           appBar: CustomAppBar(greeting: 'Oferecer Viagem', isPop: false),
           drawer: AppDrawer(),
           bottomNavigationBar: AppBottomNavigation(index: 1),
           body: AbsorbPointer(
             absorbing: viewModel.isLoading,
             child: SingleChildScrollView(
-              padding: const EdgeInsets.all(16.0),
+              reverse: true,
+              padding: EdgeInsets.fromLTRB(
+                16,
+                16,
+                16,
+                MediaQuery.of(context).viewInsets.bottom + 24,
+              ),
               child: Form(
                 key: _formKey,
                 child: Column(
@@ -471,36 +485,53 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (viewModel.credentials.rota?.pontos.isNotEmpty == true)
-                      Wrap(
-                        spacing: 8.0,
-                        runSpacing: 4.0,
-                        children:
-                            viewModel.credentials.rota!.pontos.map((ponto) {
-                              return Chip(
-                                label: Text(ponto),
-                                backgroundColor: theme.primaryColor.withOpacity(
-                                  0.15,
-                                ),
-                                labelStyle: TextStyle(
-                                  color: theme.primaryColorDark,
-                                  fontSize: 13,
-                                ),
-                                onDeleted: () => viewModel.removePonto(ponto),
-                                deleteIconColor: theme.primaryColorDark
-                                    .withOpacity(0.7),
-                              );
-                            }).toList(),
-                      )
-                    else
-                      Container(
-                        padding: const EdgeInsets.symmetric(vertical: 10.0),
-                        alignment: Alignment.center,
-                        child: Text(
-                          'Nenhum ponto de carona adicionado.',
-                          style: TextStyle(color: Colors.grey[600]),
-                        ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(
+                        maxHeight:
+                            150, // Defina uma altura máxima para a área dos chips (ajuste conforme necessário)
                       ),
+                      child: SingleChildScrollView(
+                        // Adicione um SingleChildScrollView para esta seção
+                        primary: false,
+                        child:
+                            viewModel.credentials.rota?.pontos.isNotEmpty ==
+                                    true
+                                ? Wrap(
+                                  spacing: 8.0,
+                                  runSpacing: 4.0,
+                                  children:
+                                      viewModel.credentials.rota!.pontos.map((
+                                        ponto,
+                                      ) {
+                                        return Chip(
+                                          label: Text(ponto),
+                                          backgroundColor: theme.primaryColor
+                                              .withOpacity(0.15),
+                                          labelStyle: TextStyle(
+                                            color: theme.primaryColorDark,
+                                            fontSize: 13,
+                                          ),
+                                          onDeleted:
+                                              () =>
+                                                  viewModel.removePonto(ponto),
+                                          deleteIconColor: theme
+                                              .primaryColorDark
+                                              .withOpacity(0.7),
+                                        );
+                                      }).toList(),
+                                )
+                                : Container(
+                                  // Mantenha o container para a mensagem de "nenhum ponto"
+                                  height: 50,
+                                  // Dê uma altura para quando estiver vazio, para consistência
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    'Nenhum ponto de carona adicionado.',
+                                    style: TextStyle(color: Colors.grey[600]),
+                                  ),
+                                ),
+                      ),
+                    ),
                     const SizedBox(height: 20),
 
                     // --- Horário de Saída ---
