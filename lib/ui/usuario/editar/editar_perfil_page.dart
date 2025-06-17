@@ -2,9 +2,9 @@ import 'dart:typed_data';
 
 import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/domain/validators/credentials_editar_usuario_validator.dart';
-import 'package:capy_car/ui/components/appBar.dart';
 import 'package:capy_car/ui/usuario/cadastro/components/photo_picker.dart';
 import 'package:capy_car/ui/usuario/editar/editar_perfil_view_model.dart';
+import 'package:capy_car/ui/usuario/editar/excluir_conta_view.dart';
 import 'package:capy_car/utils/GetLocais.dart';
 import 'package:flutter/material.dart';
 
@@ -172,11 +172,65 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
     final double avatarRadius = 80.0; // Raio do CircleAvatar
     final double avatarDiameter = avatarRadius * 2;
     return Scaffold(
-      appBar: CustomAppBar(greeting: "Editar Perfil", isPop: true),
+      appBar: AppBar(
+        automaticallyImplyLeading: false,
+        title: Row(
+          children: [
+            IconButton(
+              iconSize: 30.0,
+              icon: const Icon(Icons.menu),
+              onPressed: () {
+                // A função `Scaffold.of(context)` pode causar problemas se o context
+                // for o mesmo da build do Scaffold.
+                // É mais seguro usar um Builder ou `Scaffold.of(context)`
+                // em um widget filho.
+                Scaffold.of(context).openDrawer();
+              },
+            ),
+            const SizedBox(width: 8),
+            const Expanded(
+              child: Text(
+                "Editar Perfil",
+                style: TextStyle(
+                  fontSize: 18.0,
+                  fontWeight: FontWeight.bold,
+                ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
+        // Adiciona a lista de ações na AppBar para posicionar itens à direita
+        actions: [
+          // Botão que abre o modal para excluir a conta
+          IconButton(
+            icon: const Icon(Icons.delete_forever),
+            tooltip: 'Excluir Conta',
+            color: Colors.redAccent, // Adiciona uma cor para indicar perigo
+            onPressed: () {
+              // Função que chama o seu modal de exclusão
+              showDialog(
+                context: context,
+                // Impede que o modal seja fechado clicando fora dele
+                barrierDismissible: false,
+                builder: (BuildContext dialogContext) {
+                  // Retorna a instância do seu modal
+                  return const ExcluirContaModal();
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
-        reverse: true,
         primary: true,
-        padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
+        padding: EdgeInsets.fromLTRB(
+          20,
+          20,
+          20,
+          MediaQuery.of(context).viewInsets.bottom + 24,
+        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: <Widget>[
@@ -187,7 +241,8 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                   width: avatarDiameter,
                   height: avatarDiameter,
                   child: Stack(
-                    clipBehavior: Clip.none, // <<< ADICIONADO PARA PERMITIR OVERFLOW DO BADGE
+                    clipBehavior: Clip.none,
+                    // <<< ADICIONADO PARA PERMITIR OVERFLOW DO BADGE
                     children: [
                       // Foto de Perfil (CircleAvatar)
                       GestureDetector(
@@ -196,13 +251,19 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                           valueListenable: _preRenderImage,
                           builder: (context, newImageBytes, child) {
                             ImageProvider<Object> backgroundImage;
-                            if (newImageBytes != null && newImageBytes.length > 20) {
+                            if (newImageBytes != null &&
+                                newImageBytes.length > 20) {
                               backgroundImage = MemoryImage(newImageBytes);
-                            } else if (viewModel.usuario?.fotoPerfilUrl != null &&
+                            } else if (viewModel.usuario?.fotoPerfilUrl !=
+                                    null &&
                                 viewModel.usuario!.fotoPerfilUrl.isNotEmpty) {
-                              backgroundImage = NetworkImage(viewModel.usuario!.fotoPerfilUrl);
+                              backgroundImage = NetworkImage(
+                                viewModel.usuario!.fotoPerfilUrl,
+                              );
                             } else {
-                              backgroundImage = AssetImage('assets/logo/passageiro.png');
+                              backgroundImage = AssetImage(
+                                'assets/logo/passageiro.png',
+                              );
                             }
                             return CircleAvatar(
                               radius: avatarRadius,
@@ -218,35 +279,45 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                         valueListenable: _preRenderImage,
                         builder: (context, newImageBytes, _) {
                           final bool hasLocalPreview =
-                              newImageBytes != null && newImageBytes.length > 20;
+                              newImageBytes != null &&
+                              newImageBytes.length > 20;
                           final bool hasExistingNetworkImage =
                               viewModel.usuario?.fotoPerfilUrl != null &&
-                                  viewModel.usuario!.fotoPerfilUrl.isNotEmpty;
+                              viewModel.usuario!.fotoPerfilUrl.isNotEmpty;
 
                           if (hasLocalPreview || hasExistingNetworkImage) {
                             return Positioned(
-                              top: -5.0,  // <<< MODIFICADO
+                              top: -5.0, // <<< MODIFICADO
                               right: -5.0, // <<< MODIFICADO
-                              child: GestureDetector( // <<< MODIFICADO PARA GestureDetector
-                                onTap: () async { // <<< LÓGICA DE CONFIRMAÇÃO ADICIONADA
-                                  final bool? confirmarRemocao = await showDialog<bool>(
+                              child: GestureDetector(
+                                // <<< MODIFICADO PARA GestureDetector
+                                onTap: () async {
+                                  // <<< LÓGICA DE CONFIRMAÇÃO ADICIONADA
+                                  final bool?
+                                  confirmarRemocao = await showDialog<bool>(
                                     context: context,
                                     builder: (BuildContext dialogContext) {
                                       return AlertDialog(
                                         title: const Text('Confirmar Remoção'),
-                                        content: const Text( // <<< MENSAGEM MODIFICADA
-                                            'Deseja realmente remover a foto de perfil?'),
+                                        content: const Text(
+                                          // <<< MENSAGEM MODIFICADA
+                                          'Deseja realmente remover a foto de perfil?',
+                                        ),
                                         actions: <Widget>[
                                           TextButton(
                                             child: const Text('Não'),
                                             onPressed: () {
-                                              Navigator.of(dialogContext).pop(false);
+                                              Navigator.of(
+                                                dialogContext,
+                                              ).pop(false);
                                             },
                                           ),
                                           TextButton(
                                             child: const Text('Sim'),
                                             onPressed: () {
-                                              Navigator.of(dialogContext).pop(true);
+                                              Navigator.of(
+                                                dialogContext,
+                                              ).pop(true);
                                             },
                                           ),
                                         ],
@@ -258,10 +329,15 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                     // Lógica original de remoção da foto
                                     if (hasLocalPreview) {
                                       _preRenderImage.value = null;
-                                      ScaffoldMessenger.of(context).showSnackBar(
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
                                         SnackBar(
-                                          content: Text("Seleção de foto cancelada."),
-                                          backgroundColor: Colors.blue, // Ou Colors.green
+                                          content: Text(
+                                            "Seleção de foto cancelada.",
+                                          ),
+                                          backgroundColor:
+                                              Colors.blue, // Ou Colors.green
                                         ),
                                       );
                                     } else if (hasExistingNetworkImage) {
@@ -272,13 +348,18 @@ class _EditarPerfilPageState extends State<EditarPerfilPage> {
                                   }
                                 },
                                 child: Container(
-                                  padding: const EdgeInsets.all(2), // <<< MODIFICADO
+                                  padding: const EdgeInsets.all(2),
+                                  // <<< MODIFICADO
                                   decoration: BoxDecoration(
                                     color: Colors.red, // <<< MODIFICADO
                                     shape: BoxShape.circle,
-                                    border: Border.all(color: Colors.white, width: 1.5), // <<< MODIFICADO/ADICIONADO
+                                    border: Border.all(
+                                      color: Colors.white,
+                                      width: 1.5,
+                                    ), // <<< MODIFICADO/ADICIONADO
                                   ),
-                                  child: const Icon( // <<< ÍCONE DENTRO DO CONTAINER
+                                  child: const Icon(
+                                    // <<< ÍCONE DENTRO DO CONTAINER
                                     Icons.close,
                                     color: Colors.white,
                                     size: 14, // <<< MODIFICADO

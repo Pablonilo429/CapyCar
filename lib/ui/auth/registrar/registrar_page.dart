@@ -3,6 +3,7 @@ import 'package:capy_car/domain/dtos/credentials_registrar.dart';
 import 'package:capy_car/domain/validators/credentials_registrar_validator.dart';
 import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/auth/registrar/registrar_viewmodel.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:result_command/result_command.dart';
@@ -32,7 +33,6 @@ class _RegistrarPageState extends State<RegistrarPage> {
   bool _exibirSenha = false;
   bool _exibirConfirmarSenha = false;
 
-
   Future<void> _selecionarDataNascimento() async {
     DateTime? dataSelecionada = await showDatePicker(
       context: context,
@@ -49,7 +49,88 @@ class _RegistrarPageState extends State<RegistrarPage> {
     }
   }
 
-  void _onCadastroFinalizado() {}
+  // NOVA FUNÇÃO: Exibe o modal com os Termos e Condições
+  void _showTermsAndConditionsModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text("Termos e Condições"),
+          content: const SingleChildScrollView(
+            child: Text(
+              '''
+Termos e Condições de Uso do CapyCar
+
+Última atualização: 07 de Junho de 2024
+
+Bem-vindo ao CapyCar!
+
+Estes Termos e Condições de Uso ("Termos") regem o seu acesso e uso do nosso aplicativo de caronas universitárias, CapyCar ("Aplicativo"). Ao se cadastrar e utilizar o Aplicativo, você concorda em cumprir estes Termos. Leia-os com atenção.
+
+1. O Serviço
+O CapyCar é uma plataforma digital que conecta estudantes da Universidade Federal Rural do Rio de Janeiro (UFRRJ) que desejam oferecer ou buscar caronas. O serviço tem como objetivo facilitar a mobilidade, promover a sustentabilidade e fortalecer a comunidade acadêmica.
+
+Importante: O CapyCar atua exclusivamente como um intermediário entre usuários, não sendo responsável pelas ações, decisões, comportamentos ou eventuais danos causados por qualquer usuário, dentro ou fora do Aplicativo.
+
+2. Elegibilidade
+Para usar o CapyCar, você deve:
+a) Ser um membro ativo da comunidade da UFRRJ (aluno, professor ou técnico-administrativo).
+b) Possuir um e-mail institucional (@ufrrj.br) válido para verificação.
+c) Ter pelo menos 18 anos de idade.
+
+3. Cadastro e Conta
+a) Você concorda em fornecer informações precisas, atuais e completas durante o processo de registro.
+b) A segurança da sua senha é de sua responsabilidade. Não compartilhe suas credenciais com terceiros.
+c) Você é responsável por todas as atividades que ocorrem em sua conta.
+
+4. Conduta do Usuário
+a) Motoristas e Passageiros: Devem tratar-se com respeito e cortesia.
+b) Segurança: A segurança é uma responsabilidade compartilhada. Motoristas devem manter seus veículos em boas condições e dirigir de forma segura. Passageiros devem adotar um comportamento prudente.
+c) Compromisso: Ao aceitar uma carona (passageiro) ou um passageiro (motorista), você assume um compromisso. Cancelamentos devem ser feitos com a maior antecedência possível.
+d) Proibições: É estritamente proibido usar o Aplicativo para fins ilegais, transportar itens ilícitos, assediar outros usuários ou se envolver em qualquer atividade fraudulenta.
+
+5. Custos e Pagamentos
+O CapyCar sugere um valor de contribuição para ajudar a cobrir os custos do motorista (combustível, manutenção, etc.). Este valor não tem finalidade lucrativa. Toda negociação e transação é de responsabilidade exclusiva dos usuários envolvidos.
+
+O CapyCar não processa pagamentos e não se responsabiliza por valores acordados, recebidos ou não pagos.
+
+6. Isenção de Responsabilidade
+a) O CapyCar é uma ponte de conexão entre usuários e não exerce qualquer controle direto ou indireto sobre as caronas realizadas.
+b) Não nos responsabilizamos por atrasos, acidentes, perdas, danos materiais ou morais, comportamentos inapropriados ou qualquer outro evento decorrente do uso do serviço.
+c) Não verificamos a documentação dos veículos, a validade da CNH, nem o histórico dos motoristas ou passageiros.
+d) O uso do Aplicativo e a decisão de participar de caronas ocorrem por conta e risco exclusivo dos usuários.
+
+7. Privacidade
+Nossa Política de Privacidade descreve como coletamos e usamos suas informações pessoais. Ao usar o CapyCar, você concorda com a coleta e o uso de informações de acordo com essa política.
+
+8. Modificações nos Termos
+Podemos modificar estes Termos a qualquer momento. Notificaremos sobre alterações significativas através do Aplicativo ou por e-mail. O uso contínuo do Aplicativo após as modificações constitui sua aceitação dos novos Termos.
+
+9. Encerramento da Conta e Exclusão de Dados
+Você pode solicitar o encerramento da sua conta e a exclusão de seus dados pessoais a qualquer momento, entrando em contato por e-mail.
+Caso viole estes Termos, reservamo-nos o direito de suspender ou excluir sua conta sem aviso prévio.
+
+Para suporte, dúvidas, ou solicitações de exclusão de conta e dados, envie um e-mail para: pabloliv429@ufrrj.br.
+
+10. Aceite dos Termos
+Ao clicar em "Aceito os termos e condições", você confirma que leu, compreendeu e concorda com os presentes Termos.
+''',
+              textAlign: TextAlign.justify,
+              style: TextStyle(fontSize: 16, height: 1.5),
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text("Fechar"),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   @override
   void initState() {
@@ -156,7 +237,7 @@ class _RegistrarPageState extends State<RegistrarPage> {
           onChanged: credentials.setNomeSocial,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           validator: validator.byField(credentials, "nomeSocial"),
-          decoration: _buildInputDecoration('Nome Social'),
+          decoration: _buildInputDecoration('Nome Social (opcional)'),
         ),
         const SizedBox(height: 12),
 
@@ -236,6 +317,7 @@ class _RegistrarPageState extends State<RegistrarPage> {
 
         const SizedBox(height: 12),
 
+        // WIDGET MODIFICADO
         Row(
           children: [
             Checkbox(
@@ -246,11 +328,32 @@ class _RegistrarPageState extends State<RegistrarPage> {
                 });
               },
               activeColor: Colors.purple,
+              // Adicionado para melhor contraste com o fundo gradiente
+              checkColor: Colors.white,
+              side: const BorderSide(color: Colors.white),
             ),
-            const Expanded(
-              child: Text(
-                'Aceito os termos e condições',
-                style: TextStyle(color: Colors.white),
+            Expanded(
+              child: Text.rich(
+                TextSpan(
+                  text: 'Aceito os ',
+                  style: const TextStyle(
+                    color: Colors.white,
+                  ),
+                  children: [
+                    TextSpan(
+                      text: 'termos e condições',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
+                      ),
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () {
+                          _showTermsAndConditionsModal(context);
+                        },
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
@@ -264,8 +367,28 @@ class _RegistrarPageState extends State<RegistrarPage> {
               viewModel.registrarCommand.isRunning
                   ? null
                   : () {
-                    if (validator.validate(credentials).isValid) {
+                    if (!aceitoTermos) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            "Você deve aceitar os termos e condições para se cadastrar!",
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                    if (validator.validate(credentials).isValid &&
+                        aceitoTermos) {
                       viewModel.registrarCommand.execute(credentials);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text(
+                            "Por favor, corrija os erros no formulário.",
+                          ),
+                        ),
+                      );
                     }
                   },
           icon: const Icon(Icons.person_add),

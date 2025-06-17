@@ -1,5 +1,4 @@
 import 'package:capy_car/config/dependencies.dart';
-import 'package:capy_car/domain/dtos/credentials_carona.dart';
 import 'package:capy_car/domain/dtos/credentials_rota.dart';
 import 'package:capy_car/domain/validators/credentials_carona_validator.dart'; // Import validator
 import 'package:capy_car/domain/validators/credentials_rota_validator.dart'; // Import validator
@@ -9,7 +8,6 @@ import 'package:capy_car/ui/components/appBottomNavigation.dart';
 import 'package:capy_car/ui/components/appDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
 import 'package:result_command/result_command.dart';
 
 class CadastrarCaronaPage extends StatefulWidget {
@@ -238,7 +236,6 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
           body: AbsorbPointer(
             absorbing: viewModel.isLoading,
             child: SingleChildScrollView(
-              reverse: true,
               padding: EdgeInsets.fromLTRB(
                 16,
                 16,
@@ -375,7 +372,7 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
                     DropdownButtonFormField<String>(
                       value: viewModel.selectedRotaIdForPreFilling,
                       decoration: _buildInputDecoration(
-                        hintText: 'Usar rota salva ou preencher manualmente',
+                        hintText: 'Rotas Salvas',
                       ),
                       items: [
                         const DropdownMenuItem<String>(

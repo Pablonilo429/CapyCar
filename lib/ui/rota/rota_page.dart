@@ -1,5 +1,4 @@
 import 'package:capy_car/config/dependencies.dart';
-import 'package:capy_car/domain/dtos/credentials_rota.dart';
 
 // Ensure this import path is correct for your validator if it's used directly in ViewModel for validateCurrentPontoInput
 // import 'package:capy_car/domain/validators/credentials_rota_validator.dart';
@@ -159,7 +158,6 @@ class _RotaPageState extends State<RotaPage> {
       appBar: CustomAppBar(greeting: "Cadastrar/Editar Rotas", isPop: false),
       drawer: AppDrawer(),
       body: SingleChildScrollView(
-        reverse: true,
         primary: true,
         child: AnimatedBuilder(
           // Listen to viewModel for UI updates

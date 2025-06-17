@@ -24,6 +24,8 @@ class AuthGuard extends StatelessWidget {
         const rotasPublicas = [
           '/auth/login',
           '/auth/registrar',
+          '/sobre',
+          '/contato',
           'auth/registrar/final_registrar'
         ];
 

@@ -2,8 +2,7 @@ import 'package:capy_car/data/services/firebase/store_service.dart';
 import 'package:capy_car/domain/models/rota/rota.dart';
 import 'package:capy_car/domain/dtos/credentials_rota.dart';
 import 'package:capy_car/data/repositories/rota/rota_repository.dart';
-import 'package:capy_car/domain/validators/credentials_rota_validator.dart';
-import 'package:capy_car/utils/validation/LucidValidatorExtension.dart';
+
 
 import 'package:result_dart/result_dart.dart';
 import 'package:result_dart/src/unit.dart';

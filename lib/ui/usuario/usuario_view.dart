@@ -1,4 +1,3 @@
-import 'package:capy_car/config/dependencies.dart';
 import 'package:capy_car/domain/models/usuario/usuario.dart';
 import 'package:capy_car/ui/components/whatsapp_button.dart';
 

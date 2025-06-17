@@ -59,40 +59,46 @@ List<RouteEntity> get routes => [
     routeBuilder: b10Builder,
   ),
   RouteEntity(
-    key: 'mensagem',
-    uri: Uri.parse('mensagem'),
+    key: 'contato',
+    uri: Uri.parse('contato'),
     routeBuilder: b11Builder,
   ),
-  RouteEntity(key: 'rota', uri: Uri.parse('rota'), routeBuilder: b12Builder),
+  RouteEntity(
+    key: 'mensagem',
+    uri: Uri.parse('mensagem'),
+    routeBuilder: b12Builder,
+  ),
+  RouteEntity(key: 'rota', uri: Uri.parse('rota'), routeBuilder: b13Builder),
+  RouteEntity(key: 'sobre', uri: Uri.parse('sobre'), routeBuilder: b14Builder),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_carro',
     uri: Uri.parse('usuario/cadastro/cadastrar_carro'),
-    routeBuilder: b13Builder,
+    routeBuilder: b15Builder,
   ),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_foto',
     uri: Uri.parse('usuario/cadastro/cadastrar_foto'),
-    routeBuilder: b14Builder,
+    routeBuilder: b16Builder,
   ),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_localizacao',
     uri: Uri.parse('usuario/cadastro/cadastrar_localizacao'),
-    routeBuilder: b15Builder,
+    routeBuilder: b17Builder,
   ),
   RouteEntity(
     key: 'usuario/cadastro/cadastrar_papel',
     uri: Uri.parse('usuario/cadastro/cadastrar_papel'),
-    routeBuilder: b16Builder,
+    routeBuilder: b18Builder,
   ),
   RouteEntity(
     key: 'usuario/editar/editar_carro',
     uri: Uri.parse('usuario/editar/editar_carro'),
-    routeBuilder: b17Builder,
+    routeBuilder: b19Builder,
   ),
   RouteEntity(
     key: 'usuario/editar/editar_perfil',
     uri: Uri.parse('usuario/editar/editar_perfil'),
-    routeBuilder: b18Builder,
+    routeBuilder: b20Builder,
   ),
 ];
 
@@ -126,8 +132,10 @@ const routePaths = (
       ),
     ),
   ),
+  contato: '/contato',
   mensagem: '/mensagem',
   rota: '/rota',
+  sobre: '/sobre',
   usuario: (
     path: '/usuario',
     cadastro: (

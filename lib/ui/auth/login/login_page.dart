@@ -4,7 +4,6 @@ import 'package:capy_car/domain/validators/credentials_login_validator.dart';
 import 'package:capy_car/main.dart';
 import 'package:capy_car/ui/auth/login/login_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:pwa_install/pwa_install.dart';
 import 'package:result_command/result_command.dart';
 import 'package:routefly/routefly.dart';
@@ -75,11 +74,9 @@ class _LoginPageState extends State<LoginPage> {
         actions: [
           // Adiciona os botões "Contato" e "Sobre" aqui
           TextButton(
-            onPressed: () {
-              // Ação para o botão de Contato (ex: navegar para uma rota de contato)
-              // Ex: Routefly.navigate('/contato');
-              print('Botão Contato pressionado!'); // Para teste
-            },
+            onPressed: () =>
+              Routefly.navigate(routePaths.contato),
+
             child: const Text(
               'Contato',
               style: TextStyle(color: Colors.white, fontSize: 16),
@@ -87,11 +84,8 @@ class _LoginPageState extends State<LoginPage> {
           ),
           const SizedBox(width: 8), // Espaçamento entre os botões
           TextButton(
-            onPressed: () {
-              // Ação para o botão Sobre (ex: navegar para uma rota "sobre nós")
-              // Ex: Routefly.navigate('/sobre');
-              print('Botão Sobre pressionado!'); // Para teste
-            },
+            onPressed: () =>
+                Routefly.navigate(routePaths.sobre),
             child: const Text(
               'Sobre',
               style: TextStyle(color: Colors.white, fontSize: 16),
@@ -172,7 +166,7 @@ class _LoginPageState extends State<LoginPage> {
                                 });
                               },
                             ),
-                            hintText: 'senha',
+                            hintText: 'Senha',
                             filled: true,
                             fillColor: Colors.white,
                             border: OutlineInputBorder(
@@ -204,8 +198,8 @@ class _LoginPageState extends State<LoginPage> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        ListenableBuilder(
-                          listenable: viewModel.loginCommand,
+                        AnimatedBuilder(
+                          animation: viewModel.loginCommand,
                           builder: (context, _) {
                             return SizedBox(
                               width: double.infinity,

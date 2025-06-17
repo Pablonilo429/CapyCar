@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:capy_car/data/repositories/auth/auth_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:result_command/result_command.dart';

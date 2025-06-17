@@ -1,5 +1,4 @@
 import 'package:capy_car/config/dependencies.dart';
-import 'package:capy_car/domain/dtos/credentials_carro.dart';
 import 'package:capy_car/domain/validators/credentials_carro_validator.dart';
 import 'package:capy_car/ui/components/appBar.dart';
 import 'package:capy_car/ui/usuario/editar/editar_carro_view_model.dart';
@@ -108,7 +107,6 @@ class _EditarCarroPageState extends State<EditarCarroPage> {
     return Scaffold(
       appBar: CustomAppBar(greeting: "Editar Carro", isPop: true),
       body: SingleChildScrollView(
-        reverse: true,
         primary: true,
         padding: EdgeInsets.fromLTRB(20, 20, 20, MediaQuery.of(context).viewInsets.bottom + 24),
         child: Column(

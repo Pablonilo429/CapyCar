@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:capy_car/data/services/cloudinary/cloudinary_service.dart';
@@ -17,7 +16,6 @@ import 'package:capy_car/data/repositories/auth/auth_repository.dart';
 import 'package:capy_car/domain/validators/credentials_alterar_senha_validator.dart';
 import 'package:capy_car/domain/validators/credentials_editar_usuario_validator.dart';
 import 'package:capy_car/domain/validators/credentials_login_validator.dart';
-import 'package:capy_car/domain/validators/credentials_registrar_validator.dart';
 import 'package:capy_car/utils/CompactarImagem.dart';
 import 'package:capy_car/utils/validation/LucidValidatorExtension.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +27,7 @@ import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 class RemoteAuthRepository implements AuthRepository {
   final FirebaseAuthService _authService;
   final CloudinaryService _cloudinaryService;
+
   final _streamController = StreamController<Usuario?>.broadcast();
 
   RemoteAuthRepository(this._authService, this._cloudinaryService) {
@@ -67,19 +66,6 @@ class RemoteAuthRepository implements AuthRepository {
         final usuario = await _authService.getUsuarioData(user.uid);
         if (usuario is! Usuario) return Failure(Exception('Usuário inválido'));
 
-        if (usuario.isPrimeiroLogin) {
-          await FirebaseChatCore.instance.createUserInFirestore(
-            types.User(
-              firstName:
-                  usuario.nomeSocial?.isEmpty ?? true
-                      ? usuario.nome
-                      : usuario.nomeSocial,
-              id: usuario.uId, // UID from Firebase Authentication
-              imageUrl:
-                  "https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png",
-            ),
-          );
-        }
         _streamController.add(usuario);
         return Success(usuario);
       } catch (e) {
@@ -487,6 +473,16 @@ class RemoteAuthRepository implements AuthRepository {
       return Failure(
         Exception('Erro ao registrar localização: ${e.toString()}'),
       );
+    }
+  }
+
+  @override
+  AsyncResult<Unit> excluirConta(String password) async {
+    try {
+      await _authService.deleteAccount(currentPassword: password);
+      return Success(unit);
+    } catch (e) {
+      return Failure(Exception("Não foi possível exluir a sua conta, verifique se a senha inserida está corrrta"));
     }
   }
 }

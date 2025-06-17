@@ -110,5 +110,35 @@ class FirebaseAuthService {
     }
   }
 
+  Future<void> deleteAccount({required String currentPassword}) async {
+    try {
+      final user = _firebaseAuth.currentUser;
+      if (user == null || user.email == null) {
+        throw FirebaseAuthException(
+          code: 'user-not-authenticated',
+          message: 'Nenhum usuário logado para excluir.',
+        );
+      }
+
+      // 1. Reautenticar o usuário para confirmar a identidade
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword,
+      );
+      await user.reauthenticateWithCredential(credential);
+
+
+      await user.delete();
+
+    } on FirebaseAuthException catch (e) {
+      // Trata erros comuns como senha incorreta ('wrong-password')
+      // ou se a ação requer um login recente ('requires-recent-login').
+      throw FirebaseAuthException(
+        code: e.code,
+        message: e.message ?? 'Ocorreu um erro ao excluir a conta.',
+      );
+    }
+  }
+
 
 }

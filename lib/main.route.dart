@@ -14,14 +14,16 @@ import 'ui/carona/visualizar/[id]/chat_page.dart' as a10;
 import 'ui/carona/visualizar/carona_anterior_page.dart' as a7;
 import 'ui/carona/visualizar/caronas_usuario_page.dart' as a6;
 import 'ui/carona/visualizar/lista_carona_anterior_page.dart' as a8;
-import 'ui/mensagem_page.dart' as a11;
-import 'ui/rota/rota_page.dart' as a12;
-import 'ui/usuario/cadastro/cadastrar_carro_page.dart' as a13;
-import 'ui/usuario/cadastro/cadastrar_foto_page.dart' as a14;
-import 'ui/usuario/cadastro/cadastrar_localizacao_page.dart' as a15;
-import 'ui/usuario/cadastro/cadastrar_papel_page.dart' as a16;
-import 'ui/usuario/editar/editar_carro_page.dart' as a17;
-import 'ui/usuario/editar/editar_perfil_page.dart' as a18;
+import 'ui/contato_page.dart' as a11;
+import 'ui/mensagem_page.dart' as a12;
+import 'ui/rota/rota_page.dart' as a13;
+import 'ui/sobre_page.dart' as a14;
+import 'ui/usuario/cadastro/cadastrar_carro_page.dart' as a15;
+import 'ui/usuario/cadastro/cadastrar_foto_page.dart' as a16;
+import 'ui/usuario/cadastro/cadastrar_localizacao_page.dart' as a17;
+import 'ui/usuario/cadastro/cadastrar_papel_page.dart' as a18;
+import 'ui/usuario/editar/editar_carro_page.dart' as a19;
+import 'ui/usuario/editar/editar_perfil_page.dart' as a20;
 
 Route b0Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(ctx, settings, const a0.LoginPage());
@@ -50,22 +52,26 @@ Route b9Builder(BuildContext ctx, RouteSettings settings) =>
 Route b10Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(ctx, settings, const a10.ChatPage());
 Route b11Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a11.MensagemPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a11.ContatoPage());
 Route b12Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a12.RotaPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a12.MensagemPage());
 Route b13Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a13.CadastrarCarroPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a13.RotaPage());
 Route b14Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a14.CadastrarFotoPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a14.SobrePage());
 Route b15Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a15.CadastrarCarroPage());
+Route b16Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a16.CadastrarFotoPage());
+Route b17Builder(BuildContext ctx, RouteSettings settings) =>
     Routefly.defaultRouteBuilder(
       ctx,
       settings,
-      const a15.CadastrarLocalizacaoPage(),
+      const a17.CadastrarLocalizacaoPage(),
     );
-Route b16Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a16.CadastrarPapelPage());
-Route b17Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a17.EditarCarroPage());
 Route b18Builder(BuildContext ctx, RouteSettings settings) =>
-    Routefly.defaultRouteBuilder(ctx, settings, const a18.EditarPerfilPage());
+    Routefly.defaultRouteBuilder(ctx, settings, const a18.CadastrarPapelPage());
+Route b19Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a19.EditarCarroPage());
+Route b20Builder(BuildContext ctx, RouteSettings settings) =>
+    Routefly.defaultRouteBuilder(ctx, settings, const a20.EditarPerfilPage());

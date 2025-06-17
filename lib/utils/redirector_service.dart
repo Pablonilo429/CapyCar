@@ -1,7 +1,6 @@
 import 'package:capy_car/main.dart';
 import 'package:capy_car/main_viewmodel.dart';
 import 'package:routefly/routefly.dart';
-import '../main.route.dart'; // ajuste se o caminho for diferente
 
 class RedirectorService {
   final MainViewModel _mainViewModel;

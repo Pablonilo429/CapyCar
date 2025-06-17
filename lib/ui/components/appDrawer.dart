@@ -204,6 +204,28 @@ class _AppDrawerState extends State<AppDrawer> {
               ),
             ),
             const Divider(),
+            Expanded(
+              child: ListView(
+                children: [
+                  _buildItem(
+                    context,
+                    icon: Icons.info_outline,
+                    text: 'Sobre',
+                    onTap: () {
+                      Routefly.navigate(routePaths.sobre);
+                    }
+                  ),
+                  _buildItem(
+                    context,
+                    icon: Icons.connect_without_contact,
+                    text: 'Contato',
+                    onTap: () {
+                      Routefly.navigate(routePaths.contato);
+                    }
+                  ),
+                ],
+              ),
+            ),
             LogoutButton(),
           ],
         ),

@@ -27,6 +27,7 @@ import 'package:capy_car/ui/usuario/cadastro/cadastrar_localizacao_viewmodel.dar
 import 'package:capy_car/ui/usuario/cadastro/cadastrar_papel_viewmodel.dart';
 import 'package:capy_car/ui/usuario/editar/editar_carro_view_model.dart';
 import 'package:capy_car/ui/usuario/editar/editar_perfil_view_model.dart';
+import 'package:capy_car/ui/usuario/editar/excluir_conta_view_model.dart';
 import 'package:capy_car/ui/usuario/usuario_viewmodel.dart';
 import 'package:capy_car/utils/redirector_service.dart';
 
@@ -68,6 +69,7 @@ void setupDependecies() {
   injector.addSingleton<EditarCarroViewModel>(EditarCarroViewModel.new);
   injector.addSingleton<EditarPerfilViewModel>(EditarPerfilViewModel.new);
   injector.addSingleton<CadastrarPapelViewModel>(CadastrarPapelViewModel.new);
+  injector.addSingleton<ExcluirContaViewModel>(ExcluirContaViewModel.new);
 
   injector.addSingleton<RedirectorService>(RedirectorService.new);
   injector.commit();

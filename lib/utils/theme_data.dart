@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
 
 class AppColors {
   static const Color primary = Color(0xFF5DB6F0); // azul médio

@@ -2,7 +2,7 @@
     "name": "CapyCar",
     "short_name": "CapyCar",
     "start_url": ".",
-    "display": "fullscreen",
+    "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
     "description": "Aplicativo de Carona Ruralino",

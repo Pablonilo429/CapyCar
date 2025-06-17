@@ -853,6 +853,11 @@ class _CaronaPageState extends State<CaronaPage> {
                       ),
                       const SizedBox(height: 4),
                       Text(
+                        "Cor: ${motorista.carro!.cor}",
+                        style: TextStyle(fontSize: 14, color: Colors.grey[700]),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
                         "Placa: ${motorista.carro!.placa}",
                         style: TextStyle(fontSize: 14, color: Colors.grey[700]),
                       ),

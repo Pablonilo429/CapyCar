@@ -5,7 +5,6 @@ import 'package:capy_car/ui/components/appBar.dart';
 import 'package:capy_car/ui/carona/carona_home_viewmodel.dart';
 import 'package:capy_car/ui/components/appBottomNavigation.dart';
 import 'package:capy_car/ui/components/appDrawer.dart';
-import 'package:capy_car/utils/LoaderWidget.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:routefly/routefly.dart';

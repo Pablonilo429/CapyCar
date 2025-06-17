@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:capy_car/data/repositories/carona/carona_repository.dart';
+import 'package:capy_car/data/services/firebase/auth_service.dart';
 import 'package:capy_car/data/services/firebase/store_service.dart';
 import 'package:capy_car/domain/dtos/credentials_carona.dart';
 import 'package:capy_car/domain/dtos/credentials_rota.dart';
@@ -9,7 +10,6 @@ import 'package:capy_car/domain/models/rota/rota.dart';
 import 'package:capy_car/domain/validators/credentials_carona_validator.dart';
 import 'package:capy_car/domain/validators/credentials_rota_validator.dart';
 import 'package:capy_car/utils/validation/LucidValidatorExtension.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:result_dart/result_dart.dart';
 import 'package:result_dart/src/unit.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
@@ -18,6 +18,7 @@ import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 class RemoteCaronaRepository implements CaronaRepository {
   final _streamController = StreamController<Carona>.broadcast();
 
+  final FirebaseAuthService _authService = FirebaseAuthService();
   final FirestoreService _storeService = FirestoreService();
   final String _collection = 'caronas';
 
@@ -78,7 +79,7 @@ class RemoteCaronaRepository implements CaronaRepository {
         dataCarona: DateTime.now(),
         preco: credentials.preco,
         isFinalizada: false,
-        roomId: resultChat.id
+        roomId: resultChat.id,
       );
 
       final data = carona.toJson()..remove('id');
@@ -89,8 +90,6 @@ class RemoteCaronaRepository implements CaronaRepository {
 
       final doc = await docRef.get();
       final newCarona = carona.copyWith(id: doc.id);
-
-
 
       _streamController.add(newCarona);
       return Success(newCarona);
@@ -330,10 +329,35 @@ class RemoteCaronaRepository implements CaronaRepository {
 
       _streamController.add(updatedCarona);
 
-      final rooms = await FirebaseChatCore.instance.room(updatedCarona.roomId ?? '').first;
+      final rooms =
+          await FirebaseChatCore.instance
+              .room(updatedCarona.roomId ?? '')
+              .first;
 
       final sala = rooms;
 
+      final usuario = await _authService.getUsuarioData(userId);
+
+      final userDoc = await _storeService.getDocumentById(
+        collection: 'users',
+        docId: userId,
+      );
+
+      if (!userDoc.exists) {
+        await FirebaseChatCore.instance.createUserInFirestore(
+          types.User(
+            firstName:
+                usuario!.nomeSocial?.isEmpty ?? true
+                    ? usuario.nome
+                    : usuario.nomeSocial,
+            id: usuario.uId,
+            imageUrl:
+                usuario.fotoPerfilUrl.isEmpty
+                    ? "https://res.cloudinary.com/ddemkhgt4/image/upload/v1746151975/logo_capy_car.png"
+                    : usuario.fotoPerfilUrl,
+          ),
+        );
+      }
 
       final novaLista = List<types.User>.from(sala.users)
         ..add(types.User(id: userId));
@@ -428,7 +452,7 @@ class RemoteCaronaRepository implements CaronaRepository {
       FirebaseChatCore.instance.updateRoom(salaAtualizada);
 
       return Success(unit);
-    } catch (e, stack) {
+    } catch (e) {
       return Failure(Exception('Erro ao adicionar passageiro: $e'));
     }
   }

@@ -40,5 +40,7 @@ abstract interface class AuthRepository {
 
   AsyncResult<Usuario> setPrimeiroLogin();
 
+  AsyncResult<Unit> excluirConta(String password);
+
   Stream<Usuario?> userObserver();
 }

@@ -6,7 +6,6 @@ import 'package:capy_car/utils/LoaderWidget.dart';
 import 'package:capy_car/utils/theme_data.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:flutter_firebase_chat_core/flutter_firebase_chat_core.dart';
 import 'package:lucid_validation/lucid_validation.dart';
 import 'package:pwa_install/pwa_install.dart';
 import 'package:routefly/routefly.dart';
@@ -63,23 +62,29 @@ class _MainAppState extends State<MainApp> {
 
   FutureOr<RouteInformation> authMiddleware(RouteInformation routeInfo) async {
     final String currentPath = routeInfo.uri.path;
-
     final mainViewModel = injector.get<MainViewModel>();
 
-    // Aguarda o primeiro valor do usuário
+    // Aguarda a inicialização do usuário na ViewModel
     await mainViewModel.onUsuarioReady;
 
     final usuario = mainViewModel.usuario;
     final bool isLoggedIn = usuario != null;
 
-    const String pathLogin = '/auth/login'; // Ex: routePaths.auth.login
-    const String pathHome =
-        '/carona/carona_home'; // Ex: routePaths.carona.caronaHome
-    const String pathCadastrarLocalizacao =
-        '/usuario/cadastro/cadastrar_localizacao'; // Ex: routePaths.usuario.cadastro.cadastrarLocalizacao
-    const String pathCadastrarPapel =
-        '/usuario/cadastro/cadastrar_papel'; // Ex: routePaths.usuario.cadastro.cadastrarPapel
+    // --- Rotas da Aplicação ---
+    const String pathLogin = '/auth/login';
+    const String pathHome = '/carona/carona_home';
+    const String pathCadastrarLocalizacao = '/usuario/cadastro/cadastrar_localizacao';
+    const String pathCadastrarPapel = '/usuario/cadastro/cadastrar_papel';
 
+    // --- Listas de Rotas para Verificação ---
+
+    // Páginas que podem ser acessadas a qualquer momento, logado ou não.
+    const List<String> alwaysAccessiblePaths = [
+      '/sobre',
+      '/contato',
+    ];
+
+    // Páginas públicas que um usuário logado não deve acessar.
     final List<String> publicAuthPaths = [
       pathLogin,
       '/auth/registrar',
@@ -87,101 +92,62 @@ class _MainAppState extends State<MainApp> {
       '/auth/registrar/final_registrar',
     ];
 
+    // Páginas do fluxo de primeiro login.
     final List<String> firstLoginSetupPaths = [
       pathCadastrarLocalizacao,
       pathCadastrarPapel,
     ];
 
-    final bool isTargetingPublicAuthPath = publicAuthPaths.contains(
-      currentPath,
-    );
-    final bool isTargetingFirstLoginSetupPath = firstLoginSetupPaths.contains(
-      currentPath,
-    );
+    // --- Lógica do Middleware ---
 
-    // Logs para depuração (remova ou use um logger em produção)
-    print('[AuthGuard] Current Path: $currentPath, IsLoggedIn: $isLoggedIn');
-    if (isLoggedIn) {
-      print(
-        '[AuthGuard] User: ${mainViewModel.usuario}, IsPrimeiroLogin: ${mainViewModel.usuario?.isPrimeiroLogin}, Campus: ${mainViewModel.usuario?.campus}',
-      );
+    // 1. Verifica se a rota é sempre acessível
+    if (alwaysAccessiblePaths.contains(currentPath)) {
+      return routeInfo; // Permite o acesso imediato
     }
 
-    if (isLoggedIn) {
-      // Assumindo que mainViewModel.usuario não é nulo aqui devido a `isLoggedIn`
-      final usuario = mainViewModel.usuario!;
-      final bool isPrimeiroLogin = usuario.isPrimeiroLogin == true;
 
+    final bool isTargetingPublicAuthPath = publicAuthPaths.contains(currentPath);
+    final bool isTargetingFirstLoginSetupPath = firstLoginSetupPaths.contains(currentPath);
+
+    // Logs para depuração
+
+    // 2. Lógica para usuários LOGADOS
+    if (isLoggedIn) {
+      final bool isPrimeiroLogin = usuario!.isPrimeiroLogin == true;
+
+      // 2a. Fluxo de primeiro login
       if (isPrimeiroLogin) {
-        final bool campusInfoMissing =
-            usuario.campus == null || usuario.campus!.isEmpty;
+        final bool campusInfoMissing = usuario.campus == null || usuario.campus!.isEmpty;
 
         if (campusInfoMissing) {
-          // Usuário precisa preencher a localização
-          if (currentPath == pathCadastrarLocalizacao) {
-            print(
-              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusMissing. Permitindo em $pathCadastrarLocalizacao',
-            );
-            return routeInfo; // Permite, pois já está na página correta
-          } else {
-            print(
-              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusMissing. Redirecionando para $pathCadastrarLocalizacao de $currentPath',
-            );
+          // Precisa preencher a localização
+          if (currentPath != pathCadastrarLocalizacao) {
             return routeInfo.redirect(Uri.parse(pathCadastrarLocalizacao));
           }
         } else {
-          // Informações do campus estão presentes
-          // Usuário precisa preencher o papel
-          if (currentPath == pathCadastrarPapel) {
-            print(
-              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusOK. Permitindo em $pathCadastrarPapel',
-            );
-            return routeInfo; // Permite, pois já está na página correta
-          } else {
-            // Se o usuário está no fluxo de primeiro login, com campus preenchido,
-            // mas não está na página de cadastrar papel, redirecione-o para lá.
-            // Isso evita que ele acesse outras páginas (como home ou auth) durante este estágio.
-            print(
-              '[AuthGuard] LoggedIn/PrimeiroLogin/CampusOK. Redirecionando para $pathCadastrarPapel de $currentPath',
-            );
+          // Precisa preencher o papel
+          if (currentPath != pathCadastrarPapel) {
             return routeInfo.redirect(Uri.parse(pathCadastrarPapel));
           }
         }
       } else {
-        // isPrimeiroLogin é false (Cadastro completo)
-        // Se logado e cadastro completo, e tentando acessar páginas de autenticação -> redireciona para home
-        if (isTargetingPublicAuthPath) {
-          print(
-            '[AuthGuard] LoggedIn/SetupComplete. Redirecionando de PublicAuthPath ($currentPath) para $pathHome',
-          );
-          return routeInfo.redirect(Uri.parse(pathHome));
-        }
-        // Se logado e cadastro completo, e tentando acessar páginas de configuração de primeiro login -> redireciona para home
-        if (isTargetingFirstLoginSetupPath) {
-          print(
-            '[AuthGuard] LoggedIn/SetupComplete. Redirecionando de FirstLoginSetupPath ($currentPath) para $pathHome',
-          );
+        // 2b. Usuário com cadastro completo
+        // Redireciona se tentar acessar páginas de autenticação ou de setup
+        if (isTargetingPublicAuthPath || isTargetingFirstLoginSetupPath) {
           return routeInfo.redirect(Uri.parse(pathHome));
         }
       }
 
-      // Se logado, e não caiu em nenhuma das condições de redirecionamento acima
-      // (ou seja, isPrimeiroLogin=false e não está acessando auth/setup paths, ou está na página correta do fluxo de primeiro login)
-      print('[AuthGuard] LoggedIn. Permitindo navegação para $currentPath');
+      // Se chegou até aqui, o usuário está logado e pode acessar a rota
       return routeInfo;
+
     } else {
-      // Não está logado
+      // 3. Lógica para usuários DESLOGADOS
+      // Permite acesso apenas às rotas públicas de autenticação
       if (isTargetingPublicAuthPath) {
-        // Se não logado e tentando acessar uma página pública de autenticação, permite.
-        print(
-          '[AuthGuard] NotLoggedIn. Permitindo navegação para PublicAuthPath ($currentPath)',
-        );
         return routeInfo;
       } else {
-        // Se não logado e tentando acessar qualquer outra página (protegida), redireciona para login.
-        print(
-          '[AuthGuard] NotLoggedIn. Redirecionando de ProtectedPath ($currentPath) para $pathLogin',
-        );
+        // Redireciona para o login se tentar acessar qualquer outra página
         return routeInfo.redirect(Uri.parse(pathLogin));
       }
     }
