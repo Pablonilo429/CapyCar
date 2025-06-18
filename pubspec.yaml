@@ -60,6 +60,7 @@ dependencies:
   shared_preferences: ^2.5.3
   pwa_install: ^0.0.6
   crop_your_image: ^2.0.0
+  flutter_masked_text2: ^0.9.1
 
 
 dev_dependencies:

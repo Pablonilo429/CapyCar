@@ -180,8 +180,7 @@ class CadastrarCaronaViewModel extends ChangeNotifier {
     // though individual setters already do.
   }
 
-  void setPreco(String precoStr) {
-    final precoDouble = double.tryParse(precoStr.replaceAll(',', '.')) ?? 0.0;
+  void setPreco(double precoDouble) {
     credentials.setPreco(precoDouble);
     notifyListeners();
   }

@@ -8,6 +8,7 @@ import 'package:capy_car/ui/components/appBottomNavigation.dart';
 import 'package:capy_car/ui/components/appDrawer.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_masked_text2/flutter_masked_text2.dart';
 import 'package:result_command/result_command.dart';
 
 class CadastrarCaronaPage extends StatefulWidget {
@@ -28,7 +29,7 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
 
   final _saidaController = TextEditingController();
   final _pontoController = TextEditingController();
-  final _precoController = TextEditingController();
+  final _precoController = MoneyMaskedTextController(leftSymbol: 'R\$ ');
   final _pontoFieldKey = GlobalKey<FormFieldState<String>>();
 
   @override
@@ -51,12 +52,6 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
     if (_saidaController.text !=
         (viewModel.credentials.rota?.cidadeSaida ?? '')) {
       _saidaController.text = viewModel.credentials.rota?.cidadeSaida ?? '';
-    }
-    final precoVm = viewModel.credentials.preco
-        .toStringAsFixed(2)
-        .replaceAll('.', ',');
-    if (_precoController.text != precoVm) {
-      _precoController.text = precoVm;
     }
   }
 
@@ -625,19 +620,11 @@ class _CadastrarCaronaPageState extends State<CadastrarCaronaPage> {
                     const SizedBox(height: 6),
                     TextFormField(
                       controller: _precoController,
-                      decoration: _buildInputDecoration(
-                        hintText: '0,00',
-                        prefixText: 'R\$ ',
-                      ),
-                      keyboardType: const TextInputType.numberWithOptions(
-                        decimal: true,
-                      ),
-                      inputFormatters: [
-                        FilteringTextInputFormatter.allow(
-                          RegExp(r'^\d*([,.]\d{0,2})?$'),
-                        ),
-                      ],
-                      onChanged: viewModel.setPreco,
+                      decoration: _buildInputDecoration(),
+                      keyboardType: TextInputType.number,
+                      onChanged: (value) {
+                        viewModel.setPreco(_precoController.numberValue);
+                      },
                       validator: _caronaValidator.byField(
                         viewModel.credentials,
                         'preco',
