@@ -2,7 +2,7 @@
 
 ## 📝 Sobre o Projeto
 
-O **CapyCar** é um aplicativo de caronas, com foco principal na plataforma **Web**, mas construído com Flutter para ser totalmente compatível com **Android** e **iOS**.
+O **[CapyCar](https://capycarufrrj.web.app)** é um aplicativo de caronas, com foco principal na plataforma **Web**, mas construído com Flutter para ser totalmente compatível com **Android** e **iOS**.
 
 O objetivo do projeto é conectar a comunidade da **Universidade Federal Rural do Rio de Janeiro (UFRRJ)**, facilitando o transporte de estudantes e funcionários para promover a economia, a sustentabilidade e a integração no campus. A solução foi pensada como uma resposta prática aos desafios de mobilidade enfrentados pela comunidade acadêmica.
 
